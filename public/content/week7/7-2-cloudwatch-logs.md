@@ -1,0 +1,392 @@
+---
+title: 'CloudWatch Logs 분석'
+week: 7
+session: 2
+awsServices:
+  - Amazon CloudWatch
+learningObjectives:
+  - Amazon CloudWatch Logs의 수집, 저장 및 관리 방법을 파악하고 적용할 수 있습니다.
+  - Amazon CloudWatch Logs Insights를 활용하여 로그를 분석할 수 있습니다.
+  - 메트릭 필터를 생성하여 로그 기반 모니터링을 구성할 수 있습니다.
+---
+
+> [!DOWNLOAD]
+> [week7-2-cloudwatch-logs.zip](/files/week7/week7-2-cloudwatch-logs.zip)
+>
+> - `setup-4-2-student.sh` - 사전 환경 구축 스크립트 (VPC, Subnet, Security Group, EC2 인스턴스, Nginx, CloudWatch Agent, IAM 역할 등 생성)
+> - `cleanup-4-2-student.sh` - 리소스 정리 스크립트
+> - 태스크 0: 사전 환경 구축 (setup-4-2-student.sh 실행)
+
+> [!NOTE]
+> 이 실습에서는 CloudWatch Logs를 사용하여 실시간 로그 수집, 분석, 모니터링을 학습합니다. 사전 구축된 EC2 + Nginx + CloudWatch Agent 환경에서 자동으로 생성되는 로그 데이터를 활용합니다.
+
+> [!CONCEPT] Amazon CloudWatch Logs란?
+>
+> CloudWatch Logs는 AWS 리소스와 애플리케이션의 **로그를 중앙에서 수집, 저장, 분석**하는 서비스입니다.
+>
+> - **로그 그룹(Log Group)**: 동일한 유형의 로그를 그룹화하는 컨테이너입니다 (예: `/aws/ec2/nginx/access`)
+> - **로그 스트림(Log Stream)**: 동일한 소스에서 오는 로그 이벤트의 시퀀스입니다 (예: 인스턴스 ID별)
+> - **로그 이벤트(Log Event)**: 타임스탬프와 메시지를 포함하는 개별 로그 항목입니다
+> - **CloudWatch Agent**: EC2 인스턴스에 설치하여 로그를 CloudWatch로 전송하는 에이전트입니다
+>
+> 이 실습에서는 Nginx 웹 서버의 Access/Error 로그를 CloudWatch Logs로 수집하고 분석합니다.
+
+## 태스크 0: 사전 환경 구축
+
+1. 위 DOWNLOAD 섹션에서 `week7-2-cloudwatch-logs.zip` 파일을 다운로드합니다.
+
+2. AWS Management Console에 로그인한 후 상단의 **CloudShell** 아이콘을 선택하여 CloudShell을 실행합니다.
+
+3. CloudShell 상단의 **Actions** > `Upload file`을 선택하여 다운로드한 ZIP 파일을 업로드합니다.
+
+4. 업로드가 완료되면 다음 명령어로 압축을 해제합니다:
+
+```bash
+unzip week7-2-cloudwatch-logs.zip
+```
+
+5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
+
+```bash
+chmod +x setup-4-2-student.sh
+./setup-4-2-student.sh
+```
+
+6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
+
+> [!NOTE]
+> 사전 환경 구축에 약 5-7분이 소요됩니다. EC2 인스턴스 생성 후 Nginx 및 CloudWatch Agent 설치까지 기다립니다.
+
+7. 스크립트가 완료되면 출력 메시지에서 다음 리소스가 생성되었는지 확인합니다:
+
+| 리소스 | 이름 |
+|--------|------|
+| VPC | CloudArchitect-Lab-VPC |
+| Public Subnet | CloudArchitect-Lab-Public-Subnet |
+| Security Group | CloudArchitect-Lab-Web-SG |
+| EC2 인스턴스 | CloudArchitect-Lab-LogServer |
+| IAM 역할 | CloudArchitect-Lab-CloudWatchAgent-Role |
+| CloudWatch Logs 그룹 | /aws/ec2/nginx/access, /aws/ec2/nginx/error |
+
+✅ **태스크 완료**: 사전 환경 구축이 완료되었습니다.
+
+
+## 태스크 1: 사전 구축된 환경 확인
+
+### 1.1 Amazon EC2 로그 서버 확인
+
+8. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
+
+9. 왼쪽 메뉴에서 **Instances**를 선택합니다.
+
+10. `CloudArchitect-Lab-LogServer` 인스턴스의 상태가 "Running"인지 확인합니다.
+
+11. 하단 **Details** 탭에서 **Public IPv4 address**를 복사합니다.
+
+### 1.2 웹 서버 접속 테스트
+
+12. 새 브라우저 탭을 열고 `http://[복사한 Public IP]`로 접속합니다.
+
+13. CloudWatch Logs 실습 환경 페이지가 정상적으로 표시되는지 확인합니다.
+
+> [!NOTE]
+> 웹 서버에 접속하면 Nginx Access 로그가 자동으로 생성됩니다. 또한 사전 구축 스크립트에 의해 자동 트래픽 생성 시스템이 2분마다 다양한 URL 패턴(정상 200, 에러 404)의 로그를 생성합니다.
+
+14. 스크립트 실행 후 약 3-4분 기다려 충분한 로그 데이터가 생성되도록 합니다.
+
+✅ **태스크 완료**: EC2 로그 서버와 웹 서버가 정상 작동하고 있습니다.
+
+
+## 태스크 2: Amazon CloudWatch Logs 그룹 확인
+
+> [!CONCEPT] 로그 그룹과 로그 스트림의 관계
+>
+> 하나의 로그 그룹 안에 여러 로그 스트림이 존재할 수 있습니다. 예를 들어 `/aws/ec2/nginx/access` 로그 그룹에는 각 EC2 인스턴스별로 별도의 로그 스트림이 생성됩니다. 이렇게 분리하면 특정 인스턴스의 로그만 선택적으로 조회할 수 있습니다.
+
+### 2.1 Access 로그 그룹 확인
+
+15. 상단 검색창에서 `CloudWatch`를 검색하고 **CloudWatch**를 선택합니다.
+
+16. 왼쪽 메뉴에서 **Logs** 섹션을 확장하고 **Log groups**를 선택합니다.
+
+17. `/aws/ec2/nginx/access` 로그 그룹을 선택합니다.
+
+18. 로그 그룹의 **Retention setting**, **Stored bytes**, **Creation time**을 확인합니다.
+
+19. **Log streams** 탭에서 생성된 로그 스트림을 확인합니다.
+
+### 2.2 Error 로그 그룹 확인
+
+20. 왼쪽 메뉴에서 **Log groups**를 다시 선택합니다.
+
+21. `/aws/ec2/nginx/error` 로그 그룹을 선택합니다.
+
+22. Error 로그 그룹의 세부 정보와 로그 스트림을 확인합니다.
+
+> [!TIP]
+> Access 로그와 Error 로그를 별도의 그룹으로 분리하면 각각 다른 보존 기간을 설정하거나, Error 로그에만 경보를 설정하는 등 유연한 관리가 가능합니다.
+
+✅ **태스크 완료**: Access 로그와 Error 로그 그룹이 정상적으로 생성된 것을 확인했습니다.
+
+
+## 태스크 3: 실시간 로그 확인
+
+### 3.1 Access 로그 스트림 확인
+
+23. `/aws/ec2/nginx/access` 로그 그룹에서 **Log streams** 탭의 로그 스트림을 선택합니다.
+
+24. 생성된 로그 이벤트들을 확인합니다.
+
+25. 각 로그 이벤트의 **Timestamp**와 **Message**를 확인합니다.
+
+26. 정상 접속(200 응답)과 404 에러 로그를 구분하여 확인합니다.
+
+> [!NOTE]
+> Access 로그 형식 예시:
+>
+> - 정상 접속: `192.168.1.1 - - [10/Jan/2025:10:30:15 +0000] "GET / HTTP/1.1" 200 612`
+> - 404 에러: `192.168.1.1 - - [10/Jan/2025:10:30:20 +0000] "GET /test404 HTTP/1.1" 404 153`
+
+### 3.2 Error 로그 스트림 확인
+
+27. 왼쪽 메뉴에서 **Log groups**를 선택합니다.
+
+28. `/aws/ec2/nginx/error` 로그 그룹의 로그 스트림을 선택합니다.
+
+29. 404 에러와 관련된 상세한 에러 로그를 확인합니다.
+
+30. Access 로그와 Error 로그의 차이점을 비교합니다.
+
+> [!NOTE]
+> Error 로그는 Access 로그보다 상세한 오류 정보를 포함합니다. 예: `2025/01/10 10:30:20 [error] 1234#0: *1 open() "/usr/share/nginx/html/test404" failed (2: No such file or directory)`
+
+✅ **태스크 완료**: Access 로그와 Error 로그 스트림에서 실시간 로그 데이터를 확인했습니다.
+
+
+## 태스크 4: 메트릭 필터 생성
+
+> [!CONCEPT] 메트릭 필터란?
+>
+> 메트릭 필터는 로그 이벤트를 스캔하여 지정된 패턴과 일치하는 항목을 찾고, 이를 **CloudWatch 지표로 변환**합니다. 예를 들어 404 에러가 발생할 때마다 지표 값이 1씩 증가하도록 설정하면, 이 지표에 경보를 연결하여 에러 급증 시 알림을 받을 수 있습니다.
+
+### 4.1 404 에러 메트릭 필터 생성
+
+31. `/aws/ec2/nginx/access` 로그 그룹 페이지에서 **Metric filters** 탭을 선택합니다.
+
+32. [[Create metric filter]] 버튼을 클릭합니다.
+
+33. **Filter pattern**에 다음을 입력합니다:
+
+```
+[ip, identity, user, timestamp, request, status_code="404", size]
+```
+
+34. [[Test pattern]] 버튼을 클릭하여 패턴이 404 에러 로그와 매칭되는지 확인합니다.
+
+35. [[Next]] 버튼을 클릭합니다.
+
+### 4.2 메트릭 설정
+
+36. **Filter name**에 `404-Error-Filter`를 입력합니다.
+
+37. **Metric namespace**에 `CloudArchitect/Lab11`을 입력합니다.
+
+38. **Metric name**에 `404ErrorCount`를 입력합니다.
+
+39. **Metric value**에 `1`을 입력합니다.
+
+40. [[Next]] 버튼을 클릭합니다.
+
+41. 설정을 검토한 후 [[Create metric filter]] 버튼을 클릭합니다.
+
+> [!TIP]
+> 생성된 메트릭 필터는 이후 발생하는 로그에만 적용됩니다. 과거 로그에는 소급 적용되지 않습니다. 메트릭이 생성되면 CloudWatch Metrics에서 `CloudArchitect/Lab11` 네임스페이스에서 확인할 수 있습니다.
+
+✅ **태스크 완료**: 404 에러를 감지하는 메트릭 필터가 생성되었습니다.
+
+
+## 태스크 5: Amazon CloudWatch Logs Insights 쿼리
+
+> [!CONCEPT] CloudWatch Logs Insights란?
+>
+> Logs Insights는 로그 데이터를 **SQL과 유사한 쿼리 언어**로 검색하고 분석하는 기능입니다. 필터링, 파싱, 집계, 정렬 등 다양한 분석이 가능하며, 결과를 시각화할 수도 있습니다.
+
+### 5.1 기본 로그 분석 쿼리
+
+42. 왼쪽 메뉴에서 **Logs** 섹션을 확장하고 **Logs Insights**를 선택합니다.
+
+43. **Select log group(s)**에서 `/aws/ec2/nginx/access`를 선택합니다.
+
+44. 시간 범위를 `Last 1 hour`로 설정합니다.
+
+45. 쿼리 편집기에 다음 쿼리를 입력합니다:
+
+```
+fields @timestamp, @message
+| filter @message like /404/
+| sort @timestamp desc
+| limit 20
+```
+
+46. [[Run query]] 버튼을 클릭합니다.
+
+47. 결과에서 404 에러 로그들을 확인합니다.
+
+### 5.2 상태 코드별 통계 쿼리
+
+48. 쿼리 편집기에 다음 쿼리를 입력합니다:
+
+```
+fields @timestamp, @message
+| parse @message /(?<ip>\S+) \S+ \S+ \[(?<timestamp>[^\]]+)\] "(?<method>\S+) (?<path>\S+) (?<protocol>\S+)" (?<status>\d+) (?<size>\d+)/
+| stats count() by status
+| sort count desc
+```
+
+49. [[Run query]] 버튼을 클릭합니다.
+
+50. 결과에서 200, 404 등 상태 코드별 발생 횟수를 확인합니다.
+
+### 5.3 시간별 로그 발생 패턴 분석
+
+51. 다음 쿼리를 입력하여 시간별 로그 발생 패턴을 분석합니다:
+
+```
+fields @timestamp
+| stats count() by bin(5m)
+| sort @timestamp desc
+```
+
+52. [[Run query]] 버튼을 클릭합니다.
+
+53. 결과에서 5분 단위로 로그 발생 추이를 확인합니다.
+
+> [!TIP]
+> Logs Insights 쿼리 결과는 **Visualization** 탭에서 그래프로 시각화할 수 있습니다. `stats` 명령어와 `bin()` 함수를 함께 사용하면 시계열 그래프를 생성할 수 있습니다.
+
+✅ **태스크 완료**: Logs Insights를 통해 로그 검색, 파싱, 집계 분석을 수행했습니다.
+
+
+## 태스크 6: Live Tail 실시간 모니터링
+
+### 6.1 Live Tail 시작
+
+54. `/aws/ec2/nginx/access` 로그 그룹 페이지로 이동합니다.
+
+55. [[Start Live tail]] 버튼을 클릭합니다.
+
+56. Live tail 상태가 "Running"으로 변경될 때까지 기다립니다.
+
+### 6.2 실시간 로그 관찰
+
+57. 다른 브라우저 탭에서 웹 서버 IP로 접속하여 실시간으로 로그가 나타나는지 확인합니다.
+
+58. 존재하지 않는 페이지(예: `http://[IP]/test-page`)에 접속하여 404 에러 로그를 생성합니다.
+
+59. Live tail 화면에서 **Filter events** 입력창에 `404`를 입력하여 404 에러 로그만 필터링합니다.
+
+60. 필터를 `200`으로 변경하여 정상 접속 로그만 표시합니다.
+
+61. [[Stop Live tail]] 버튼을 클릭하여 세션을 종료합니다.
+
+> [!NOTE]
+> Live tail은 실시간 문제 감지, 배포 후 로그 확인, 트래픽 패턴 분석 등에 유용합니다. 필터링 기능으로 특정 조건의 로그만 선택적으로 모니터링할 수 있습니다.
+
+✅ **태스크 완료**: Live tail을 통해 실시간 로그 모니터링과 필터링을 체험했습니다.
+
+## 리소스 정리
+
+> [!WARNING]
+> 실습 완료 후 **반드시** 리소스를 정리하여 불필요한 비용을 방지하세요.
+
+### 방법 1: CloudShell에서 정리 스크립트 실행
+
+1. AWS Management Console 상단의 **CloudShell** 아이콘을 선택합니다.
+
+2. 다음 명령어로 정리 스크립트를 실행합니다:
+
+```bash
+./cleanup-4-2-student.sh
+```
+
+3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.
+
+4. 스크립트가 다음 리소스를 자동으로 삭제합니다:
+   - CloudWatch 로그 그룹 (`/aws/ec2/nginx/access`, `/aws/ec2/nginx/error`)
+   - 메트릭 필터
+   - EC2 인스턴스 (`CloudArchitect-Lab-LogServer`)
+   - IAM 역할 (`CloudArchitect-Lab-CloudWatchAgent-Role`)
+   - Security Group, VPC 및 관련 리소스
+
+> [!NOTE]
+> 정리 스크립트는 이 실습에서 생성한 리소스만 삭제합니다. 다른 리소스에는 영향을 주지 않습니다.
+
+### 방법 2: 수동 삭제 (스크립트 실행이 불가능한 경우)
+
+#### 태스크 1: Amazon CloudWatch Logs 리소스 삭제
+
+1. 상단 검색창에서 `CloudWatch`를 검색하고 **CloudWatch**를 선택합니다.
+
+2. 왼쪽 메뉴에서 **Log groups**를 선택합니다.
+
+3. `/aws/ec2/nginx/access` 로그 그룹을 선택하고 **Actions** > **Delete log group(s)**를 선택합니다.
+
+4. 확인 대화 상자에서 [[Delete]]를 클릭합니다.
+
+5. `/aws/ec2/nginx/error` 로그 그룹도 동일하게 삭제합니다.
+
+6. 실습에서 생성한 메트릭 필터가 있다면 해당 로그 그룹의 **Metric filters** 탭에서 삭제합니다.
+
+#### 태스크 2: Amazon EC2 인스턴스 종료
+
+7. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
+
+8. 왼쪽 메뉴에서 **Instances**를 선택합니다.
+
+9. `CloudArchitect-Lab-LogServer` 인스턴스를 선택합니다.
+
+10. **Instance state** > **Terminate instance**를 선택합니다.
+
+11. 확인 대화 상자에서 [[Terminate]]를 클릭합니다.
+
+#### 태스크 3: Security Group 및 Amazon VPC 삭제
+
+12. EC2 인스턴스 종료 후, 왼쪽 메뉴의 **Security Groups**에서 `CloudArchitect-Lab-Web-SG`를 삭제합니다.
+
+13. 상단 검색창에서 `VPC`를 검색하고 **VPC**를 선택합니다.
+
+14. `CloudArchitect-Lab-VPC`를 선택하고 **Actions** > **Delete VPC**를 선택합니다.
+
+15. 확인 필드에 `delete`를 입력하고 [[Delete]]를 클릭합니다.
+
+#### 태스크 4: 최종 확인
+
+16. 상단 검색창에서 `Resource Groups & Tag Editor`를 검색하고 **Resource Groups & Tag Editor**를 선택합니다.
+
+17. 왼쪽 메뉴에서 **Tag Editor**를 선택합니다.
+
+18. 다음과 같이 검색 조건을 설정합니다:
+   - **Regions**: `Asia Pacific (Seoul) ap-northeast-2`
+   - **Resource types**: `All supported resource types`
+   - **Tags**: Tag key에 `Name`을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
+
+19. [[Search resources]]를 클릭합니다.
+
+20. 검색 결과에 리소스가 표시되지 않으면 정리가 완료된 것입니다.
+
+✅ **리소스 정리 완료**: 모든 리소스가 삭제되었습니다.
+
+
+## 💡 핵심 포인트 정리
+
+📋
+CloudWatch Logs 구조
+로그 그룹 → 로그 스트림 → 로그 이벤트 계층 구조로 로그를 체계적으로 관리합니다.
+
+🔍
+Logs Insights
+SQL과 유사한 쿼리 언어로 로그를 검색, 파싱, 집계하여 패턴을 분석합니다.
+
+📊
+메트릭 필터
+로그 패턴을 CloudWatch 지표로 변환하여 로그 기반 모니터링과 경보를 구성합니다.
