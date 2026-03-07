@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import remarkKoreanBold from '@/utils/remarkKoreanBold';
-import { Box, Icon, Modal } from '@cloudscape-design/components';
+import { Box, Icon } from '@cloudscape-design/components';
 import StatusIndicator from '@cloudscape-design/components/status-indicator';
 import CopyToClipboard from '@cloudscape-design/components/copy-to-clipboard';
 import CodeView from '@cloudscape-design/code-view/code-view';
