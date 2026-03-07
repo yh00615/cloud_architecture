@@ -312,15 +312,17 @@
 .markdown-code-block code,
 .markdown-code-block .awsui_code-line_1pkji_12id4_64 {
   line-height: 1.8 !important;
-  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+  font-family: 'D2Coding', 'D2 coding', 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
   font-size: 0.9rem !important;
+  font-weight: 500 !important;
 }
 
 /* 줄번호 영역도 동일한 줄간격 */
 .markdown-code-block .awsui_line-number_1pkji_12id4_43 code {
   line-height: 1.8 !important;
-  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+  font-family: 'D2Coding', 'D2 coding', 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
   font-size: 0.9rem !important;
+  font-weight: 500 !important;
 }
 
 /* 하이라이트 토큰 색상 강화 - 라이트모드 */
@@ -383,5 +385,6 @@
 .info-box-content code,
 .info-box-content .awsui_code-line_1pkji_12id4_64 {
   line-height: 1.8 !important;
-  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+  font-family: 'D2Coding', 'D2 coding', 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+  font-weight: 500 !important;
 }

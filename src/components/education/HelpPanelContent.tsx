@@ -620,7 +620,7 @@ export const HelpPanelContent: React.FC<HelpPanelContentProps> = ({
                                   >
                                     {term.weeks.map((week, weekIdx) => (
                                       <Badge key={weekIdx} color="blue">
-                                        {week}
+                                        Week {week}
                                       </Badge>
                                     ))}
                                   </SpaceBetween>
