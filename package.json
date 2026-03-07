@@ -15,6 +15,7 @@
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "validate": "node scripts/validate.js",
+    "review": "node scripts/review.js",
     "fix": "bash scripts/fix.sh"
   },
   "dependencies": {

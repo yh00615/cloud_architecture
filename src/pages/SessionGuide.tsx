@@ -208,6 +208,7 @@ export const SessionGuide: React.FC = () => {
             const section = keyPointsMatch[0];
             content = content.replace(section, '');
             // 각 항목 파싱: 이모지\n제목\n설명 (각각 별도 줄)
+            // eslint-disable-next-line no-misleading-character-class
             const itemRegex = /^([\p{Emoji_Presentation}\p{Extended_Pictographic}\u200d\ufe0f]+)\n(.+)\n(.+)$/gmu;
             const items: { emoji: string; title: string; desc: string }[] = [];
             let m;
