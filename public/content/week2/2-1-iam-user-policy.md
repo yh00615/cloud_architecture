@@ -72,11 +72,22 @@ learningObjectives:
 
 14. [[Next]] 버튼을 클릭합니다.
 
-15. 설정을 검토한 후 [[Create user]] 버튼을 클릭합니다.
+15. **Review and create** 페이지에서 설정을 검토합니다.
 
-16. 사용자 생성이 완료되면 **Console sign-in details** 페이지가 표시됩니다.
+16. **Tags** 섹션에서 [[Add new tag]] 버튼을 클릭합니다.
 
-17. **Console sign-in URL**과 **Username**을 복사하여 메모장에 저장합니다.
+17. 다음과 같이 태그를 입력합니다:
+    - **Key**: `Name`
+    - **Value**: `CloudArchitect-Lab-DeveloperUser`
+
+> [!NOTE]
+> 태그는 AWS 리소스를 식별, 구성, 검색하는 데 도움이 되는 키-값 쌍입니다. 실습에서는 리소스 정리 시 Tag Editor를 사용하여 태그로 리소스를 검색할 수 있습니다.
+
+18. [[Create user]] 버튼을 클릭합니다.
+
+19. 사용자 생성이 완료되면 **Console sign-in details** 페이지가 표시됩니다.
+
+20. **Console sign-in URL**과 **Username**을 복사하여 메모장에 저장합니다.
 
 > [!IMPORTANT]
 > Console sign-in URL은 이 페이지를 벗어나면 다시 확인하기 어렵습니다. 반드시 메모장에 저장합니다.
@@ -220,6 +231,8 @@ learningObjectives:
 > [!CONCEPT] IAM 정책 시뮬레이터
 >
 > 정책 시뮬레이터는 실제 리소스에 영향을 주지 않고 IAM 정책의 효과를 테스트할 수 있는 도구입니다. 특정 사용자가 특정 리소스에 대해 특정 작업을 수행할 수 있는지 미리 검증할 수 있어, 정책 배포 전 안전하게 테스트할 수 있습니다.
+>
+> 이 태스크에서는 태스크 3에서 생성한 **CloudArchitect-Lab-S3-Limited-Access** 정책이 의도한 대로 작동하는지 검증합니다. `cloudarchitect-lab-*` 패턴의 S3 버킷에는 접근이 허용되고, 다른 버킷에는 접근이 거부되는지 확인합니다.
 
 ### 4.1 정책 시뮬레이터 사용
 
@@ -233,35 +246,32 @@ learningObjectives:
 - **ReadOnlyAccess**
 - **CloudArchitect-Lab-S3-Limited-Access**
 
-> [!TIP]
-> 정책 시뮬레이터는 체크된 정책들만 시뮬레이션에 포함합니다. 모든 정책을 체크해야 사용자의 실제 권한을 정확히 테스트할 수 있습니다.
-
-50. 선택된 정책들이 오른쪽 **Policies** 패널에도 표시되는 것을 확인합니다:
-- **AWS Managed Policies**: ReadOnlyAccess
-- **Customer Managed Policies**: CloudArchitect-Lab-S3-Limited-Access
-
 > [!NOTE]
-> 오른쪽 패널에서 정책 이름을 클릭하면 왼쪽에 해당 정책의 JSON 내용이 표시됩니다. 정책의 구조와 권한 범위를 확인할 수 있습니다.
+> 정책 이름을 클릭하면 해당 정책의 JSON 내용을 확인할 수 있습니다. 체크된 정책들만 시뮬레이션에 포함되므로, 사용자의 실제 권한을 정확히 테스트하려면 모든 관련 정책을 체크해야 합니다.
 
 ### 4.2 허용되는 작업 테스트
 
-51. **Policy Simulator** 섹션에서 **Select service** 드롭다운을 선택하고 **Amazon S3**를 선택합니다.
+50. **Policy Simulator** 섹션에서 **Select service** 드롭다운을 선택하고 **Amazon S3**를 선택합니다.
 
 52. **Select actions** 드롭다운을 선택하고 **GetObject** 액션을 선택합니다.
 
-53. 선택된 액션이 **Action Settings and Results** 목록에 나타나고 **Permission** 열에 "Not simulated"가 표시되는 것을 확인합니다.
+53. 선택된 액션이 **Action Settings and Results** 테이블에 추가되고 **Permission** 열에 "Not simulated"가 표시되는 것을 확인합니다.
 
 54. GetObject 행의 왼쪽 화살표를 선택하여 행을 확장합니다.
 
-55. **Resource ARN** 필드에 다음 ARN을 입력합니다:
+55. 확장된 영역에 **Resource** 섹션이 표시됩니다. 기본값으로 `***`가 표시되어 있으며, 이는 모든 리소스를 의미합니다.
+
+56. [[Add Resource]] 버튼을 클릭합니다.
+
+57. 리소스 ARN 입력 필드에 다음 ARN을 입력합니다:
 
 ```text
 arn:aws:s3:::cloudarchitect-lab-test-bucket/test-file.txt
 ```
 
-56. 오른쪽 상단의 [[Run Simulation]] 버튼을 클릭합니다.
+58. 오른쪽 상단의 [[Run Simulation]] 버튼을 클릭합니다.
 
-57. 시뮬레이션 완료 후 GetObject 행의 **Permission** 열이 **allowed**로 표시되는 것을 확인합니다.
+59. 시뮬레이션 완료 후 GetObject 행의 **Permission** 열이 **allowed**로 표시되는 것을 확인합니다.
 
 > [!OUTPUT]
 > ```
@@ -270,17 +280,22 @@ arn:aws:s3:::cloudarchitect-lab-test-bucket/test-file.txt
 > Permission: allowed
 > ```
 
-58. **allowed** 옆의 **matching statement(s)** 링크를 선택하여 어떤 정책이 이 액션을 허용했는지 확인합니다.
+60. **allowed** 옆의 **matching statement(s)** 링크를 선택하여 어떤 정책이 이 액션을 허용했는지 확인합니다.
 
 ### 4.3 거부되는 작업 테스트
 
-59. GetObject 행을 확장하고 **Resource ARN** 필드의 내용을 지운 후 다음 ARN을 입력합니다:
+60. 왼쪽 **IAM Policies** 섹션에서 **ReadOnlyAccess** 정책의 체크를 해제하고, **CloudArchitect-Lab-S3-Limited-Access** 정책만 체크된 상태로 유지합니다.
+
+> [!NOTE]
+> 특정 정책의 제한 효과를 명확히 확인하기 위해 CloudArchitect-Lab-S3-Limited-Access 정책만 선택합니다. 이 정책은 `cloudarchitect-lab-*` 패턴의 버킷에만 접근을 허용합니다.
+
+62. GetObject 행을 확장한 상태에서 **Resource** 섹션의 ARN 필드 내용을 지운 후 다음 ARN을 입력합니다:
 
 ```text
 arn:aws:s3:::other-bucket/test-file.txt
 ```
 
-60. [[Run Simulation]] 버튼을 클릭합니다.
+63. [[Run Simulation]] 버튼을 클릭합니다.
 
 61. 시뮬레이션 완료 후 GetObject 행의 **Permission** 열이 **implicitDeny**로 표시되는 것을 확인합니다.
 
@@ -296,15 +311,15 @@ arn:aws:s3:::other-bucket/test-file.txt
 
 ### 4.4 사용자 권한 확인
 
-62. IAM 콘솔로 이동합니다.
+64. IAM 콘솔로 이동합니다.
 
-63. 왼쪽 메뉴에서 **Users**를 선택합니다.
+65. 왼쪽 메뉴에서 **Users**를 선택합니다.
 
-64. **CloudArchitect-Lab-DeveloperUser** 사용자를 선택합니다.
+66. **CloudArchitect-Lab-DeveloperUser** 사용자를 선택합니다.
 
-65. **Permissions** 탭에서 사용자에게 적용된 모든 권한을 확인합니다.
+67. **Permissions** 탭에서 사용자에게 적용된 모든 권한을 확인합니다.
 
-66. **Groups** 탭에서 그룹 멤버십을 확인합니다.
+68. **Groups** 탭에서 **User groups membership**을 확인합니다.
 
 > [!TIP]
 > **Permissions** 탭에서 정책 이름 옆에 "Attached from group: CloudArchitect-Lab-Developers"라고 표시됩니다. 이는 해당 권한이 그룹을 통해 상속된 것임을 나타냅니다.
@@ -318,56 +333,46 @@ arn:aws:s3:::other-bucket/test-file.txt
 
 이 실습에서는 자동 정리 스크립트가 제공되지 않으므로, 아래 단계에 따라 AWS Management Console에서 수동으로 리소스를 삭제합니다.
 
-### 태스크 1: AWS IAM 리소스 삭제
+### 태스크 1: IAM 사용자 삭제
 
 1. 상단 검색창에서 `IAM`을 검색하고 **IAM**을 선택합니다.
 
-2. 왼쪽 메뉴에서 **Roles**를 선택합니다.
+2. 왼쪽 메뉴에서 **Users**를 선택합니다.
 
-3. 실습에서 생성한 역할을 선택합니다.
+3. **CloudArchitect-Lab-DeveloperUser** 사용자를 선택합니다.
 
-4. **Delete** 버튼을 클릭합니다.
+4. [[Delete]] 버튼을 클릭합니다.
 
-5. 확인 창에 역할 이름을 입력하고 [[Delete]] 버튼을 클릭합니다.
+5. 확인 창에 `confirm`을 입력하고 [[Delete user]] 버튼을 클릭합니다.
 
-6. 왼쪽 메뉴에서 **Policies**를 선택합니다.
+> [!NOTE]
+> 사용자가 그룹에 속해 있어도 바로 삭제할 수 있습니다. 사용자를 삭제하면 그룹 멤버십도 자동으로 제거됩니다.
 
-7. 실습에서 생성한 정책을 선택합니다.
+### 태스크 2: IAM 그룹 삭제
 
-8. **Actions** > **Delete**를 선택합니다.
+6. 왼쪽 메뉴에서 **User groups**를 선택합니다.
 
-9. 확인 창에 정책 이름을 입력하고 [[Delete]] 버튼을 클릭합니다.
+7. **CloudArchitect-Lab-Developers** 그룹을 선택합니다.
 
-10. 왼쪽 메뉴에서 **Users**를 선택합니다.
+8. **Delete** 버튼을 클릭합니다.
 
-11. 실습에서 생성한 사용자를 선택합니다.
+9. 확인 창에 `CloudArchitect-Lab-Developers`를 입력하고 [[Delete]] 버튼을 클릭합니다.
 
-12. 사용자에 연결된 정책을 먼저 제거합니다:
-   - **Permissions** 탭 선택
-   - 정책 선택 후 **Remove** 클릭
+### 태스크 3: IAM 정책 삭제
 
-13. **Delete user** 버튼을 클릭합니다.
+10. 왼쪽 메뉴에서 **Policies**를 선택합니다.
 
-14. 확인 창에 사용자 이름을 입력하고 [[Delete]] 버튼을 클릭합니다.
+11. **Filter by Type** 드롭다운을 클릭하고 **Customer managed**를 선택합니다.
 
-### 태스크 2: 최종 확인
+12. 검색창에 `CloudArchitect-Lab-S3-Limited-Access`를 입력합니다.
 
-1. 상단 검색창에서 `Resource Groups & Tag Editor`를 검색하고 **Resource Groups & Tag Editor**를 선택합니다.
+13. **CloudArchitect-Lab-S3-Limited-Access** 정책 옆의 체크박스를 체크합니다.
 
-2. 왼쪽 메뉴에서 **Tag Editor**를 선택합니다.
+14. [[Delete]] 버튼을 클릭합니다.
 
-3. 다음과 같이 검색 조건을 설정합니다:
-   - **Regions**: **Asia Pacific (Seoul) ap-northeast-2**
-   - **Resource types**: **All supported resource types**
-   - **Tags**: Tag key에 **Name**을 선택하고, Tag value에 **CloudArchitect-Lab**을 입력합니다.
+15. 확인 창에 `CloudArchitect-Lab-S3-Limited-Access`를 입력하고 [[Delete]] 버튼을 클릭합니다.
 
-4. [[Search resources]]를 클릭합니다.
-
-5. 검색 결과에 리소스가 표시되지 않으면 정리가 완료된 것입니다.
-
-6. 검색된 리소스가 있다면 해당 서비스 콘솔로 이동하여 삭제합니다.
-
-✅ **리소스 정리 완료**: 모든 리소스가 삭제되었습니다.
+✅ **리소스 정리 완료**: 모든 IAM 리소스가 삭제되었습니다.
 
 
 ## 💡 핵심 포인트 정리
