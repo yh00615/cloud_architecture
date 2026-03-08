@@ -119,7 +119,7 @@ learningObjectives:
 
 13. **Policy name** 필드에 `CloudArchitect-Lab-S3ReadOnly`를 입력합니다.
 
-14. **Description** 필드에 `Lab S3 읽기 전용 정책`을 입력합니다.
+14. **Description** 필드에 `Lab S3 read-only policy`를 입력합니다.
 
 15. [[Create policy]] 버튼을 클릭합니다.
 
@@ -156,7 +156,7 @@ learningObjectives:
 
 19. **Policy name** 필드에 `CloudArchitect-Lab-S3FullAccess`를 입력합니다.
 
-20. **Description** 필드에 `Lab S3 전체 접근 정책`을 입력합니다.
+20. **Description** 필드에 `Lab S3 full access policy`를 입력합니다.
 
 21. [[Create policy]] 버튼을 클릭합니다.
 
@@ -193,7 +193,7 @@ learningObjectives:
 
 25. **Policy name** 필드에 `CloudArchitect-Lab-CloudWatchLogs`를 입력합니다.
 
-26. **Description** 필드에 `Lab CloudWatch 로그 정책`을 입력합니다.
+26. **Description** 필드에 `Lab CloudWatch logs policy`를 입력합니다.
 
 27. [[Create policy]] 버튼을 클릭합니다.
 
@@ -214,9 +214,11 @@ learningObjectives:
 
 30. **Trusted entity type**에서 **AWS service**를 선택합니다.
 
-31. **Use case**에서 **EC2**를 선택합니다.
+31. **Service or use case** 드롭다운에서 **EC2**를 선택합니다.
 
-32. [[Next]] 버튼을 클릭합니다.
+32. **Use case**에서 **EC2**를 선택합니다.
+
+33. [[Next]] 버튼을 클릭합니다.
 
 > [!TIP]
 > AWS service → EC2를 선택하면 자동으로 Trust Policy에 `"Service": "ec2.amazonaws.com"`이 설정됩니다. 이는 EC2 서비스만 이 역할을 assume할 수 있다는 의미입니다.
@@ -231,11 +233,11 @@ learningObjectives:
 
 ### 3.3 역할 이름 및 생성
 
-36. **Role name** 필드에 `CloudArchitect-Lab-EC2-S3ReadOnly`를 입력합니다.
+37. **Role name** 필드에 `CloudArchitect-Lab-EC2-S3ReadOnly`를 입력합니다.
 
-37. **Description** 필드에 `Lab EC2용 S3 읽기 전용 역할`을 입력합니다.
+38. **Description** 필드에 `Lab EC2 S3 read-only role`을 입력합니다.
 
-38. 설정을 검토한 후 [[Create role]] 버튼을 클릭합니다.
+39. 설정을 검토한 후 [[Create role]] 버튼을 클릭합니다.
 
 ✅ **태스크 완료**: CloudArchitect-Lab-EC2-S3ReadOnly 역할이 생성되었습니다. EC2 인스턴스가 이 역할을 사용하여 S3에 읽기 접근할 수 있습니다.
 
@@ -271,11 +273,11 @@ learningObjectives:
 
 ### 4.3 AWS Lambda 역할 이름 및 생성
 
-47. **Role name** 필드에 `CloudArchitect-Lab-Lambda-S3FullAccess`를 입력합니다.
+48. **Role name** 필드에 `CloudArchitect-Lab-Lambda-S3FullAccess`를 입력합니다.
 
-48. **Description** 필드에 `Lab Lambda용 S3 전체 접근 역할`을 입력합니다.
+49. **Description** 필드에 `Lab Lambda S3 full access role`을 입력합니다.
 
-49. 설정을 검토한 후 [[Create role]] 버튼을 클릭합니다.
+50. 설정을 검토한 후 [[Create role]] 버튼을 클릭합니다.
 
 ✅ **태스크 완료**: CloudArchitect-Lab-Lambda-S3FullAccess 역할이 생성되었습니다. Lambda 함수가 S3에 전체 접근하고 CloudWatch에 로그를 기록할 수 있습니다.
 
@@ -286,56 +288,59 @@ learningObjectives:
 
 이 실습에서는 자동 정리 스크립트가 제공되지 않으므로, 아래 단계에 따라 AWS Management Console에서 수동으로 리소스를 삭제합니다.
 
-### 태스크 1: AWS IAM 리소스 삭제
+### 태스크 1: IAM 역할 삭제
 
 1. 상단 검색창에서 `IAM`을 검색하고 **IAM**을 선택합니다.
 
 2. 왼쪽 메뉴에서 **Roles**를 선택합니다.
 
-3. 실습에서 생성한 역할을 선택합니다.
+3. 검색창에 `CloudArchitect-Lab`을 입력하여 실습에서 생성한 역할들을 필터링합니다.
 
-4. **Delete** 버튼을 클릭합니다.
+4. **CloudArchitect-Lab-EC2-S3ReadOnly** 역할 옆의 체크박스를 체크합니다.
 
-5. 확인 창에 역할 이름을 입력하고 [[Delete]] 버튼을 클릭합니다.
+5. [[Delete]] 버튼을 클릭합니다.
 
-6. 왼쪽 메뉴에서 **Policies**를 선택합니다.
+6. 확인 창에 `CloudArchitect-Lab-EC2-S3ReadOnly`를 입력하고 [[Delete]] 버튼을 클릭합니다.
 
-7. 실습에서 생성한 정책을 선택합니다.
+7. 검색창에 `CloudArchitect-Lab-Lambda-S3FullAccess`를 입력합니다.
 
-8. **Actions** > **Delete**를 선택합니다.
+8. **CloudArchitect-Lab-Lambda-S3FullAccess** 역할 옆의 체크박스를 체크합니다.
 
-9. 확인 창에 정책 이름을 입력하고 [[Delete]] 버튼을 클릭합니다.
+9. [[Delete]] 버튼을 클릭합니다.
 
-10. 왼쪽 메뉴에서 **Users**를 선택합니다.
+10. 확인 창에 `CloudArchitect-Lab-Lambda-S3FullAccess`를 입력하고 [[Delete]] 버튼을 클릭합니다.
 
-11. 실습에서 생성한 사용자를 선택합니다.
+### 태스크 2: IAM 정책 삭제
 
-12. 사용자에 연결된 정책을 먼저 제거합니다:
-   - **Permissions** 탭 선택
-   - 정책 선택 후 **Remove** 클릭
+11. 왼쪽 메뉴에서 **Policies**를 선택합니다.
 
-13. **Delete user** 버튼을 클릭합니다.
+12. **Filter by Type** 드롭다운을 클릭하고 **Customer managed**를 선택합니다.
 
-14. 확인 창에 사용자 이름을 입력하고 [[Delete]] 버튼을 클릭합니다.
+13. 검색창에 `CloudArchitect-Lab-S3ReadOnly`를 입력합니다.
 
-### 태스크 2: 최종 확인
+14. **CloudArchitect-Lab-S3ReadOnly** 정책 옆의 체크박스를 체크합니다.
 
-1. 상단 검색창에서 `Resource Groups & Tag Editor`를 검색하고 **Resource Groups & Tag Editor**를 선택합니다.
+15. [[Delete]] 버튼을 클릭합니다.
 
-2. 왼쪽 메뉴에서 **Tag Editor**를 선택합니다.
+16. 확인 창에 `CloudArchitect-Lab-S3ReadOnly`를 입력하고 [[Delete]] 버튼을 클릭합니다.
 
-3. 다음과 같이 검색 조건을 설정합니다:
-   - **Regions**: `Asia Pacific (Seoul) ap-northeast-2`
-   - **Resource types**: `All supported resource types`
-   - **Tags**: Tag key에 `Name`을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
+17. 검색창에 `CloudArchitect-Lab-S3FullAccess`를 입력합니다.
 
-4. [[Search resources]]를 클릭합니다.
+18. **CloudArchitect-Lab-S3FullAccess** 정책 옆의 체크박스를 체크합니다.
 
-5. 검색 결과에 리소스가 표시되지 않으면 정리가 완료된 것입니다.
+19. [[Delete]] 버튼을 클릭합니다.
 
-6. 검색된 리소스가 있다면 해당 서비스 콘솔로 이동하여 삭제합니다.
+20. 확인 창에 `CloudArchitect-Lab-S3FullAccess`를 입력하고 [[Delete]] 버튼을 클릭합니다.
 
-✅ **리소스 정리 완료**: 모든 리소스가 삭제되었습니다.
+21. 검색창에 `CloudArchitect-Lab-CloudWatchLogs`를 입력합니다.
+
+22. **CloudArchitect-Lab-CloudWatchLogs** 정책 옆의 체크박스를 체크합니다.
+
+23. [[Delete]] 버튼을 클릭합니다.
+
+24. 확인 창에 `CloudArchitect-Lab-CloudWatchLogs`를 입력하고 [[Delete]] 버튼을 클릭합니다.
+
+✅ **리소스 정리 완료**: 모든 IAM 역할과 정책이 삭제되었습니다.
 
 
 ## 💡 핵심 포인트 정리
