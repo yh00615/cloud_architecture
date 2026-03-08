@@ -20,6 +20,10 @@ learningObjectives:
 > [!NOTE]
 > 이 실습에서는 EC2 인스턴스를 생성하고 Apache 웹 서버를 배포하여 클라우드 컴퓨팅의 핵심 개념을 학습합니다.
 
+> [!ARCHITECTURE] 실습 아키텍처 다이어그램 - EC2 인스턴스 배포
+>
+> <img src="/images/week4/4-1-architecture-diagram.svg" alt="EC2 인스턴스 아키텍처 - VPC, Public Subnet, Internet Gateway, Security Group, EC2 인스턴스 구조" class="guide-img-lg" />
+
 > [!CONCEPT] Amazon EC2란?
 >
 > Amazon EC2(Elastic Compute Cloud)는 AWS에서 제공하는 가상 서버 서비스입니다. 필요할 때 서버를 생성하고, 사용한 만큼만 비용을 지불합니다.
@@ -78,9 +82,9 @@ chmod +x setup-2-1-student.sh
 
 10. **CloudArchitect-Lab-VPC**를 찾아 선택합니다.
 
-11. **CIDR 블록**이 `10.0.0.0/16`인지 확인합니다.
+11. **CIDR 블록**이 **10.0.0.0/16**인지 확인합니다.
 
-12. **DNS hostnames**와 **DNS resolution**이 모두 "Enabled"인지 확인합니다.
+12. **DNS hostnames**와 **DNS resolution**이 모두 **Enabled**인지 확인합니다.
 
 > [!TIP]
 > DNS hostnames가 Enabled여야 EC2 인스턴스에 퍼블릭 DNS 이름이 자동으로 할당됩니다. 이 설정이 없으면 IP 주소로만 접근해야 합니다.
@@ -91,7 +95,7 @@ chmod +x setup-2-1-student.sh
 
 14. **CloudArchitect-Lab-IGW**를 찾아 선택합니다.
 
-15. **State**가 "Attached"인지, **VPC ID**가 CloudArchitect-Lab-VPC와 연결되어 있는지 확인합니다.
+15. **State**가 **Attached**인지, **VPC ID**가 **CloudArchitect-Lab-VPC**와 연결되어 있는지 확인합니다.
 
 ### 1.3 Public Subnet 확인
 
@@ -100,9 +104,9 @@ chmod +x setup-2-1-student.sh
 17. **CloudArchitect-Lab-Public-Subnet**을 찾아 선택합니다.
 
 18. 다음 설정을 확인합니다:
-- **IPv4 CIDR**: `10.0.0.0/24`
-- **Availability zone**: `ap-northeast-2a`
-- **Auto-assign public IPv4 address**: "Yes"
+- **IPv4 CIDR**: **10.0.0.0/24**
+- **Availability zone**: **ap-northeast-2a**
+- **Auto-assign public IPv4 address**: **Yes**
 
 > [!NOTE]
 > Auto-assign public IPv4 address가 "Yes"로 설정되어 있어야 이 서브넷에 생성되는 EC2 인스턴스에 자동으로 퍼블릭 IP가 할당됩니다.
@@ -115,7 +119,7 @@ chmod +x setup-2-1-student.sh
 
 21. **Routes** 탭을 선택합니다.
 
-22. `0.0.0.0/0` 경로가 Internet Gateway(igw-xxx)로 설정되어 있는지 확인합니다.
+22. **0.0.0.0/0** 경로가 **Internet Gateway(igw-xxx)**로 설정되어 있는지 확인합니다.
 
 23. **Subnet associations** 탭을 선택하여 **CloudArchitect-Lab-Public-Subnet**이 연결되어 있는지 확인합니다.
 
@@ -132,10 +136,10 @@ chmod +x setup-2-1-student.sh
 
 27. **Inbound rules** 탭에서 다음 규칙이 설정되어 있는지 확인합니다:
 
-| Type | Port | Source | 용도 |
-|------|------|--------|------|
-| SSH | 22 | 0.0.0.0/0 | EC2 Instance Connect 접속 |
-| HTTP | 80 | 0.0.0.0/0 | 웹 서버 접근 |
+| Type | Source type | Source | Description | 용도 |
+|------|-------------|--------|-------------|------|
+| SSH (22) | Anywhere-IPv4 | 0.0.0.0/0 | Allow SSH | EC2 Instance Connect 접속 |
+| HTTP (80) | Anywhere-IPv4 | 0.0.0.0/0 | Allow HTTP | 웹 서버 접근 |
 
 > [!SUCCESS] 네트워크 환경 준비 완료:
 > VPC, 서브넷, 라우팅 테이블, 보안 그룹이 모두 준비되었습니다. 이제 EC2 인스턴스를 생성합니다.
@@ -151,44 +155,42 @@ chmod +x setup-2-1-student.sh
 >
 > **IMDSv2(Instance Metadata Service v2)**는 EC2 인스턴스 내부에서 자신의 메타데이터(인스턴스 ID, IP 주소 등)를 조회하는 보안 강화된 방식입니다. 토큰 기반 인증을 사용하여 SSRF(Server-Side Request Forgery) 공격을 방지합니다.
 
-### 2.1 인스턴스 생성 시작
+### 2.1 기본 설정
 
 28. EC2 콘솔에서 왼쪽 메뉴의 **Instances**를 선택합니다.
 
-29. [[Launch instances]] 버튼을 클릭합니다.
+29. 오른쪽 상단의 [[Launch instances]] 버튼을 클릭합니다.
 
 30. **Name** 필드에 `CloudArchitect-Lab-WebServer`를 입력합니다.
 
-31. **Application and OS Images**에서 `Amazon Linux 2023 AMI`를 선택합니다.
+31. **Application and OS Images (Amazon Machine Image)** 섹션에서 기본 선택된 **Amazon Linux 2023 AMI**를 그대로 사용합니다.
 
-32. **Instance type**에서 `t3.micro`를 선택합니다.
+32. **Instance type**에서 **t3.micro**를 선택합니다.
 
-33. **Key pair (login)**에서 `Proceed without a key pair (not recommended)`를 선택합니다.
+33. **Key pair (login)**에서 **Proceed without a key pair (Not recommended)**를 선택합니다.
 
 > [!TIP]
-> Key pair 없이도 EC2 Instance Connect를 통해 브라우저에서 SSH 접속이 가능합니다. 실습 환경에서는 키 관리 부담을 줄이기 위해 이 방식을 사용합니다.
+> EC2 Instance Connect를 사용하면 키 페어 없이도 브라우저에서 SSH 접속이 가능합니다.
 
 ### 2.2 네트워크 설정
 
 34. **Network settings** 섹션에서 [[Edit]] 버튼을 클릭합니다.
 
-35. **VPC**에서 `CloudArchitect-Lab-VPC`를 선택합니다.
+35. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
-36. **Subnet**에서 `CloudArchitect-Lab-Public-Subnet`을 선택합니다.
+36. **Subnet**에서 **CloudArchitect-Lab-Public-Subnet**을 선택합니다.
 
-37. **Auto-assign public IP**를 `Enable`로 설정합니다.
+37. **Auto-assign public IP**에서 **Enable**을 선택합니다.
 
-38. **Firewall (security groups)**에서 `Select existing security group`를 선택합니다.
+38. **Firewall (security groups)**에서 **Select existing security group**을 선택합니다.
 
-39. `CloudArchitect-Lab-Web-SG`를 선택합니다.
+39. **CloudArchitect-Lab-Web-SG**를 선택합니다.
 
 ### 2.3 User Data 스크립트 설정
 
-40. 페이지 하단의 **Advanced details** 섹션을 확장합니다. **Advanced details**는 **Network settings** 아래에 있으며, 접힌 상태로 표시됩니다. 섹션 제목을 클릭하여 확장합니다.
+40. 페이지를 아래로 스크롤하여 **Advanced details** 섹션을 클릭해 확장합니다.
 
-41. **Advanced details** 섹션 내에서 맨 아래로 스크롤하면 **User data** 텍스트 박스가 있습니다.
-
-42. 다음 스크립트를 입력합니다:
+41. 맨 아래의 **User data** 텍스트 박스에 다음 스크립트를 입력합니다:
 
 ```bash
 #!/bin/bash
@@ -255,10 +257,12 @@ cat > /var/www/html/index.html << HTML
 HTML
 ```
 
-43. [[Launch instance]] 버튼을 클릭합니다.
+42. 페이지 오른쪽 하단의 [[Launch instance]] 버튼을 클릭합니다.
+
+43. 성공 메시지가 표시되면 [[View all instances]]를 클릭합니다.
 
 > [!NOTE]
-> 인스턴스가 시작되면 User Data 스크립트가 자동으로 실행됩니다. Apache 웹 서버 설치와 웹 페이지 생성까지 약 3-5분이 소요됩니다. 이 시간 동안 인스턴스 상태를 모니터링합니다.
+> 인스턴스가 시작되면 User Data 스크립트가 자동으로 실행됩니다. Apache 웹 서버 설치와 웹 페이지 생성까지 약 3-5분이 소요됩니다.
 
 ✅ **태스크 완료**: User Data 스크립트가 포함된 EC2 인스턴스가 생성되었습니다.
 
@@ -267,24 +271,19 @@ HTML
 
 ### 3.1 인스턴스 시작 확인
 
-44. 인스턴스 목록에서 **CloudArchitect-Lab-WebServer**를 찾습니다.
+44. **CloudArchitect-Lab-WebServer** 인스턴스의 **Instance state**가 **Running**으로 변경될 때까지 기다립니다.
 
-45. **Instance state** 열이 "Pending"에서 "Running"으로 변경될 때까지 기다립니다.
+45. **Status check**가 **2/2 checks passed**로 변경될 때까지 기다립니다 (약 3-5분 소요).
 
-> [!NOTE]
-> 인스턴스 상태 변화: "Pending" (시작 중) → "Running" (실행 중). 상태가 변경되지 않으면 오른쪽 상단의 새로고침 아이콘을 클릭합니다.
-
-46. **Status check** 열이 "Initializing"에서 `2/2 checks passed`로 변경될 때까지 기다립니다 (약 3-5분 소요).
-
-47. 인스턴스를 선택한 후 하단 **Details** 탭에서 **Public IPv4 address**를 복사합니다 (예: `3.35.xxx.xxx`).
+46. 인스턴스를 선택하고 하단 **Details** 탭에서 **Public IPv4 address**를 복사합니다.
 
 ### 3.2 웹 서버 동작 확인
 
-48. 새 브라우저 탭을 열고 주소창에 `http://[복사한 Public IP]`를 붙여넣고 Enter를 누릅니다.
+47. 새 브라우저 탭에서 `http://[복사한 Public IP]`로 접속합니다.
 
-49. **CloudArchitect Lab05 성공!** 페이지가 표시되는지 확인합니다.
+48. **CloudArchitect Lab05 성공!** 페이지가 표시되는지 확인합니다.
 
-50. 웹 페이지에서 인스턴스 ID, 가용 영역, IP 주소 정보가 표시되는지 확인합니다.
+49. 웹 페이지에 인스턴스 ID, 가용 영역, IP 주소 정보가 표시되는지 확인합니다.
 
 > [!TROUBLESHOOTING]
 > 페이지가 로드되지 않는 경우:
@@ -295,17 +294,15 @@ HTML
 
 ### 3.3 Instance Connect를 통한 SSH 접속
 
-51. EC2 콘솔로 이동하여 **CloudArchitect-Lab-WebServer** 인스턴스를 선택합니다.
+50. EC2 콘솔에서 **CloudArchitect-Lab-WebServer** 인스턴스를 선택합니다.
 
-52. 상단의 [[Connect]] 버튼을 클릭합니다.
+51. 상단의 [[Connect]] 버튼을 클릭합니다.
 
-53. **EC2 Instance Connect** 탭이 선택되어 있는지 확인합니다.
+52. **EC2 Instance Connect** 탭에서 **User name**이 **ec2-user**인지 확인합니다.
 
-54. **User name**이 `ec2-user`로 설정되어 있는지 확인합니다.
+53. [[Connect]] 버튼을 클릭합니다.
 
-55. [[Connect]] 버튼을 클릭합니다.
-
-56. 새 브라우저 탭에서 터미널이 열리면 다음 명령어를 실행합니다:
+54. 터미널이 열리면 다음 명령어를 실행합니다:
 
 ```bash
 # 시스템 정보 확인
@@ -344,30 +341,23 @@ curl -s localhost | head -5
 
 ### 4.1 Amazon EC2 인스턴스 종료
 
-57. EC2 콘솔에서 왼쪽 메뉴의 **Instances**를 선택합니다.
+55. EC2 콘솔에서 **CloudArchitect-Lab-WebServer** 인스턴스를 선택합니다.
 
-58. **CloudArchitect-Lab-WebServer** 인스턴스를 선택합니다.
+56. 상단의 **Instance state** > **Terminate instance**를 선택합니다.
 
-59. **Instance state** > `Terminate instance`를 선택합니다.
-
-> [!NOTE]
-> **Instance state** 버튼은 인스턴스 목록 상단에 있습니다. 인스턴스를 선택한 상태에서 클릭하면 드롭다운 메뉴가 나타납니다.
-
-60. 확인 창에서 [[Terminate]] 버튼을 클릭합니다.
+57. 확인 창에서 [[Terminate]]를 클릭합니다.
 
 > [!NOTE]
 > 인스턴스 상태가 "Shutting-down"을 거쳐 "Terminated"로 변경됩니다. 종료된 인스턴스는 약 1시간 후 목록에서 자동으로 사라집니다.
 
 ### 4.2 Cleanup 스크립트 실행
 
-61. CloudShell에서 cleanup 스크립트를 실행하여 사전 구축 리소스를 정리합니다:
+58. CloudShell에서 cleanup 스크립트를 실행합니다:
 
 ```bash
 chmod +x cleanup-2-1-student.sh
 ./cleanup-2-1-student.sh
 ```
-
-62. 스크립트가 VPC, 서브넷, Internet Gateway, 라우팅 테이블, 보안 그룹을 삭제합니다.
 
 > [!WARNING]
 > EC2 인스턴스를 먼저 종료(Terminate)한 후 cleanup 스크립트를 실행합니다. 인스턴스가 실행 중이면 보안 그룹 삭제가 실패할 수 있습니다.
@@ -410,7 +400,7 @@ chmod +x cleanup-2-1-student.sh
 
 2. 왼쪽 메뉴에서 **Instances**를 선택합니다.
 
-3. `CloudArchitect-Lab-WebServer` 인스턴스를 선택합니다.
+3. **CloudArchitect-Lab-WebServer** 인스턴스를 선택합니다.
 
 4. **Instance state** > **Terminate instance**를 선택합니다.
 
@@ -423,7 +413,7 @@ chmod +x cleanup-2-1-student.sh
 
 6. 왼쪽 메뉴의 **Network & Security** 섹션에서 **Security Groups**를 선택합니다.
 
-7. `CloudArchitect-Lab-Web-SG`를 선택하고 **Actions** > **Delete security groups**를 선택합니다.
+7. **CloudArchitect-Lab-Web-SG**를 선택하고 **Actions** > **Delete security groups**를 선택합니다.
 
 8. 확인 대화 상자에서 [[Delete]]를 클릭합니다.
 
@@ -436,7 +426,7 @@ chmod +x cleanup-2-1-student.sh
 
 10. 왼쪽 메뉴에서 **Your VPCs**를 선택합니다.
 
-11. `CloudArchitect-Lab-VPC`를 선택하고 **Actions** > **Delete VPC**를 선택합니다.
+11. **CloudArchitect-Lab-VPC**를 선택하고 **Actions** > **Delete VPC**를 선택합니다.
 
 12. 확인 필드에 `delete`를 입력하고 [[Delete]]를 클릭합니다.
 
@@ -447,9 +437,9 @@ chmod +x cleanup-2-1-student.sh
 14. 왼쪽 메뉴에서 **Tag Editor**를 선택합니다.
 
 15. 다음과 같이 검색 조건을 설정합니다:
-   - **Regions**: `Asia Pacific (Seoul) ap-northeast-2`
-   - **Resource types**: `All supported resource types`
-   - **Tags**: Tag key에 `Name`을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
+   - **Regions**: **Asia Pacific (Seoul) ap-northeast-2**
+   - **Resource types**: **All supported resource types**
+   - **Tags**: Tag key에 **Name**을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
 
 16. [[Search resources]]를 클릭합니다.
 
