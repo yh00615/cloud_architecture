@@ -11,12 +11,15 @@ learningObjectives:
   - Amazon ECS를 활용하여 컨테이너화된 애플리케이션을 배포하고 관리할 수 있습니다.
 ---
 
+> [!TIP]
+> 이 실습에서는 **Amazon ECS Fargate**로 컨테이너 애플리케이션을 배포합니다. **ECS 클러스터**를 생성하고, **태스크 정의**로 컨테이너 이미지와 리소스 설정을 지정합니다. **Application Load Balancer**를 생성하여 트래픽을 분산하고, **ECS 서비스**로 지정된 수의 태스크를 실행합니다. 서비스가 실행되면 **로드 밸런서 DNS**로 접속하여 컨테이너 애플리케이션이 정상적으로 동작하는지 확인합니다.
+
 > [!DOWNLOAD]
 > [week10-2-ecs-service-deploy.zip](/files/week10/week10-2-ecs-service-deploy.zip)
 >
-> - `setup-10-2-student.sh` - 사전 환경 구축 스크립트 (VPC, Public/Private Subnets, NAT Gateway, Security Groups, Amazon ECR 리포지토리, Docker 이미지 등 생성)
-> - `cleanup-10-2-student.sh` - 리소스 정리 스크립트
-> - 태스크 0: 사전 환경 구축 (setup-10-2-student.sh 실행)
+> - `setup-10-2.sh` - 사전 환경 구축 스크립트 (Amazon ECR 리포지토리, Docker 이미지 푸시)
+> - `cleanup-10-2.sh` - 리소스 정리 스크립트
+> - 태스크 0: 사전 환경 구축 (setup-10-2.sh 실행)
 
 > [!NOTE]
 > 이 실습에서는 Amazon ECS를 사용하여 컨테이너 기반 애플리케이션을 배포하고 관리합니다. AWS Fargate를 이용한 서버리스 컨테이너 실행과 Application Load Balancer를 통한 고가용성 구성을 구현합니다.
@@ -54,8 +57,8 @@ unzip week10-2-ecs-service-deploy.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-10-2-student.sh
-./setup-10-2-student.sh
+chmod +x setup-10-2.sh
+./setup-10-2.sh
 ```
 
 6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
@@ -77,6 +80,13 @@ chmod +x setup-10-2-student.sh
 
 ✅ **태스크 완료**: 사전 환경 구축이 완료되었습니다.
 
+> [!TIP]
+> **CloudShell 파일 정리**: 실습이 완전히 종료된 후, 업로드한 ZIP 파일과 스크립트를 삭제하여 CloudShell 스토리지를 정리할 수 있습니다:
+> ```bash
+> rm -f week10-2-ecs-service-deploy.zip setup-10-2.sh cleanup-10-2.sh
+> ```
+> CloudShell 스토리지는 리전별로 1GB까지 무료 제공되며, 파일 정리는 선택사항입니다.
+
 
 ## 태스크 1: 사전 구축된 환경 확인
 
@@ -86,7 +96,7 @@ chmod +x setup-10-2-student.sh
 
 9. 왼쪽 메뉴에서 **Your VPCs**를 선택합니다.
 
-10. `CloudArchitect-Lab-VPC`가 생성되어 있는지 확인합니다.
+10. **CloudArchitect-Lab-VPC**가 생성되어 있는지 확인합니다.
 
 11. 왼쪽 메뉴에서 **Subnets**를 선택하여 4개의 서브넷(Public 2개, Private 2개)을 확인합니다.
 
@@ -96,7 +106,7 @@ chmod +x setup-10-2-student.sh
 
 13. ECR 콘솔의 왼쪽 메뉴에서 **Private registry** 섹션 아래의 **Repositories**를 선택합니다.
 
-14. `cloudarchitect-lab-webapp` 리포지토리를 선택합니다.
+14. **cloudarchitect-lab-webapp** 리포지토리를 선택합니다.
 
 15. `latest` 태그가 있는 Docker 이미지를 확인합니다.
 
@@ -124,7 +134,7 @@ chmod +x setup-10-2-student.sh
 
 20. **Cluster name**에 `CloudArchitect-Lab-Cluster`를 입력합니다.
 
-21. **Infrastructure** 섹션에서 `AWS Fargate (serverless)`가 선택되어 있는지 확인합니다.
+21. **Infrastructure** 섹션에서 **Fargate only**가 선택되어 있는지 확인합니다.
 
 22. [[Create]] 버튼을 클릭합니다.
 
@@ -147,9 +157,9 @@ chmod +x setup-10-2-student.sh
 
 26. **Task definition family**에 `cloudarchitect-lab-task`를 입력합니다.
 
-27. **Launch type**에서 `AWS Fargate`를 선택합니다.
+27. **Launch type**에서 **AWS Fargate**를 선택합니다.
 
-28. **Operating system/Architecture**에서 `Linux/X86_64`를 선택합니다.
+28. **Operating system/Architecture**에서 **Linux/X86_64**를 선택합니다.
 
 29. **CPU**를 `0.25 vCPU`로 설정합니다.
 
@@ -157,7 +167,7 @@ chmod +x setup-10-2-student.sh
 
 31. **Task roles** 섹션을 확장합니다.
 
-32. **Task execution role**에서 `Create new role`을 선택합니다.
+32. **Task execution role**에서 **Create new role**을 선택합니다.
 
 > [!NOTE]
 > Task execution role은 ECS가 ECR에서 이미지를 가져오고 CloudWatch에 로그를 전송하는 데 필요한 권한입니다. `Create new role`을 선택하면 `AmazonECSTaskExecutionRolePolicy`가 자동으로 부여됩니다.
@@ -170,7 +180,18 @@ chmod +x setup-10-2-student.sh
 
 35. **Port mappings** 섹션에서 **Container port**를 `3000`으로 설정합니다.
 
-36. **Protocol**이 `TCP`로 설정되어 있는지 확인합니다.
+36. **Protocol**이 **TCP**로 설정되어 있는지 확인합니다.
+
+> [!CONCEPT] 컨테이너 포트 매핑
+>
+> ECS 태스크에서 컨테이너 포트를 설정할 때:
+>
+> - **Container port**: 컨테이너 내부에서 애플리케이션이 리스닝하는 포트 (예: 3000)
+> - **Protocol**: 일반적으로 TCP 사용
+> - **Port name**: ALB가 트래픽을 전달할 때 참조하는 이름 (선택사항)
+> - **App protocol**: HTTP, HTTPS 등 애플리케이션 프로토콜 (ALB 헬스 체크용)
+>
+> 이 실습에서는 Node.js 앱이 포트 3000에서 실행되므로 Container port를 3000으로 설정합니다. Fargate를 사용하면 호스트 포트는 자동으로 할당되므로 지정할 필요가 없습니다.
 
 37. [[Create]] 버튼을 클릭합니다.
 
@@ -191,31 +212,31 @@ chmod +x setup-10-2-student.sh
 
 42. **Load balancer name**에 `CloudArchitect-Lab-ALB`를 입력합니다.
 
-43. **Scheme**에서 `Internet-facing`을 선택합니다.
+43. **Scheme**에서 **Internet-facing**을 선택합니다.
 
-44. **IP address type**에서 `IPv4`를 선택합니다.
+44. **IP address type**에서 **IPv4**를 선택합니다.
 
 ### 4.2 네트워크 및 보안 그룹 설정
 
-45. **Network mapping** 섹션에서 `CloudArchitect-Lab-VPC`를 선택합니다.
+45. **Network mapping** 섹션에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
 46. **Availability Zones and subnets**에서 **Public 서브넷** 2개를 선택합니다 (이름에 "Public"이 포함된 서브넷).
 
-47. **Security groups** 섹션에서 기본 보안 그룹을 제거하고 `CloudArchitect-Lab-ALB-SG`를 선택합니다.
+47. **Security groups** 섹션에서 기본 보안 그룹을 제거하고 **CloudArchitect-Lab-ALB-SG**를 선택합니다.
 
 ### 4.3 Target Group 생성
 
-48. **Listeners and routing** 섹션에서 **Protocol**이 `HTTP`, **Port**가 `80`인지 확인합니다.
+48. **Listeners and routing** 섹션에서 **Protocol**이 **HTTP**, **Port**가 **80**인지 확인합니다.
 
-49. **Default action**에서 `Create target group` 링크를 선택합니다.
+49. **Default action**에서 **Create target group** 링크를 선택합니다.
 
-50. 새 탭에서 **Target type**으로 `IP addresses`를 선택합니다.
+50. 새 탭에서 **Target type**으로 **IP addresses**를 선택합니다.
 
 51. **Target group name**에 `CloudArchitect-Lab-TG`를 입력합니다.
 
-52. **Protocol**을 `HTTP`, **Port**를 `3000`으로 설정합니다.
+52. **Protocol**을 **HTTP**, **Port**를 `3000`으로 설정합니다.
 
-53. **VPC**에서 `CloudArchitect-Lab-VPC`를 선택합니다.
+53. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
 54. **Health check path**를 `/health`로 설정합니다.
 
@@ -228,7 +249,7 @@ chmod +x setup-10-2-student.sh
 
 57. ALB 생성 탭으로 이동하여 **Default action** 드롭다운 옆의 새로고침 아이콘을 선택합니다.
 
-58. `CloudArchitect-Lab-TG`를 선택합니다.
+58. **CloudArchitect-Lab-TG**를 선택합니다.
 
 59. [[Create load balancer]] 버튼을 클릭합니다.
 
@@ -245,13 +266,13 @@ chmod +x setup-10-2-student.sh
 
 ### 5.1 Amazon ECS 서비스 생성
 
-61. ECS 콘솔에서 `CloudArchitect-Lab-Cluster`를 선택합니다.
+61. ECS 콘솔에서 **CloudArchitect-Lab-Cluster**를 선택합니다.
 
 62. **Services** 탭에서 [[Create]] 버튼을 클릭합니다.
 
-63. **Compute options**에서 `Launch type`을 선택하고 `FARGATE`를 설정합니다.
+63. **Compute options**에서 **Launch type**을 선택하고 **FARGATE**를 설정합니다.
 
-64. **Task definition** 섹션에서 **Family**로 `cloudarchitect-lab-task`를 선택합니다.
+64. **Task definition** 섹션에서 **Family**로 **cloudarchitect-lab-task**를 선택합니다.
 
 65. **Service name**에 `cloudarchitect-lab-service`를 입력합니다.
 
@@ -261,28 +282,28 @@ chmod +x setup-10-2-student.sh
 
 67. **Networking** 섹션을 확장합니다.
 
-68. **VPC**에서 `CloudArchitect-Lab-VPC`를 선택합니다.
+68. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
 69. **Subnets**에서 **Private 서브넷** 2개를 선택합니다 (이름에 "Private"이 포함된 서브넷).
 
 > [!TIP]
 > ALB는 퍼블릭 서브넷에, ECS 태스크는 프라이빗 서브넷에 배치합니다. 이렇게 하면 컨테이너가 외부에 직접 노출되지 않아 보안이 강화됩니다.
 
-70. **Security group**에서 `Use an existing security group`을 선택한 후 `CloudArchitect-Lab-ECS-SG`를 선택합니다.
+70. **Security group**에서 **Use an existing security group**을 선택한 후 `CloudArchitect-Lab-ECS-SG`를 선택합니다.
 
-71. **Public IP** 토글을 `Turned off`로 설정합니다.
+71. **Public IP** 토글을 **Turned off**로 설정합니다.
 
 ### 5.3 로드 밸런서 연동
 
-72. **Load balancing** 섹션에서 `Application Load Balancer`를 선택합니다.
+72. **Load balancing** 섹션에서 **Application Load Balancer**를 선택합니다.
 
-73. `Use an existing load balancer`를 선택합니다.
+73. **Use an existing load balancer**를 선택합니다.
 
 74. **Load balancer**에서 `CloudArchitect-Lab-ALB`를 선택합니다.
 
-75. **Listener**에서 `Use an existing listener`를 선택하고 `80:HTTP`를 선택합니다.
+75. **Listener**에서 **Use an existing listener**를 선택하고 **80:HTTP**를 선택합니다.
 
-76. **Target group**에서 `Use an existing target group`을 선택하고 `CloudArchitect-Lab-TG`를 선택합니다.
+76. **Target group**에서 **Use an existing target group**을 선택하고 `CloudArchitect-Lab-TG`를 선택합니다.
 
 77. [[Create]] 버튼을 클릭합니다.
 
@@ -347,7 +368,7 @@ chmod +x setup-10-2-student.sh
 2. 다음 명령어로 정리 스크립트를 실행합니다:
 
 ```bash
-./cleanup-10-2-student.sh
+./cleanup-10-2.sh
 ```
 
 3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.

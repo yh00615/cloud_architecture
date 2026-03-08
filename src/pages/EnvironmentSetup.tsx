@@ -179,7 +179,7 @@ export const EnvironmentSetup: React.FC = () => {
                             label: '🌏 리전 설정',
                             content: (
                                 <SpaceBetween direction="vertical" size="m">
-                                    <Box fontSize="body-m">모든 실습은 <strong>서울 리전 (ap-northeast-2)</strong>에서 진행됩니다.</Box>
+                                    <Box fontSize="body-m">대부분의 실습은 <strong>서울 리전 (ap-northeast-2)</strong>에서 진행됩니다.</Box>
                                     <div className="info-box info-box--note">
                                         <div className="info-box-icon"><Icon name="status-info" variant="link" /></div>
                                         <div className="info-box-content">
@@ -194,7 +194,8 @@ export const EnvironmentSetup: React.FC = () => {
                                                 <SpaceBetween direction="vertical" size="xs">
                                                     <Bullet>리전이 다르면 실습 파일이나 리소스를 찾을 수 없습니다</Bullet>
                                                     <Bullet>실습 중 리전을 변경하지 않습니다</Bullet>
-                                                    <Bullet>모든 리소스는 서울 리전에 생성합니다</Bullet>
+                                                    <Bullet>대부분의 리소스는 서울 리전에 생성합니다</Bullet>
+                                                    <Bullet>일부 글로벌 서비스(IAM, IAM Identity Center 등)는 리전과 무관하게 작동합니다</Bullet>
                                                 </SpaceBetween>
                                             </Box>
                                         </SpaceBetween>
@@ -242,6 +243,20 @@ export const EnvironmentSetup: React.FC = () => {
                                             </SpaceBetween>
                                         </div>
                                     </ColumnLayout>
+                                    
+                                    <div className="info-box info-box--note">
+                                        <div className="info-box-icon"><Icon name="status-info" variant="link" /></div>
+                                        <div className="info-box-content">
+                                            <strong>정기적인 빌링 확인</strong>
+                                            <div>
+                                                <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
+                                                    <li>주 1-2회 AWS Billing 대시보드에서 사용 요금을 확인하세요</li>
+                                                    <li>예상보다 높은 요금이 발생하면 즉시 리소스를 점검하고 삭제하세요</li>
+                                                    <li>AWS Budgets 알림을 설정하여 예산 초과를 미리 방지하세요</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </SpaceBetween>
                             )
                         },
@@ -346,21 +361,6 @@ echo "클린업 완료"`}
                                             </SpaceBetween>
                                         </div>
                                     </ColumnLayout>
-                                    <div className="info-box info-box--note">
-                                        <div className="info-box-icon"><Icon name="status-warning" variant="warning" /></div>
-                                        <div className="info-box-content">
-                                            <strong>실습 주의사항</strong>
-                                            <div>
-                                                <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
-                                                    <li>이 스크립트는 이전 실습 리소스가 모두 삭제된 상태를 기준으로 작성되었습니다</li>
-                                                    <li>기존 리소스가 있으면 자동으로 재사용하지만, 예상치 못한 충돌이 발생할 수 있습니다</li>
-                                                    <li>안전한 실습을 위해 이전 실습의 cleanup 스크립트를 먼저 실행하는 것을 권장합니다</li>
-                                                    <li>실습 중 직접 생성한 리소스(EC2 인스턴스, S3 버킷 등)는 스크립트로 삭제되지 않으므로 별도로 수동 삭제해야 합니다</li>
-                                                    <li><Link href="https://console.aws.amazon.com/resource-groups/tag-editor" external>Tag Editor</Link>를 활용하면 모든 리전의 리소스를 한눈에 조회하고 누락된 리소스를 확인할 수 있습니다</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </SpaceBetween>
                             )
                         },
@@ -370,27 +370,29 @@ echo "클린업 완료"`}
                             content: (
                                 <SpaceBetween direction="vertical" size="m">
                                     <ColumnLayout columns={2}>
-                                        <div className="column-card column-card--amber">
+                                        <div className="column-card column-card--red">
                                             <SpaceBetween direction="vertical" size="s">
-                                                <Box><SpaceBetween direction="horizontal" size="xs" alignItems="center"><Icon name="remove" variant="error" /><Box variant="h4">리소스 정리 확인</Box></SpaceBetween></Box>
+                                                <Box><SpaceBetween direction="horizontal" size="xs" alignItems="center"><Icon name="status-negative" variant="error" /><Box variant="h4">이전 실습 리소스 삭제 필수</Box></SpaceBetween></Box>
                                                 <Box className="tab-content-text">
                                                     <SpaceBetween direction="vertical" size="xs">
-                                                        <Bullet>CLEANUP 스크립트 실행 후 AWS 콘솔에서 삭제하려고 한 리소스가 모두 삭제되었는지 반드시 확인하세요</Bullet>
-                                                        <Bullet>실습 중 직접 생성한 리소스(EC2 인스턴스, S3 버킷 등)는 스크립트로 삭제되지 않으므로 별도로 삭제해야 합니다</Bullet>
-                                                        <Bullet>삭제되지 않은 리소스는 지속적으로 요금이 발생할 수 있습니다</Bullet>
-                                                        <Bullet>AWS 콘솔에서 <Link href="https://console.aws.amazon.com/resource-groups/tag-editor" external>Tag Editor</Link>를 활용하면 모든 리전의 리소스를 한눈에 조회하고 누락된 리소스를 확인할 수 있습니다</Bullet>
+                                                        <Bullet>스크립트는 쿼터 절약을 위해 동일한 리소스 이름을 사용합니다.</Bullet>
+                                                        <Bullet>이전 실습 리소스가 남아있으면 이름 충돌로 에러가 발생합니다.</Bullet>
+                                                        <Bullet>새 실습 시작 전 반드시 이전 실습의 CLEANUP 스크립트를 실행하세요.</Bullet>
+                                                        <Bullet>직접 생성한 리소스는 스크립트로 삭제되지 않으므로 수동 삭제가 필요합니다.</Bullet>
+                                                        <Bullet><Link href="https://console.aws.amazon.com/resource-groups/tag-editor" external>Tag Editor</Link>로 누락된 리소스를 확인할 수 있습니다.</Bullet>
                                                     </SpaceBetween>
                                                 </Box>
                                             </SpaceBetween>
                                         </div>
                                         <div className="column-card column-card--blue">
                                             <SpaceBetween direction="vertical" size="s">
-                                                <Box><SpaceBetween direction="horizontal" size="xs" alignItems="center"><Icon name="status-warning" variant="warning" /><Box variant="h4">정기적인 빌링 확인</Box></SpaceBetween></Box>
+                                                <Box><SpaceBetween direction="horizontal" size="xs" alignItems="center"><Icon name="status-info" variant="link" /><Box variant="h4">AWS 서비스 쿼터</Box></SpaceBetween></Box>
                                                 <Box className="tab-content-text">
                                                     <SpaceBetween direction="vertical" size="xs">
-                                                        <Bullet>주 1-2회 AWS Billing 대시보드에서 사용 요금을 확인하세요</Bullet>
-                                                        <Bullet>예상보다 높은 요금이 발생하면 즉시 리소스를 점검하고 삭제하세요</Bullet>
-                                                        <Bullet>AWS Budgets 알림을 설정하여 예산 초과를 미리 방지하세요</Bullet>
+                                                        <Bullet>AWS 계정에는 각 서비스별 생성 가능한 리소스 수에 제한이 있습니다.</Bullet>
+                                                        <Bullet>예: VPC 5개, Elastic IP 5개, EC2 인스턴스 타입별 제한 등</Bullet>
+                                                        <Bullet>쿼터 초과 시 리소스 생성이 실패하며, AWS Support를 통해 증가 요청이 가능합니다.</Bullet>
+                                                        <Bullet><Link href="https://console.aws.amazon.com/servicequotas" external>Service Quotas 콘솔</Link>에서 현재 쿼터와 사용량을 확인할 수 있습니다.</Bullet>
                                                     </SpaceBetween>
                                                 </Box>
                                             </SpaceBetween>

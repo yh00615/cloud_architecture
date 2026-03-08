@@ -10,11 +10,11 @@ learningObjectives:
   - AWS Budgets를 생성하고 Amazon SNS와 연동하여 비용 알림 시스템을 구축할 수 있습니다.
 ---
 
+> [!TIP]
+> 이 실습에서는 **AWS Cost Explorer**로 클라우드 비용을 분석하고 관리합니다. **서비스별, 리전별**로 비용을 그룹화하여 어디에 비용이 많이 발생하는지 확인합니다. **일별, 월별** 단위로 비용 추세를 분석하고, **예측 기능**으로 향후 비용을 예상합니다. **AWS Budgets**로 월별 예산을 설정하고 임계값을 초과하면 **이메일 알림**을 받도록 구성합니다.
+
 > [!DOWNLOAD]
 > 사전 구축되는 리소스가 없습니다
-
-> [!NOTE]
-> 이 실습에서는 AWS Cost Explorer와 AWS Budgets, Amazon SNS를 사용하여 실제 작동하는 비용 알림 시스템을 구축합니다.
 
 ## 태스크 1: AWS Cost Explorer 활성화 및 UI 탐색
 
@@ -34,7 +34,7 @@ learningObjectives:
 
 2. Billing and Cost Management 콘솔의 왼쪽 메뉴에서 **Cost analysis** 섹션 아래의 **Cost Explorer**를 선택합니다.
 
-3. **Launch Cost Explorer** 버튼이 표시되면 [[Launch Cost Explorer]] 버튼을 클릭합니다.
+3. Launch Cost Explorer 버튼이 표시되면 [[Launch Cost Explorer]] 버튼을 클릭합니다.
 
 > [!WARNING]
 > Cost Explorer를 처음 사용하는 경우 "Cost Explorer is being set up" 메시지가 표시될 수 있습니다. 이는 정상이며, 최대 24시간 후 데이터가 표시됩니다. 데이터가 없어도 다음 단계로 진행 가능합니다.
@@ -76,7 +76,7 @@ learningObjectives:
 
 8. [[Create topic]] 버튼을 클릭합니다.
 
-9. **Details** 섹션에서 **Type**으로 `Standard`를 선택합니다.
+9. **Details** 섹션에서 **Type**으로 **Standard**를 선택합니다.
 
 10. **Name**에 `MyBudgetAlerts`를 입력합니다.
 
@@ -89,7 +89,7 @@ learningObjectives:
 
 12. 생성된 토픽 상세 페이지에서 [[Create subscription]] 버튼을 클릭합니다.
 
-13. **Protocol**에서 `Email`을 선택합니다.
+13. **Protocol**에서 **Email**을 선택합니다.
 
 14. **Endpoint**에 개인 이메일 주소를 입력합니다.
 
@@ -134,9 +134,9 @@ learningObjectives:
 
 22. [[Create budget]] 버튼을 클릭합니다.
 
-23. **Budget setup**에서 `Customize (advanced)`를 선택합니다.
+23. **Budget setup**에서 **Customize (advanced)**를 선택합니다.
 
-24. **Budget types**에서 `Cost budget`를 선택합니다.
+24. **Budget types**에서 **Cost budget**을 선택합니다.
 
 25. [[Next]] 버튼을 클릭합니다.
 
@@ -146,13 +146,13 @@ learningObjectives:
 
 27. **Set budget amount** 섹션에서 다음과 같이 설정합니다:
 
-   - **Period**: `Monthly` 선택
-   - **Budget renewal type**: `Recurring budget` 선택
-   - **Start date**: 현재 월의 1일 (자동 설정됨)
+   - **Period**: **Monthly** 선택
+   - **Budget renewal type**: **Recurring budget** 선택
+   - **Start month**: 현재 월 (자동 설정됨)
 
-28. **Budgeting method**에서 `Fixed`를 선택합니다.
+28. **Budgeting method**에서 **Fixed**를 선택합니다.
 
-29. **Enter your budgeted amount**에 `10.00`을 입력합니다.
+29. **Enter your budgeted amount ($)**에 `10.00`을 입력합니다.
 
 > [!TIP]
 > 실습용으로 $10의 낮은 금액을 설정하면 알림을 빨리 받아볼 수 있습니다. 실무에서는 월 평균 사용량의 110-120%로 설정하는 것을 권장합니다. 금액은 언제든 변경 가능합니다.
@@ -166,8 +166,8 @@ learningObjectives:
 32. 첫 번째 알림을 설정합니다:
 
    - **Threshold**: `80` 입력
-   - 옆의 드롭다운에서 `% of budgeted amount` 선택
-   - 다음 드롭다운에서 `Actual` 선택
+   - 드롭다운에서 **% of budgeted amount** 선택 (기본값)
+   - **Trigger** 드롭다운에서 **Actual** 선택 (기본값)
 
 33. **Notification preferences** 섹션에서 **Amazon SNS Alerts**에 태스크 2에서 복사한 SNS 토픽 ARN을 붙여넣습니다.
 
@@ -176,8 +176,8 @@ learningObjectives:
 35. 두 번째 알림을 설정합니다:
 
    - **Threshold**: `100` 입력
-   - 옆의 드롭다운에서 `% of budgeted amount` 선택
-   - 다음 드롭다운에서 `Forecasted` 선택
+   - 드롭다운에서 **% of budgeted amount** 선택 (기본값)
+   - **Trigger** 드롭다운에서 **Forecasted** 선택
    - **Amazon SNS Alerts**에 동일한 SNS 토픽 ARN을 붙여넣습니다
 
 > [!NOTE]
@@ -191,10 +191,18 @@ learningObjectives:
 
 38. **Review** 페이지에서 설정 내용을 확인합니다:
 
-   - Budget 이름: MyPersonalBudget
-   - 월 예산: $10.00
-   - 알림: 80% Actual, 100% Forecasted
-   - SNS 토픽: MyBudgetAlerts
+   - **Step 1: Choose budget type**
+     - Budget type: Cost budget
+   - **Step 2: Set up your budget**
+     - Name: MyPersonalBudget
+     - Period: Monthly
+     - Start date: 현재 월
+     - Budget amount: $10.00
+   - **Step 3: Configure alerts**
+     - Alert #1: 80% of budgeted amount, Actual costs
+     - Alert #2: 100% of budgeted amount, Forecasted costs
+   - **Step 4: Attach actions**
+     - You have no budgets actions
 
 39. [[Create budget]] 버튼을 클릭하여 예산을 생성합니다.
 
@@ -290,9 +298,9 @@ Threshold: 80% Actual
 2. 왼쪽 메뉴에서 **Tag Editor**를 선택합니다.
 
 3. 다음과 같이 검색 조건을 설정합니다:
-   - **Regions**: `Asia Pacific (Seoul) ap-northeast-2`
-   - **Resource types**: `All supported resource types`
-   - **Tags**: Tag key에 `Name`을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
+   - **Regions**: **Asia Pacific (Seoul) ap-northeast-2**
+   - **Resource types**: **All supported resource types**
+   - **Tags**: Tag key에 **Name**을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
 
 4. [[Search resources]]를 클릭합니다.
 

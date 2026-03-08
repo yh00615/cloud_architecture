@@ -10,15 +10,15 @@ learningObjectives:
   - Amazon EC2 인스턴스를 생성하고 관리할 수 있습니다.
 ---
 
+> [!TIP]
+> 이 실습에서는 **AWS**의 가상 서버인 **EC2 인스턴스**를 생성하고 웹 서버를 배포합니다. **인스턴스 타입**을 선택하고 키 페어를 생성하여 **SSH 접속**을 준비합니다. **User Data 스크립트**로 **Apache 웹 서버**를 자동으로 설치하고, **보안 그룹**으로 HTTP와 SSH 포트를 개방합니다. 인스턴스가 실행되면 **퍼블릭 IP**로 웹 브라우저에서 접속하여 웹 페이지를 확인합니다.
+
 > [!DOWNLOAD]
 > [week4-1-ec2-instance-deploy.zip](/files/week4/week4-1-ec2-instance-deploy.zip)
 >
-> - `setup-4-1-student.sh` - 사전 환경 구축 스크립트 (VPC, Subnet, Security Group 등 생성)
-> - `cleanup-4-1-student.sh` - 리소스 정리 스크립트
-> - 태스크 0: 사전 환경 구축 (setup-4-1-student.sh 실행)
-
-> [!NOTE]
-> 이 실습에서는 EC2 인스턴스를 생성하고 Apache 웹 서버를 배포하여 클라우드 컴퓨팅의 핵심 개념을 학습합니다.
+> - `setup-4-1.sh` - 사전 환경 구축 스크립트 (VPC, Subnet, Security Group 등 생성)
+> - `cleanup-4-1.sh` - 리소스 정리 스크립트
+> - 태스크 0: 사전 환경 구축 (setup-4-1.sh 실행)
 
 > [!ARCHITECTURE] 실습 아키텍처 다이어그램 - EC2 인스턴스 배포
 >
@@ -53,8 +53,8 @@ unzip week4-1-ec2-instance-deploy.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-4-1-student.sh
-./setup-4-1-student.sh
+chmod +x setup-4-1.sh
+./setup-4-1.sh
 ```
 
 6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
@@ -73,6 +73,13 @@ chmod +x setup-4-1-student.sh
 > 사전 환경 구축에 약 2-3분이 소요됩니다. 스크립트가 완료될 때까지 기다려주세요.
 
 ✅ **태스크 완료**: 사전 환경 구축이 완료되었습니다.
+
+> [!TIP]
+> **CloudShell 파일 정리**: 실습이 완전히 종료된 후, 업로드한 ZIP 파일과 스크립트를 삭제하여 CloudShell 스토리지를 정리할 수 있습니다:
+> ```bash
+> rm -f week4-1-ec2-instance-deploy.zip setup-4-1.sh cleanup-4-1.sh
+> ```
+> CloudShell 스토리지는 리전별로 1GB까지 무료 제공되며, 파일 정리는 선택사항입니다.
 
 
 ## 태스크 1: 사전 구축된 환경 확인
@@ -164,36 +171,46 @@ chmod +x setup-4-1-student.sh
 
 29. 오른쪽 상단의 [[Launch instances]] 버튼을 클릭합니다.
 
-30. **Name** 필드에 `CloudArchitect-Lab-WebServer`를 입력합니다.
+30. **Name and tags** 섹션의 **Name** 필드에 `CloudArchitect-Lab-WebServer`를 입력합니다.
 
-31. **Application and OS Images (Amazon Machine Image)** 섹션에서 기본 선택된 **Amazon Linux 2023 AMI**를 그대로 사용합니다.
+31. **Name** 필드 아래의 **Add additional tags** 링크를 클릭합니다.
 
-32. **Instance type**에서 **t3.micro**를 선택합니다.
+32. **Add new tag** 버튼을 클릭하고 다음과 같이 입력합니다:
+- **Key**: `StudentId`
+- **Value**: `[본인 학번]` (예: 20241234)
+- **Resource types**: `Instances`와 `Volumes` 모두 체크 ✅
 
-33. **Key pair (login)**에서 **Proceed without a key pair (Not recommended)**를 선택합니다.
+> [!TIP]
+> StudentId 태그를 추가하면 공유 AWS 계정에서 본인의 리소스를 쉽게 구분할 수 있습니다. Resource types에서 Instances와 Volumes를 모두 체크하면 EC2 인스턴스와 연결된 EBS 볼륨에도 태그가 자동으로 적용됩니다.
+
+33. **Application and OS Images (Amazon Machine Image)** 섹션에서 기본 선택된 **Amazon Linux 2023 AMI**를 그대로 사용합니다.
+
+34. **Instance type**에서 **t3.micro**를 선택합니다.
+
+35. **Key pair (login)**에서 **Proceed without a key pair (Not recommended)**를 선택합니다.
 
 > [!TIP]
 > EC2 Instance Connect를 사용하면 키 페어 없이도 브라우저에서 SSH 접속이 가능합니다.
 
 ### 2.2 네트워크 설정
 
-34. **Network settings** 섹션에서 [[Edit]] 버튼을 클릭합니다.
+36. **Network settings** 섹션에서 [[Edit]] 버튼을 클릭합니다.
 
-35. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
+37. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
-36. **Subnet**에서 **CloudArchitect-Lab-Public-Subnet**을 선택합니다.
+38. **Subnet**에서 **CloudArchitect-Lab-Public-Subnet**을 선택합니다.
 
-37. **Auto-assign public IP**에서 **Enable**을 선택합니다.
+39. **Auto-assign public IP**에서 **Enable**을 선택합니다.
 
-38. **Firewall (security groups)**에서 **Select existing security group**을 선택합니다.
+40. **Firewall (security groups)**에서 **Select existing security group**을 선택합니다.
 
-39. **CloudArchitect-Lab-Web-SG**를 선택합니다.
+41. **CloudArchitect-Lab-Web-SG**를 선택합니다.
 
 ### 2.3 User Data 스크립트 설정
 
-40. 페이지를 아래로 스크롤하여 **Advanced details** 섹션을 클릭해 확장합니다.
+42. 페이지를 아래로 스크롤하여 **Advanced details** 섹션을 클릭해 확장합니다.
 
-41. 맨 아래의 **User data** 텍스트 박스에 다음 스크립트를 입력합니다:
+43. 맨 아래의 **User data** 텍스트 박스에 다음 스크립트를 입력합니다:
 
 ```bash
 #!/bin/bash
@@ -260,9 +277,9 @@ cat > /var/www/html/index.html << HTML
 HTML
 ```
 
-42. 페이지 오른쪽 하단의 [[Launch instance]] 버튼을 클릭합니다.
+44. 페이지 오른쪽 하단의 [[Launch instance]] 버튼을 클릭합니다.
 
-43. 성공 메시지가 표시되면 [[View all instances]]를 클릭합니다.
+45. 성공 메시지가 표시되면 [[View all instances]]를 클릭합니다.
 
 > [!NOTE]
 > 인스턴스가 시작되면 User Data 스크립트가 자동으로 실행됩니다. Apache 웹 서버 설치와 웹 페이지 생성까지 약 3-5분이 소요됩니다.
@@ -274,19 +291,35 @@ HTML
 
 ### 3.1 인스턴스 시작 확인
 
-44. **CloudArchitect-Lab-WebServer** 인스턴스의 **Instance state**가 **Running**으로 변경될 때까지 기다립니다.
+46. **CloudArchitect-Lab-WebServer** 인스턴스의 **Instance state**가 **Running**으로 변경될 때까지 기다립니다.
 
-45. **Status check**가 **2/2 checks passed**로 변경될 때까지 기다립니다 (약 3-5분 소요).
+47. **Status check**가 **2/2 checks passed**로 변경될 때까지 기다립니다 (약 3-5분 소요).
 
-46. 인스턴스를 선택하고 하단 **Details** 탭에서 **Public IPv4 address**를 복사합니다.
+> [!NOTE] User Data 스크립트 실행 확인
+>
+> User Data 스크립트는 인스턴스가 처음 시작될 때 root 권한으로 자동 실행됩니다. 실행 완료 여부는 다음 방법으로 확인할 수 있습니다:
+>
+> 1. **Status check**: "2/2 checks passed"가 표시되면 인스턴스가 정상 작동 중입니다
+>    - 1/2: 시스템 상태 체크 (AWS 인프라 레벨 - 하드웨어, 네트워크)
+>    - 2/2: 인스턴스 상태 체크 (OS 및 네트워크 설정)
+>
+> 2. **웹 서버 접속**: HTTP로 접속하여 웹 페이지가 표시되면 스크립트 실행 완료
+>
+> 3. **로그 확인** (Instance Connect 접속 후):
+>    ```bash
+>    sudo cat /var/log/cloud-init-output.log
+>    ```
+>    이 로그 파일에서 User Data 스크립트의 모든 실행 과정과 오류를 확인할 수 있습니다.
+
+48. 인스턴스를 선택하고 하단 **Details** 탭에서 **Public IPv4 address**를 복사합니다.
 
 ### 3.2 웹 서버 동작 확인
 
-47. 새 브라우저 탭에서 `http://[복사한 Public IP]`로 접속합니다.
+49. 새 브라우저 탭에서 `http://[복사한 Public IP]`로 접속합니다.
 
-48. **CloudArchitect Lab05 성공!** 페이지가 표시되는지 확인합니다.
+50. **CloudArchitect Lab05 성공!** 페이지가 표시되는지 확인합니다.
 
-49. 웹 페이지에 인스턴스 ID, 가용 영역, IP 주소 정보가 표시되는지 확인합니다.
+51. 웹 페이지에 인스턴스 ID, 가용 영역, IP 주소 정보가 표시되는지 확인합니다.
 
 > [!TROUBLESHOOTING]
 > 페이지가 로드되지 않는 경우:
@@ -297,15 +330,15 @@ HTML
 
 ### 3.3 Instance Connect를 통한 SSH 접속
 
-50. EC2 콘솔에서 **CloudArchitect-Lab-WebServer** 인스턴스를 선택합니다.
+52. EC2 콘솔에서 **CloudArchitect-Lab-WebServer** 인스턴스를 선택합니다.
 
-51. 상단의 [[Connect]] 버튼을 클릭합니다.
+53. 상단의 [[Connect]] 버튼을 클릭합니다.
 
-52. **EC2 Instance Connect** 탭에서 **User name**이 **ec2-user**인지 확인합니다.
+54. **EC2 Instance Connect** 탭에서 **User name**이 **ec2-user**인지 확인합니다.
 
-53. [[Connect]] 버튼을 클릭합니다.
+55. [[Connect]] 버튼을 클릭합니다.
 
-54. 터미널이 열리면 다음 명령어를 실행합니다:
+56. 터미널이 열리면 다음 명령어를 실행합니다:
 
 ```bash
 # 시스템 정보 확인
@@ -344,22 +377,22 @@ curl -s localhost | head -5
 
 ### 4.1 Amazon EC2 인스턴스 종료
 
-55. EC2 콘솔에서 **CloudArchitect-Lab-WebServer** 인스턴스를 선택합니다.
+57. EC2 콘솔에서 **CloudArchitect-Lab-WebServer** 인스턴스를 선택합니다.
 
-56. 상단의 **Instance state** > **Terminate instance**를 선택합니다.
+58. 상단의 **Instance state** > **Terminate instance**를 선택합니다.
 
-57. 확인 창에서 [[Terminate]]를 클릭합니다.
+59. 확인 창에서 [[Terminate]]를 클릭합니다.
 
 > [!NOTE]
 > 인스턴스 상태가 "Shutting-down"을 거쳐 "Terminated"로 변경됩니다. 종료된 인스턴스는 약 1시간 후 목록에서 자동으로 사라집니다.
 
 ### 4.2 Cleanup 스크립트 실행
 
-58. CloudShell에서 cleanup 스크립트를 실행합니다:
+60. CloudShell에서 cleanup 스크립트를 실행합니다:
 
 ```bash
-chmod +x cleanup-4-1-student.sh
-./cleanup-4-1-student.sh
+chmod +x cleanup-4-1.sh
+./cleanup-4-1.sh
 ```
 
 > [!WARNING]
@@ -379,7 +412,7 @@ chmod +x cleanup-4-1-student.sh
 2. 다음 명령어로 정리 스크립트를 실행합니다:
 
 ```bash
-./cleanup-4-1-student.sh
+./cleanup-4-1.sh
 ```
 
 3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.
@@ -442,7 +475,10 @@ chmod +x cleanup-4-1-student.sh
 15. 다음과 같이 검색 조건을 설정합니다:
    - **Regions**: **Asia Pacific (Seoul) ap-northeast-2**
    - **Resource types**: **All supported resource types**
-   - **Tags**: Tag key에 **Name**을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
+   - **Tags**: Tag key에 **StudentId**를 선택하고, Tag value에 본인 학번을 입력합니다.
+
+> [!TIP]
+> StudentId 태그로 검색하면 본인이 생성한 리소스만 정확히 확인할 수 있습니다. Name 태그로 검색하려면 Tag key를 `Name`, Tag value를 `CloudArchitect-Lab`로 입력합니다.
 
 16. [[Search resources]]를 클릭합니다.
 
@@ -456,21 +492,25 @@ chmod +x cleanup-4-1-student.sh
 ## 💡 핵심 포인트 정리
 
 🖥️
-EC2 인스턴스 생성
-클라우드 가상 서버를 생성하고 구성하여 확장 가능한 컴퓨팅 환경을 구축했습니다.
+EC2 인스턴스 타입
+범용(t3), 컴퓨팅 최적화(c5), 메모리 최적화(r5) 등 워크로드에 따라 적합한 인스턴스 패밀리를 선택합니다.
 
-🔐
-EC2 Instance Connect
-키 페어 없이 브라우저를 통해 안전하게 EC2 인스턴스에 접속하여 서버를 관리할 수 있습니다.
+🔑
+키 페어 인증
+EC2 인스턴스에 SSH 접속하려면 키 페어(공개키/개인키)를 생성하고 개인키(.pem)를 안전하게 보관해야 합니다.
 
-🛡️
-보안 그룹
-인바운드 규칙을 설정하여 SSH, HTTP 트래픽을 제어하고 네트워크 보안을 구현했습니다.
+💾
+EBS 볼륨
+EC2 인스턴스의 영구 스토리지로, 인스턴스를 중지해도 데이터가 유지되며 크기와 타입을 선택할 수 있습니다.
+
+📝
+User Data 스크립트
+인스턴스 시작 시 자동으로 실행되는 스크립트로, 소프트웨어 설치나 초기 설정을 자동화할 수 있습니다.
 
 🌐
-User Data 자동화
-부트스트랩 스크립트를 통해 인스턴스 시작 시 자동으로 웹 서버를 설치하고 구성했습니다.
+퍼블릭 IP와 Elastic IP
+퍼블릭 IP는 인스턴스 재시작 시 변경되지만, Elastic IP는 고정 IP 주소로 인스턴스에 연결할 수 있습니다.
 
-📊
-IMDSv2 메타데이터
-토큰 기반 보안 방식으로 인스턴스 내부에서 자신의 메타데이터를 안전하게 조회했습니다.
+🔒
+보안 그룹 규칙
+인바운드 규칙으로 허용된 트래픽만 인스턴스에 도달할 수 있으며, SSH(22), HTTP(80) 등 포트별로 설정합니다.

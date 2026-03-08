@@ -11,11 +11,11 @@ learningObjectives:
   - AWS IAM 권한 경계(Permission Boundary)의 개념과 활용 방법을 이해할 수 있습니다.
 ---
 
+> [!TIP]
+> 이 실습에서는 **IAM 역할**을 생성하고 **EC2 인스턴스**에 연결하는 방법을 학습합니다. **Trust Policy**로 EC2 서비스가 역할을 사용할 수 있도록 허용하고, **Permission Policy**로 **S3**와 **CloudWatch Logs** 접근 권한을 부여합니다. **Instance Profile**을 통해 역할을 EC2에 연결한 후, 인스턴스 내부에서 액세스 키 없이 AWS 서비스에 접근합니다. 마지막으로 **권한 경계**를 설정하여 역할이 가질 수 있는 최대 권한을 제한합니다.
+
 > [!DOWNLOAD]
 > 사전 구축되는 리소스가 없습니다.
-
-> [!NOTE]
-> 이 실습에서는 IAM 역할, Trust Policy, Instance Profile을 직접 생성하고 관리하여 AWS 서비스 간 권한 위임을 학습합니다. IAM 리소스는 비용이 발생하지 않습니다.
 
 > [!CONCEPT] IAM 역할이란?
 >
@@ -225,11 +225,11 @@ learningObjectives:
 
 ### 3.2 커스텀 정책 연결
 
-33. **Add permissions** 페이지에서 검색창에 `CloudArchitect-Lab-S3ReadOnly`를 입력합니다.
+34. **Add permissions** 페이지에서 검색창에 `CloudArchitect-Lab-S3ReadOnly`를 입력합니다.
 
-34. **CloudArchitect-Lab-S3ReadOnly** 정책 옆의 체크박스를 체크합니다.
+35. **CloudArchitect-Lab-S3ReadOnly** 정책 옆의 체크박스를 체크합니다.
 
-35. [[Next]] 버튼을 클릭합니다.
+36. [[Next]] 버튼을 클릭합니다.
 
 ### 3.3 역할 이름 및 생성
 
@@ -253,23 +253,23 @@ learningObjectives:
 
 ### 4.1 AWS Lambda 역할 생성 시작
 
-39. IAM 콘솔에서 왼쪽 메뉴의 **Access management** 섹션 아래의 **Roles**를 선택합니다.
+40. IAM 콘솔에서 왼쪽 메뉴의 **Access management** 섹션 아래의 **Roles**를 선택합니다.
 
-40. [[Create role]] 버튼을 클릭합니다.
+41. [[Create role]] 버튼을 클릭합니다.
 
-41. **Trusted entity type**에서 **AWS service**를 선택합니다.
+42. **Trusted entity type**에서 **AWS service**를 선택합니다.
 
-42. **Use case**에서 **Lambda**를 선택합니다.
+43. **Use case**에서 **Lambda**를 선택합니다.
 
-43. [[Next]] 버튼을 클릭합니다.
+44. [[Next]] 버튼을 클릭합니다.
 
 ### 4.2 커스텀 정책 연결
 
-44. 검색창에 `CloudArchitect-Lab-S3FullAccess`를 입력하고 체크박스를 체크합니다.
+45. 검색창에 `CloudArchitect-Lab-S3FullAccess`를 입력하고 체크박스를 체크합니다.
 
-45. 검색창을 지우고 `CloudArchitect-Lab-CloudWatchLogs`를 입력하고 체크박스를 체크합니다.
+46. 검색창을 지우고 `CloudArchitect-Lab-CloudWatchLogs`를 입력하고 체크박스를 체크합니다.
 
-46. 두 정책이 모두 선택되었는지 확인하고 [[Next]] 버튼을 클릭합니다.
+47. 두 정책이 모두 선택되었는지 확인하고 [[Next]] 버튼을 클릭합니다.
 
 ### 4.3 AWS Lambda 역할 이름 및 생성
 
@@ -346,17 +346,25 @@ learningObjectives:
 ## 💡 핵심 포인트 정리
 
 🎭
-IAM 역할
-임시 자격 증명을 제공하는 AWS 리소스로, 영구적인 액세스 키 없이도 AWS 서비스가 다른 서비스에 안전하게 접근할 수 있게 합니다.
+IAM 역할의 개념
+IAM 사용자는 영구 자격 증명을 사용하지만, IAM 역할은 임시 자격 증명을 제공하여 보안성이 높습니다.
 
-🤝
-Trust Policy
-역할을 누가 사용할 수 있는지 정의하는 JSON 정책으로, Principal 요소를 통해 특정 AWS 서비스나 사용자가 역할을 assume할 수 있는 권한을 부여합니다.
+🔐
+Trust Policy와 Permission Policy
+Trust Policy는 "누가" 역할을 사용할 수 있는지, Permission Policy는 "무엇을" 할 수 있는지를 정의합니다.
 
-📋
-Permission Policy
-역할이 assume된 후 어떤 AWS 리소스에 대해 어떤 작업을 수행할 수 있는지 정의합니다.
+🖥️
+Instance Profile
+EC2 인스턴스가 IAM 역할을 사용하려면 Instance Profile을 통해 역할을 연결해야 합니다.
 
-🔒
-보안 모범 사례
-임시 자격 증명 사용으로 보안 위험 최소화, 최소 권한 원칙 적용, 서비스별 역할 분리를 통해 안전한 환경을 구성합니다.
+🔄
+역할 전환(Assume Role)
+AWS STS(Security Token Service)를 통해 임시 자격 증명을 발급받아 역할을 사용합니다.
+
+📏
+권한 경계(Permission Boundary)
+역할이 가질 수 있는 최대 권한을 제한하여, 실수로 과도한 권한이 부여되는 것을 방지합니다.
+
+🛡️
+서비스 간 안전한 접근
+액세스 키를 코드에 하드코딩하지 않고 IAM 역할을 사용하여 AWS 서비스 간 안전하게 통신합니다.

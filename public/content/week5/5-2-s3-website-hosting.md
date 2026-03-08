@@ -10,11 +10,11 @@ learningObjectives:
   - Amazon S3의 데이터 관리 및 보안 기능(버전 관리, 암호화, 접근 제어)을 활용할 수 있습니다.
 ---
 
+> [!TIP]
+> 이 실습에서는 **S3 버킷**에 정적 웹사이트를 호스팅하는 방법을 학습합니다. S3 버킷을 생성하고 **HTML, CSS 파일**을 업로드한 후, **Static website hosting** 기능을 활성화합니다. **퍼블릭 액세스 차단** 설정을 해제하고, **버킷 정책**으로 모든 사용자에게 읽기 권한을 부여합니다. **웹사이트 엔드포인트**로 브라우저에서 접속하여 서버 없이 운영되는 웹사이트를 확인합니다.
+
 > [!DOWNLOAD]
 > 사전 구축되는 리소스가 없습니다.
-
-> [!NOTE]
-> 이 실습에서는 Amazon S3 버킷을 생성하고 정적 웹사이트를 호스팅합니다. HTML, CSS 파일을 업로드하고 버킷 정책을 설정하여 웹사이트를 공개합니다. 리소스 정리 전까지 소량의 S3 스토리지 비용이 발생할 수 있습니다.
 
 > [!CONCEPT] Amazon S3 정적 웹사이트 호스팅이란?
 >
@@ -39,10 +39,10 @@ learningObjectives:
 
 4. **General configuration** 섹션에서 **AWS Region**이 **Asia Pacific (Seoul) ap-northeast-2**로 설정되어 있는지 확인합니다.
 
-5. **Bucket name**에 `cloudarchitect-lab-s3website-[계정ID]`를 입력합니다.
+5. **Bucket name**에 `cloudarchitect-lab-s3website-[학번]`을 입력합니다.
 
 > [!TIP]
-> S3 버킷 이름은 전 세계적으로 고유해야 합니다. `[계정ID]` 부분을 본인의 AWS 계정 ID로 대체합니다. 계정 ID는 콘솔 오른쪽 상단의 계정 드롭다운에서 확인할 수 있습니다.
+> S3 버킷 이름은 전 세계적으로 고유해야 합니다. [학번] 부분을 본인의 학번으로 대체합니다. 예: `cloudarchitect-lab-s3website-20241234`
 
 ### 1.3 퍼블릭 액세스 설정
 
@@ -53,16 +53,45 @@ learningObjectives:
 > [!WARNING]
 > 웹사이트 호스팅을 위해 퍼블릭 액세스를 허용합니다. 민감한 데이터는 절대 이 버킷에 업로드하지 않습니다.
 
-8. 다른 설정은 기본값으로 유지하고 [[Create bucket]] 버튼을 클릭합니다.
+### 1.4 태그 설정
+
+8. 페이지를 아래로 스크롤하여 **Tags - optional** 섹션을 찾습니다.
+
+9. [[Add tag]] 버튼을 클릭하고 첫 번째 태그를 입력합니다:
+- **Key**: `Name`
+- **Value**: `CloudArchitect-Lab-S3Website`
+
+10. [[Add tag]] 버튼을 다시 클릭하고 두 번째 태그를 추가합니다:
+- **Key**: `StudentId`
+- **Value**: `[본인 학번]` (예: 20241234)
+
+> [!TIP]
+> StudentId 태그를 추가하면 공유 AWS 계정에서 본인의 S3 버킷을 쉽게 구분하고, Tag Editor로 본인 학번으로 검색하여 모든 실습 리소스를 한 번에 확인할 수 있습니다.
+
+11. 다른 설정은 기본값으로 유지하고 [[Create bucket]] 버튼을 클릭합니다.
 
 ✅ **태스크 완료**: S3 버킷이 생성되었습니다.
 
 
 ## 태스크 2: 정적 웹사이트 파일 생성 및 업로드
 
-### 2.1 HTML 및 CSS 파일 생성
+### 2.1 HTML 파일 생성
 
-9. 로컬 컴퓨터에서 텍스트 에디터를 열고 다음 내용으로 `index.html` 파일을 생성합니다:
+12. 로컬 컴퓨터에서 다음 중 하나의 텍스트 에디터를 엽니다:
+- **Windows**: 메모장 (Notepad) 또는 VS Code
+- **Mac**: TextEdit 또는 VS Code
+- **Linux**: gedit 또는 VS Code
+
+> [!TIP] Windows 메모장 사용 시 주의사항
+>
+> Windows 메모장을 사용하는 경우:
+> - 파일 저장 시 "파일 형식"을 **"모든 파일 (*.*)"**로 선택합니다
+> - 파일명을 `index.html`로 입력합니다 (따옴표 없이)
+> - 인코딩을 **"UTF-8"**로 선택합니다
+>
+> 이렇게 하지 않으면 `index.html.txt`로 저장되어 웹 서버가 인식하지 못할 수 있습니다.
+
+13. 다음 내용을 복사하여 붙여넣습니다:
 
 ```html
 <!DOCTYPE html>
@@ -107,7 +136,16 @@ learningObjectives:
 </html>
 ```
 
-10. 같은 폴더에 `style.css` 파일을 생성하고 다음 내용을 입력합니다:
+14. 파일을 `index.html` 이름으로 **바탕화면**에 저장합니다.
+
+15. `index.html` 파일에서 `[여기에 본인 이름 입력]` 부분을 본인의 이름으로 수정하고 저장합니다.
+
+> [!TIP]
+> 예: `<p><strong>학생 이름:</strong> 홍길동</p>`
+
+### 2.1.2 CSS 파일 생성
+
+16. 같은 방법으로 새 파일을 열고 `style.css` 파일을 생성합니다:
 
 ```css
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -131,25 +169,25 @@ header p { color: #666; font-size: 1.1em; }
 footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 0.9em; }
 ```
 
-11. `index.html` 파일을 다시 열어 `[여기에 본인 이름 입력]` 부분을 본인의 이름으로 수정합니다.
+17. 파일을 `style.css` 이름으로 **바탕화면**에 저장합니다.
 
-> [!TIP]
-> 예: `<p><strong>학생 이름:</strong> 홍길동</p>`
+> [!NOTE]
+> 두 파일(`index.html`, `style.css`)이 모두 바탕화면에 저장되어 있는지 확인합니다. 다음 단계에서 이 파일들을 S3 버킷에 업로드합니다.
 
 ### 2.2 파일 업로드
 
-12. S3 콘솔에서 생성한 버킷을 선택합니다.
+18. S3 콘솔에서 생성한 버킷을 선택합니다.
 
-13. **Objects** 탭에서 [[Upload]] 버튼을 클릭합니다.
+19. **Objects** 탭에서 [[Upload]] 버튼을 클릭합니다.
 
-14. [[Add files]] 버튼을 클릭하여 `index.html`과 `style.css` 파일을 선택합니다.
+20. [[Add files]] 버튼을 클릭하여 `index.html`과 `style.css` 파일을 선택합니다.
 
 > [!TIP]
 > [[Add files]] 버튼 대신 파일을 드래그 앤 드롭으로 업로드 영역에 직접 끌어다 놓을 수도 있습니다.
 
-15. 파일이 추가되었는지 확인하고 [[Upload]] 버튼을 클릭합니다.
+21. 파일이 추가되었는지 확인하고 [[Upload]] 버튼을 클릭합니다.
 
-16. 업로드가 완료되면 [[Close]] 버튼을 클릭합니다.
+22. 업로드가 완료되면 [[Close]] 버튼을 클릭합니다.
 
 > [!NOTE]
 > S3에 업로드된 파일들은 기본적으로 비공개 상태입니다. 웹사이트로 접근하려면 정적 웹사이트 호스팅 설정과 버킷 정책을 통한 퍼블릭 읽기 권한이 필요합니다.
@@ -161,27 +199,27 @@ footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1p
 
 ### 3.1 웹사이트 호스팅 활성화
 
-17. 버킷 상세 페이지 상단의 탭 메뉴에서 **Properties** 탭을 선택합니다. (Objects, Properties, Permissions, Metrics, Management, Access Points 순서로 나열되어 있습니다.)
+23. 버킷 상세 페이지 상단의 탭 메뉴에서 **Properties** 탭을 선택합니다. (Objects, Properties, Permissions, Metrics, Management, Access Points 순서로 나열되어 있습니다.)
 
-18. **Properties** 탭 페이지에서 아래로 스크롤하여 맨 하단의 **Static website hosting** 섹션을 찾습니다.
+24. **Properties** 탭 페이지에서 아래로 스크롤하여 맨 하단의 **Static website hosting** 섹션을 찾습니다.
 
-19. [[Edit]] 버튼을 클릭합니다.
+25. [[Edit]] 버튼을 클릭합니다.
 
-20. **Static website hosting**에서 **Enable**을 선택합니다.
+26. **Static website hosting**에서 **Enable**을 선택합니다.
 
-21. **Hosting type**에서 **Host a static website**를 선택합니다.
+26. **Hosting type**에서 **Host a static website**를 선택합니다.
 
-22. **Index document** 필드에 `index.html`을 입력합니다.
+27. **Index document** 필드에 `index.html`을 입력합니다.
 
-23. **Error document** 필드에 `error.html`을 입력합니다.
+28. **Error document** 필드에 `error.html`을 입력합니다.
 
-24. [[Save changes]] 버튼을 클릭합니다.
+29. [[Save changes]] 버튼을 클릭합니다.
 
 ### 3.2 웹사이트 엔드포인트 URL 확인
 
-25. **Properties** 탭의 **Static website hosting** 섹션에서 **Bucket website endpoint** URL을 확인합니다.
+30. **Properties** 탭의 **Static website hosting** 섹션에서 **Bucket website endpoint** URL을 확인합니다.
 
-26. URL을 복사하여 메모장에 저장합니다.
+31. URL을 복사하여 메모장에 저장합니다.
 
 > [!IMPORTANT]
 > 이 URL은 나중에 웹사이트 접속 테스트에 사용합니다. 반드시 메모장에 저장합니다. 현재 이 URL로 접속하면 403 Forbidden 오류가 발생합니다. 버킷 정책을 설정한 후(태스크 4 완료 후)에 정상적으로 접속할 수 있습니다.
@@ -195,11 +233,11 @@ footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1p
 >
 > 버킷 정책은 JSON 형식으로 작성하며, 누가(Principal) 어떤 작업(Action)을 어떤 리소스(Resource)에 대해 수행할 수 있는지 정의합니다. 웹사이트 호스팅을 위해서는 모든 사용자(`*`)에게 객체 읽기(`s3:GetObject`) 권한을 부여해야 합니다.
 
-27. 버킷 상세 페이지 상단의 탭 메뉴에서 **Permissions** 탭을 선택합니다.
+32. 버킷 상세 페이지 상단의 탭 메뉴에서 **Permissions** 탭을 선택합니다.
 
-28. **Bucket policy** 섹션에서 [[Edit]] 버튼을 클릭합니다.
+33. **Bucket policy** 섹션에서 [[Edit]] 버튼을 클릭합니다.
 
-29. 다음 정책을 입력합니다 (`YOUR-BUCKET-NAME`을 본인의 버킷 이름으로 변경):
+34. 다음 정책을 입력합니다 (`YOUR-BUCKET-NAME`을 본인의 버킷 이름으로 변경):
 
 ```json
 {
@@ -216,9 +254,9 @@ footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1p
 }
 ```
 
-30. `YOUR-BUCKET-NAME` 부분을 본인의 실제 버킷 이름(예: `cloudarchitect-lab-s3website-123456789012`)으로 변경합니다.
+35. `YOUR-BUCKET-NAME` 부분을 본인의 실제 버킷 이름(예: `cloudarchitect-lab-s3website-20241234`)으로 변경합니다.
 
-31. [[Save changes]] 버튼을 클릭합니다.
+36. [[Save changes]] 버튼을 클릭합니다.
 
 > [!TROUBLESHOOTING]
 > "Access Denied" 오류가 발생하면:
@@ -232,13 +270,13 @@ footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1p
 
 ### 5.1 웹사이트 접속 테스트
 
-32. 새 브라우저 탭을 열고 메모장에 저장한 웹사이트 엔드포인트 URL을 붙여넣고 Enter를 누릅니다.
+37. 새 브라우저 탭을 열고 메모장에 저장한 웹사이트 엔드포인트 URL을 붙여넣고 Enter를 누릅니다.
 
-33. **CloudArchitect S3 웹사이트 실습** 페이지가 표시되는지 확인합니다.
+38. **CloudArchitect S3 웹사이트 실습** 페이지가 표시되는지 확인합니다.
 
-34. CSS 스타일이 올바르게 적용되었는지 확인합니다 (보라색 그라데이션 배경, 카드 레이아웃).
+39. CSS 스타일이 올바르게 적용되었는지 확인합니다 (보라색 그라데이션 배경, 카드 레이아웃).
 
-35. JavaScript가 작동하여 현재 날짜가 표시되는지 확인합니다.
+40. JavaScript가 작동하여 현재 날짜가 표시되는지 확인합니다.
 
 > [!TROUBLESHOOTING]
 > 페이지가 로드되지 않는 경우:
@@ -248,7 +286,7 @@ footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1p
 
 ### 5.2 오류 페이지 생성 및 테스트
 
-36. 로컬에서 `error.html` 파일을 생성합니다:
+39. 로컬에서 `error.html` 파일을 생성합니다:
 
 ```html
 <!DOCTYPE html>
@@ -274,11 +312,11 @@ footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1p
 </html>
 ```
 
-37. S3 버킷에 `error.html` 파일을 업로드합니다.
+40. S3 버킷에 `error.html` 파일을 업로드합니다.
 
-38. 웹사이트 URL 뒤에 `/nonexistent.html`을 추가하여 접속합니다.
+41. 웹사이트 URL 뒤에 `/nonexistent.html`을 추가하여 접속합니다.
 
-39. 사용자 정의 404 오류 페이지가 표시되는지 확인합니다.
+42. 사용자 정의 404 오류 페이지가 표시되는지 확인합니다.
 
 > [!OUTPUT]
 > ```
@@ -301,7 +339,7 @@ footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1p
 
 1. 상단 검색창에서 `S3`를 검색하고 **S3**를 선택합니다.
 
-2. 실습에서 생성한 버킷(`cloudarchitect-lab-s3website-[계정ID]`)을 선택합니다.
+2. 실습에서 생성한 버킷(`cloudarchitect-lab-s3website-[학번]`)을 선택합니다.
 
 3. 버킷 내 모든 객체를 먼저 삭제합니다:
    - [[Empty]] 버튼 클릭
@@ -324,8 +362,24 @@ footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1p
 
 🌐
 정적 웹사이트 호스팅
-S3의 Static website hosting 기능으로 서버 없이 HTML, CSS, JS 파일을 웹사이트로 서빙합니다.
+S3의 Static website hosting 기능으로 서버 없이 HTML, CSS, JS 파일을 웹사이트로 서빙합니다
 
 🔒
 버킷 정책
-JSON 형식으로 퍼블릭 읽기 권한을 부여하여 웹사이트 접근을 허용합니다.
+JSON 형식으로 퍼블릭 읽기 권한을 부여하여 웹사이트 접근을 허용합니다
+
+📁
+객체 스토리지
+S3는 파일을 객체로 저장하며, 각 객체는 고유한 키(경로)를 가집니다
+
+🌍
+퍼블릭 액세스 설정
+기본적으로 차단된 퍼블릭 액세스를 해제하고 버킷 정책으로 읽기 권한을 부여해야 웹사이트가 작동합니다
+
+🔗
+웹사이트 엔드포인트
+S3가 제공하는 HTTP 엔드포인트를 통해 브라우저에서 웹사이트에 접근할 수 있습니다
+
+💰
+비용 효율성
+서버 운영 비용 없이 저장 용량과 데이터 전송량에 따라서만 과금되어 소규모 웹사이트에 적합합니다

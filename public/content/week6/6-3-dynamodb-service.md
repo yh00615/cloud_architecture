@@ -10,11 +10,11 @@ learningObjectives:
   - 쿼리, 스캔 연산의 특징을 이해하고 보조 인덱스를 활용할 수 있습니다.
 ---
 
+> [!TIP]
+> 이 실습에서는 **NoSQL 데이터베이스**인 **DynamoDB 테이블**을 생성하고 데이터를 관리합니다. **파티션 키**와 **정렬 키**를 설정하여 테이블 구조를 정의하고, **프로비저닝 모드**로 읽기/쓰기 용량을 설정합니다. 콘솔에서 항목을 생성하고 **쿼리**로 데이터를 검색한 후, **스캔**으로 전체 데이터를 조회합니다. 마지막으로 **강력한 일관된 읽기**와 **최종 일관된 읽기**의 차이를 이해합니다.
+
 > [!DOWNLOAD]
 > 사전 구축되는 리소스가 없습니다.
-
-> [!NOTE]
-> 이 실습에서는 Amazon DynamoDB 테이블을 생성하고 데이터를 추가, 조회, 수정하여 NoSQL 데이터베이스의 핵심 개념을 학습합니다. DynamoDB 온디맨드 모드는 사용한 만큼만 과금되며, 실습 규모에서는 프리 티어 범위 내입니다.
 
 > [!CONCEPT] Amazon DynamoDB란?
 >
@@ -50,23 +50,36 @@ learningObjectives:
 
 4. **Table name**에 `CloudArchitect-Lab-Users`를 입력합니다.
 
-5. **Partition key**에 `id`를 입력하고 타입을 `String`으로 설정합니다.
+5. **Partition key**에 `id`를 입력하고 타입을 **String**으로 설정합니다.
 
 6. **Table settings**에서 **Default settings**를 선택합니다.
 
 > [!NOTE]
-> Default settings를 선택하면 온디맨드 용량 모드가 적용됩니다. 온디맨드 모드는 실제 읽기/쓰기 요청 수에 따라 자동으로 용량이 조절되므로 트래픽 예측이 어려운 실습 환경에 적합합니다. 프로비저닝 모드는 예상 트래픽을 미리 설정하여 비용을 절감할 수 있지만, 트래픽 초과 시 요청이 제한될 수 있습니다.
+> Default settings를 선택하면 On-demand 용량 모드가 자동으로 적용됩니다. On-demand 모드는 실제 읽기/쓰기 요청 수에 따라 자동으로 용량이 조절되므로 트래픽 예측이 어려운 실습 환경에 적합합니다.
 
-7. [[Create table]] 버튼을 클릭합니다.
+7. 페이지를 아래로 스크롤하여 **Tags** 섹션을 찾습니다.
+
+8. [[Add new tag]] 버튼을 클릭하고 첫 번째 태그를 입력합니다:
+- **Key**: `Name`
+- **Value**: `CloudArchitect-Lab-Users`
+
+9. [[Add new tag]] 버튼을 다시 클릭하고 두 번째 태그를 추가합니다:
+- **Key**: `StudentId`
+- **Value**: `[본인 학번]` (예: 20241234)
+
+> [!TIP]
+> StudentId 태그를 추가하면 공유 AWS 계정에서 본인의 DynamoDB 테이블을 쉽게 구분하고, Tag Editor로 본인 학번으로 검색하여 모든 실습 리소스를 한 번에 확인할 수 있습니다.
+
+10. [[Create table]] 버튼을 클릭합니다.
 
 ### 1.3 테이블 생성 완료 확인
 
-8. 테이블 상태가 "Active"로 변경될 때까지 기다립니다.
+11. 테이블 상태가 "Active"로 변경될 때까지 기다립니다.
 
 > [!NOTE]
 > 테이블 생성에 약 1-2분이 소요됩니다. 상태가 "Creating"에서 "Active"로 변경되면 데이터를 추가할 수 있습니다.
 
-9. 생성된 `CloudArchitect-Lab-Users` 테이블 이름을 선택하여 상세 정보로 이동합니다.
+12. 생성된 `CloudArchitect-Lab-Users` 테이블 이름을 선택하여 상세 정보로 이동합니다.
 
 
 ## 태스크 2: 데이터 아이템 생성
@@ -77,29 +90,29 @@ learningObjectives:
 
 ### 2.1 첫 번째 아이템 생성 (Form 뷰)
 
-10. 테이블 상세 페이지 상단의 **Explore table items** 탭을 선택합니다.
+13. 테이블 상세 페이지 상단의 **Explore table items** 탭을 선택합니다.
 
-11. 화면 오른쪽 상단의 [[Create item]] 버튼을 클릭합니다.
+14. 화면 오른쪽 상단의 [[Create item]] 버튼을 클릭합니다.
 
-12. **id** 필드에 `user001`을 입력합니다.
+15. **id** 필드에 `user001`을 입력합니다.
 
-13. [[Add new attribute]] 버튼을 클릭하고 **String**을 선택합니다.
+16. [[Add new attribute]] 버튼을 클릭하고 **String**을 선택합니다.
 
-14. 속성 이름에 `name`을 입력하고 값에 `김철수`를 입력합니다.
+17. 속성 이름에 `name`을 입력하고 값에 `김철수`를 입력합니다.
 
-15. [[Add new attribute]] 버튼을 클릭하고 **String**을 선택합니다.
+18. [[Add new attribute]] 버튼을 클릭하고 **String**을 선택합니다.
 
-16. 속성 이름에 `email`을 입력하고 값에 `kim@example.com`을 입력합니다.
+19. 속성 이름에 `email`을 입력하고 값에 `kim@example.com`을 입력합니다.
 
-17. [[Add new attribute]] 버튼을 클릭하고 **Number**를 선택합니다.
+20. [[Add new attribute]] 버튼을 클릭하고 **Number**를 선택합니다.
 
-18. 속성 이름에 `age`를 입력하고 값에 `25`를 입력합니다.
+21. 속성 이름에 `age`를 입력하고 값에 `25`를 입력합니다.
 
-19. [[Add new attribute]] 버튼을 클릭하고 **String**을 선택합니다.
+22. [[Add new attribute]] 버튼을 클릭하고 **String**을 선택합니다.
 
-20. 속성 이름에 `department`를 입력하고 값에 `컴퓨터공학과`를 입력합니다.
+23. 속성 이름에 `department`를 입력하고 값에 `컴퓨터공학과`를 입력합니다.
 
-21. [[Create item]] 버튼을 클릭합니다.
+24. [[Create item]] 버튼을 클릭합니다.
 
 > [!OUTPUT]
 > ```
@@ -109,16 +122,16 @@ learningObjectives:
 
 ### 2.2 두 번째 아이템 생성 (JSON 뷰)
 
-22. [[Create item]] 버튼을 클릭합니다.
+25. [[Create item]] 버튼을 클릭합니다.
 
-23. 아이템 편집 화면 상단의 **JSON view**를 선택합니다.
+26. 아이템 편집 화면 상단의 **JSON view**를 선택합니다.
 
-24. **View DynamoDB JSON** 토글을 비활성화합니다 (꺼진 상태로 설정).
+27. **View DynamoDB JSON** 토글을 비활성화합니다 (꺼진 상태로 설정).
 
 > [!WARNING]
 > **View DynamoDB JSON**이 활성화되어 있으면 타입 정보가 추가된 복잡한 형태(`{"S": "값"}`)로 표시됩니다. 일반 JSON 형태로 입력하려면 반드시 비활성화합니다.
 
-25. 다음 JSON 데이터를 입력합니다:
+28. 다음 JSON 데이터를 입력합니다:
 
 ```json
 {
@@ -130,7 +143,7 @@ learningObjectives:
 }
 ```
 
-26. [[Create item]] 버튼을 클릭합니다.
+29. [[Create item]] 버튼을 클릭합니다.
 
 > [!TIP]
 > JSON 뷰를 사용하면 복잡한 중첩 구조나 여러 속성을 한 번에 입력할 수 있어 편리합니다. 대량의 데이터를 입력할 때는 AWS CLI의 `aws dynamodb put-item` 명령어를 사용하는 것이 더 효율적입니다.
@@ -155,13 +168,13 @@ learningObjectives:
 
 ### 3.1 전체 데이터 스캔
 
-27. 테이블 상세 페이지에서 **Explore table items** 탭을 선택합니다.
+30. 테이블 상세 페이지에서 **Explore table items** 탭을 선택합니다.
 
-28. **Scan or query items** 섹션에서 드롭다운이 **Scan**으로 설정되어 있는지 확인합니다.
+31. **Scan or query items** 섹션에서 드롭다운이 **Scan**으로 설정되어 있는지 확인합니다.
 
-29. [[Run]] 버튼을 클릭하여 테이블의 모든 데이터를 조회합니다.
+32. [[Run]] 버튼을 클릭하여 테이블의 모든 데이터를 조회합니다.
 
-30. 하단의 **Items returned** 섹션에서 생성한 2개의 사용자 아이템이 모두 표시되는지 확인합니다.
+33. 하단의 **Items returned** 섹션에서 생성한 2개의 사용자 아이템이 모두 표시되는지 확인합니다.
 
 > [!OUTPUT]
 > ```
@@ -172,20 +185,20 @@ learningObjectives:
 > user002  | 이영희  | lee@example.com    | 23  | 정보시스템학과
 > ```
 
-31. **Items returned**와 **Items scanned** 수치를 확인합니다.
+32. **Items returned**와 **Items scanned** 수치를 확인합니다.
 
 > [!NOTE]
 > 스캔 결과에서 **Items returned**과 **Items scanned**가 동일하게 2로 표시됩니다. 데이터가 적을 때는 차이가 없지만, 대규모 테이블에서는 스캔이 전체 항목을 읽으므로 비용이 크게 증가합니다.
 
 ### 3.2 파티션 키로 쿼리
 
-32. **Scan or query items** 섹션에서 드롭다운을 **Query**로 변경합니다.
+33. **Scan or query items** 섹션에서 드롭다운을 **Query**로 변경합니다.
 
-33. **Partition key** 필드에 `user001`을 입력합니다.
+34. **Partition key** 필드에 `user001`을 입력합니다.
 
-34. [[Run]] 버튼을 클릭합니다.
+35. [[Run]] 버튼을 클릭합니다.
 
-35. `user001` (김철수) 사용자의 정보만 정확히 조회되는지 확인합니다.
+36. `user001` (김철수) 사용자의 정보만 정확히 조회되는지 확인합니다.
 
 > [!OUTPUT]
 > ```
@@ -195,14 +208,14 @@ learningObjectives:
 > user001  | 김철수  | kim@example.com    | 25  | 컴퓨터공학과
 > ```
 
-36. **Items returned**이 `1`이고 **Items scanned**도 `1`인 것을 확인합니다.
+37. **Items returned**이 `1`이고 **Items scanned**도 `1`인 것을 확인합니다.
 
 > [!TIP]
 > 쿼리는 파티션 키를 사용하여 정확한 항목만 검색하므로 매우 효율적입니다. 스캔에서는 Items scanned가 전체 항목 수(2)였지만, 쿼리에서는 1만 읽었습니다. 데이터가 수백만 건인 테이블에서 이 차이는 비용과 성능에 큰 영향을 미칩니다.
 
 ### 3.3 아이템 수정
 
-37. **Scan or query items** 섹션에서 드롭다운을 다시 **Scan**으로 변경하고 [[Run]] 버튼을 클릭하여 전체 아이템을 조회합니다.
+38. **Scan or query items** 섹션에서 드롭다운을 다시 **Scan**으로 변경하고 [[Run]] 버튼을 클릭하여 전체 아이템을 조회합니다.
 
 38. 하단 결과 목록에서 `user002` 아이템의 **id** 링크를 선택합니다.
 
@@ -245,7 +258,10 @@ learningObjectives:
 3. 다음과 같이 검색 조건을 설정합니다:
    - **Regions**: `Asia Pacific (Seoul) ap-northeast-2`
    - **Resource types**: `All supported resource types`
-   - **Tags**: Tag key에 `Name`을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
+   - **Tags**: Tag key에 `StudentId`를 선택하고, Tag value에 본인 학번을 입력합니다.
+
+> [!TIP]
+> StudentId 태그로 검색하면 본인이 생성한 리소스만 정확히 확인할 수 있습니다. Name 태그로 검색하려면 Tag key를 `Name`, Tag value를 `CloudArchitect-Lab`로 입력합니다.
 
 4. [[Search resources]]를 클릭합니다.
 
