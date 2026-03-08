@@ -11,14 +11,14 @@ learningObjectives:
   - AWS CLI의 기본 명령어를 사용하여 계정 정보를 조회하고 콘솔 결과와 비교할 수 있습니다.
 ---
 
+> [!TIP]
+> 이 실습에서는 **AWS**를 관리하는 두 가지 방법을 학습합니다. 먼저 웹 브라우저 기반의 **AWS Management Console**에서 **리전**을 확인하고 **계정 정보**를 조회합니다. 그 다음 **AWS CloudShell**에서 **CLI 명령어**를 실행하여 동일한 정보를 확인합니다. 마지막으로 **--output**과 **--query** 옵션을 사용하여 출력 형식을 제어하고 필요한 데이터만 추출하는 방법을 익힙니다. 리소스를 생성하지 않으므로 비용이 발생하지 않습니다.
+
 > [!DOWNLOAD]
 > [week1-2-aws-management-interface.zip](/files/week1/week1-2-aws-management-interface.zip)
 >
-> - `lab01-check.sh` - AWS 환경 정보 확인 스크립트 (계정 정보, 리전, 가용 영역 조회)
+> - `setup-1-2.sh` - AWS 환경 정보 확인 스크립트 (계정 정보, 리전, 가용 영역 조회)
 > - 태스크 0: CloudShell에서 스크립트 업로드
-
-> [!NOTE]
-> 이 실습은 AWS Management Console과 AWS CLI 사용법을 학습합니다. 콘솔 기본 사용법, CLI 기본 명령어 체험, 콘솔과 CLI의 차이점을 이해합니다. 리소스를 생성하지 않으므로 비용이 발생하지 않습니다.
 
 > [!CONCEPT] AWS 관리 인터페이스란?
 >
@@ -32,39 +32,46 @@ learningObjectives:
 
 ## 태스크 0: 실습 파일 준비
 
+> [!NOTE]
+> 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
+
 1. 위 DOWNLOAD 섹션에서 `week1-2-aws-management-interface.zip` 파일을 다운로드합니다.
 
-2. 다운로드한 `week1-2-aws-management-interface.zip` 파일의 압축을 해제합니다.
+2. AWS Management Console에 로그인합니다.
 
-3. AWS Management Console에 로그인합니다.
+3. AWS Management Console 상단의 **CloudShell** 아이콘을 선택합니다.
 
-4. AWS Management Console 상단의 **CloudShell** 아이콘을 선택합니다.
-
-5. CloudShell이 처음 실행되는 경우 환경 초기화를 기다립니다.
+4. CloudShell이 처음 실행되는 경우 환경 초기화를 기다립니다.
 
 > [!NOTE]
-> CloudShell 첫 실행 시 환경 초기화에 약 1-2분이 소요됩니다. "Waiting for environment to run..." 메시지가 표시되며, 완료되면 명령어 프롬프트(`$`)가 나타납니다.
+> CloudShell 첫 실행 시 환경 초기화에 약 1-2분이 소요됩니다. "Waiting for environment to run..." 메시지가 표시되며, 완료되면 명령어 프롬프트가 나타납니다.
 
-6. CloudShell 상단의 **Actions** > `Upload file`을 선택하여 압축 해제한 `lab01-check.sh` 파일을 업로드합니다.
+5. CloudShell 상단의 **Actions** → **Upload file**을 선택하여 다운로드한 ZIP 파일을 업로드합니다.
 
 > [!NOTE]
 > CloudShell의 **Actions** 메뉴는 터미널 오른쪽 상단에 있습니다. Upload file을 선택하면 로컬 파일을 CloudShell 홈 디렉토리(`/home/cloudshell-user`)로 업로드할 수 있습니다.
 
-7. 업로드가 완료되면 파일이 존재하는지 확인합니다:
+6. 업로드가 완료되면 다음 명령어를 실행합니다:
 
 ```bash
-ls -la lab01-check.sh
+unzip week1-2-aws-management-interface.zip
+```
+
+7. 압축 해제된 파일이 존재하는지 확인합니다:
+
+```bash
+ls -la setup-1-2.sh
 ```
 
 > [!OUTPUT]
 > ```
-> -rw-r--r-- 1 cloudshell-user cloudshell-user 612 ... lab01-check.sh
+> -rw-r--r-- 1 cloudshell-user cloudshell-user 828 ... setup-1-2.sh
 > ```
 
 8. 스크립트에 실행 권한을 부여합니다:
 
 ```bash
-chmod +x lab01-check.sh
+chmod +x setup-1-2.sh
 ```
 
 ✅ **태스크 완료**: 실습 파일이 CloudShell에 업로드되고 실행 준비가 완료되었습니다.
@@ -84,7 +91,7 @@ chmod +x lab01-check.sh
 
 9. 상단 내비게이션 바에서 톱니바퀴(⚙) 아이콘을 선택합니다.
 
-10. **Language** 항목에서 드롭다운을 선택하고 `English (US)`를 선택합니다.
+10. **Language** 항목에서 드롭다운을 선택하고 **English (US)**를 선택합니다.
 
 11. 콘솔 인터페이스가 영어로 변경되는 것을 확인합니다.
 
@@ -110,7 +117,7 @@ chmod +x lab01-check.sh
 
 17. 드롭다운에서 사용 가능한 AWS 리전 목록을 확인합니다.
 
-18. `Asia Pacific (Seoul) ap-northeast-2`를 선택합니다.
+18. **Asia Pacific (Seoul) ap-northeast-2**를 선택합니다.
 
 > [!IMPORTANT]
 > 리전 설정은 매우 중요합니다. 리전이 다르면 생성한 리소스가 보이지 않을 수 있습니다. 실습 전 항상 **Asia Pacific (Seoul) ap-northeast-2** 리전이 선택되어 있는지 확인합니다.
@@ -156,7 +163,7 @@ chmod +x lab01-check.sh
 24. CloudShell 터미널에서 태스크 0에서 업로드한 스크립트를 실행합니다:
 
 ```bash
-./lab01-check.sh
+./setup-1-2.sh
 ```
 
 > [!TIP]
@@ -287,8 +294,25 @@ aws ec2 describe-availability-zones --query 'AvailabilityZones[].ZoneName' --out
 
 🖥️
 AWS Management Console
-웹 브라우저에서 GUI로 AWS 서비스를 관리하는 인터페이스입니다. 리전 설정, 계정 정보 확인 등 기본 작업을 수행합니다.
+웹 브라우저에서 GUI로 AWS 서비스를 관리하는 인터페이스로, 직관적으로 리소스를 생성하고 설정할 수 있습니다.
+
+☁️
+AWS CloudShell
+브라우저 기반 셸 환경으로 AWS CLI가 사전 설치되어 있어 별도 설정 없이 바로 명령어를 실행할 수 있습니다.
 
 🔄
 콘솔과 CLI의 관계
 동일한 AWS 계정에 대해 콘솔(GUI)과 CLI(명령어) 두 가지 방식으로 접근할 수 있으며, 동일한 결과를 확인할 수 있습니다.
+
+📋
+출력 형식 제어
+--output 옵션으로 json, table, text 형식을 선택하여 데이터를 다양한 방식으로 확인할 수 있습니다.
+
+🔍
+JMESPath 쿼리
+--query 옵션으로 JSON 응답에서 필요한 데이터만 필터링하여 추출할 수 있습니다.
+
+🌐
+리전 개념
+AWS 서비스는 전 세계 여러 리전에 분산되어 있으며, 리소스는 특정 리전에 생성되므로 올바른 리전 선택이 중요합니다.
+

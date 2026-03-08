@@ -10,17 +10,17 @@ learningObjectives:
   - Dockerfile을 작성하여 컨테이너 이미지를 빌드할 수 있습니다.
 ---
 
-> [!NOTE]
-> 이 실습에서는 Docker를 사용하여 Node.js 애플리케이션을 컨테이너화하고 Amazon ECR에 이미지를 저장하는 방법을 학습합니다. 사전 구축 스크립트 없이 CloudShell에서 직접 진행합니다.
+> [!TIP]
+> 이 실습에서는 **Docker 이미지**를 빌드하고 **컨테이너**를 실행한 후, **Amazon ECR**에 이미지를 푸시하여 컨테이너 기술의 기본을 학습합니다.
 
 > [!CONCEPT] Docker 컨테이너란?
 >
 > Docker는 애플리케이션을 **컨테이너**라는 격리된 환경에서 실행하는 플랫폼입니다.
 >
-> - **이미지(Image)**: 애플리케이션 코드, 런타임, 라이브러리를 포함한 읽기 전용 템플릿입니다
-> - **컨테이너(Container)**: 이미지를 기반으로 실행되는 격리된 프로세스입니다
-> - **Dockerfile**: 이미지를 빌드하기 위한 명령어를 정의한 텍스트 파일입니다
-> - **레지스트리(Registry)**: 이미지를 저장하고 배포하는 저장소입니다 (Amazon ECR, Docker Hub 등)
+> - **이미지(Image)**: 애플리케이션 코드, 런타임, 라이브러리를 포함한 읽기 전용 템플릿입니다.
+> - **컨테이너(Container)**: 이미지를 기반으로 실행되는 격리된 프로세스입니다.
+> - **Dockerfile**: 이미지를 빌드하기 위한 명령어를 정의한 텍스트 파일입니다.
+> - **레지스트리(Registry)**: 이미지를 저장하고 배포하는 저장소입니다 (Amazon ECR, Docker Hub 등).
 >
 > 가상머신(VM)과 달리 컨테이너는 OS 커널을 공유하므로 가볍고 빠르게 시작됩니다.
 
@@ -91,7 +91,7 @@ app.get('/', (req, res) => {
     <html lang="ko">
     <head>
         <meta charset="UTF-8">
-        <title>Lab14 Docker App</title>
+        <title>CloudArchitect Week 10-1 Docker App</title>
         <style>
             body { 
                 font-family: Arial, sans-serif; 
@@ -115,10 +115,10 @@ app.get('/', (req, res) => {
     </head>
     <body>
         <div class="container">
-            <h1>🐳 Lab14 Docker Application</h1>
+            <h1>🐳 CloudArchitect Week 10-1 Docker Application</h1>
             <div class="info">
                 <p>Docker 컨테이너가 성공적으로 실행되고 있습니다.</p>
-                <p class="highlight">CloudArchitect AWS 가이드 - Lab14</p>
+                <p class="highlight">CloudArchitect AWS 가이드 - Week 10-1</p>
                 <p>실행 시간: ${new Date().toLocaleString()}</p>
                 <p>포트: 3000</p>
             </div>
@@ -132,12 +132,12 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy', 
     timestamp: new Date().toISOString(),
-    message: 'Lab14 Docker App is running'
+    message: 'CloudArchitect Week 10-1 Docker App is running'
   });
 });
 
 app.listen(port, () => {
-  console.log(`Lab14 Docker App running on port ${port}`);
+  console.log(`CloudArchitect Week 10-1 Docker App running on port ${port}`);
 });
 SERVEREOF
 ```
@@ -149,14 +149,39 @@ SERVEREOF
 
 > [!CONCEPT] Dockerfile 주요 명령어
 >
-> | 명령어 | 설명 |
-> |--------|------|
-> | `FROM` | 베이스 이미지를 지정합니다 (예: `node:18-alpine`) |
-> | `WORKDIR` | 컨테이너 내 작업 디렉토리를 설정합니다 |
-> | `COPY` | 호스트 파일을 컨테이너로 복사합니다 |
-> | `RUN` | 이미지 빌드 시 실행할 명령어입니다 |
-> | `EXPOSE` | 컨테이너가 사용하는 포트를 명시합니다 |
-> | `CMD` | 컨테이너 시작 시 실행할 기본 명령어입니다 |
+> | 명령어 | 설명 | 예시 |
+> |--------|------|------|
+> | `FROM` | 베이스 이미지를 지정합니다 | `FROM node:18-alpine` |
+> | `LABEL` | 이미지 메타데이터를 추가합니다 | `LABEL version="1.0"` |
+> | `WORKDIR` | 컨테이너 내 작업 디렉토리를 설정합니다 | `WORKDIR /app` |
+> | `COPY` | 호스트 파일을 컨테이너로 복사합니다 | `COPY package.json ./` |
+> | `RUN` | 이미지 빌드 시 실행할 명령어입니다 | `RUN npm install` |
+> | `USER` | 컨테이너 실행 사용자를 지정합니다 | `USER appuser` |
+> | `EXPOSE` | 컨테이너가 사용하는 포트를 명시합니다 (문서화) | `EXPOSE 3000` |
+> | `HEALTHCHECK` | 컨테이너 상태 확인 명령어를 정의합니다 | `HEALTHCHECK CMD curl localhost` |
+> | `CMD` | 컨테이너 시작 시 실행할 기본 명령어입니다 | `CMD ["npm", "start"]` |
+>
+> **주요 차이점:**
+>
+> **RUN vs CMD:**
+> - **RUN**: 이미지 **빌드 시점**에 실행되며, 실행 결과가 새로운 레이어로 저장됩니다
+>   - 예: **RUN npm install**은 빌드할 때 의존성을 설치하고 그 결과를 이미지에 포함
+>   - 여러 번 사용 가능하며, 각각 새로운 레이어를 생성합니다
+> - **CMD**: 컨테이너 **실행 시점**에 실행되며, 이미지에는 명령어만 저장됩니다
+>   - 예: **CMD ["npm", "start"]**는 컨테이너가 시작될 때마다 애플리케이션을 실행
+>   - Dockerfile에 하나만 존재하며, 마지막 CMD만 유효합니다
+>   - **docker run** 명령어로 덮어쓸 수 있습니다
+>
+> **EXPOSE의 실제 동작:**
+> - **EXPOSE 3000**은 컨테이너가 3000번 포트를 사용한다는 것을 **문서화**하는 역할만 합니다
+> - 실제로 포트를 외부에 노출하지 않으며, 방화벽 규칙도 생성하지 않습니다
+> - 실제 포트 매핑은 **docker run -p 8080:3000** 명령어의 **-p** 옵션으로 수행합니다
+>   - **-p 8080:3000**: 호스트의 8080 포트를 컨테이너의 3000 포트에 연결
+> - EXPOSE는 개발자 간 커뮤니케이션과 자동화 도구를 위한 메타데이터입니다
+>
+> **COPY vs ADD:**
+> - **COPY**: 단순히 파일/디렉토리를 복사합니다 (권장)
+> - **ADD**: 복사 + URL 다운로드 + tar 자동 압축 해제 기능 (복잡하므로 특별한 경우만 사용)
 
 ### 3.1 Dockerfile 생성
 
@@ -164,37 +189,44 @@ SERVEREOF
 
 ```bash
 cat > ~/docker-lab/Dockerfile << 'EOF'
+# 베이스 이미지 지정 - Alpine Linux 기반의 경량 Node.js 18 이미지
 FROM node:18-alpine
 
-# 메타데이터
-LABEL maintainer="Lab14 Student"
-LABEL description="Lab14 Docker Container Application"
+# 메타데이터 - 이미지에 대한 정보를 레이블로 추가
+LABEL maintainer="CloudArchitect Student"
+LABEL description="CloudArchitect Week 10-1 Docker Container Application"
 LABEL version="1.0"
 
-# 작업 디렉토리 설정
+# 작업 디렉토리 설정 - 이후 모든 명령어는 이 디렉토리에서 실행됨
 WORKDIR /app
 
 # 패키지 파일 복사 및 의존성 설치
+# package.json과 package-lock.json을 먼저 복사하여 Docker 레이어 캐싱 최적화
 COPY package*.json ./
+# --only=production: 개발 의존성 제외, npm cache clean: 캐시 삭제로 이미지 크기 감소
 RUN npm install --only=production && npm cache clean --force
 
 # 애플리케이션 코드 복사
+# 의존성 설치 후 코드를 복사하면 코드 변경 시 의존성 재설치를 방지할 수 있음
 COPY server.js .
 
-# 비특권 사용자 생성 및 전환
+# 비특권 사용자 생성 및 전환 (보안 모범 사례)
+# root 권한으로 컨테이너를 실행하지 않아 보안 위험을 줄임
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S appuser -u 1001 && \
     chown -R appuser:nodejs /app
 USER appuser
 
-# 포트 노출
+# 포트 노출 - 컨테이너가 3000번 포트를 사용함을 명시 (문서화 목적)
 EXPOSE 3000
 
-# 헬스체크 추가
+# 헬스체크 추가 - 컨테이너의 상태를 주기적으로 확인
+# --interval: 30초마다 체크, --timeout: 3초 내 응답, --start-period: 시작 후 5초 대기
+# --retries: 3번 실패 시 unhealthy 상태로 표시
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD node -e "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
-# 애플리케이션 실행
+# 애플리케이션 실행 - 컨테이너 시작 시 실행될 기본 명령어
 CMD ["npm", "start"]
 EOF
 ```
@@ -209,6 +241,12 @@ EOF
 ```bash
 docker build -t cloudarchitect-lab-app:latest ~/docker-lab/
 ```
+
+> [!NOTE]
+> - `-t cloudarchitect-lab-app:latest`: 이미지에 이름(태그)을 지정합니다
+>   - `cloudarchitect-lab-app`: 이미지 이름
+>   - `latest`: 이미지 버전 태그 (기본값)
+> - `~/docker-lab/`: Dockerfile이 있는 디렉토리 경로 (빌드 컨텍스트)
 
 8. 빌드된 이미지를 확인합니다:
 
@@ -239,7 +277,12 @@ docker run -d --name cloudarchitect-lab-app -p 8080:3000 cloudarchitect-lab-app:
 ```
 
 > [!NOTE]
-> `-d`는 백그라운드 실행, `-p 8080:3000`은 호스트의 8080 포트를 컨테이너의 3000 포트에 매핑합니다. `--name`으로 컨테이너에 이름을 지정합니다.
+> Docker run 옵션 설명:
+> - `-d`: 백그라운드(detached) 모드로 실행합니다
+> - `--name cloudarchitect-lab-app`: 컨테이너에 이름을 지정합니다 (관리 편의성)
+> - `-p 8080:3000`: 포트 매핑 (호스트:컨테이너)
+>   - 호스트의 8080 포트로 들어오는 요청을 컨테이너의 3000 포트로 전달합니다
+> - `cloudarchitect-lab-app:latest`: 실행할 이미지 이름과 태그
 
 10. 컨테이너 상태를 확인합니다:
 
@@ -261,6 +304,9 @@ docker ps
 curl http://localhost:8080
 ```
 
+> [!NOTE]
+> `curl` 명령어는 HTTP 요청을 보내고 응답을 확인하는 도구입니다. 컨테이너가 정상적으로 실행 중이면 HTML 페이지가 출력됩니다.
+
 12. 헬스 체크 엔드포인트를 확인합니다:
 
 ```bash
@@ -269,7 +315,7 @@ curl http://localhost:8080/health
 
 > [!OUTPUT]
 > ```json
-> {"status":"healthy","timestamp":"2025-xx-xxTxx:xx:xx.xxxZ","message":"Lab14 Docker App is running"}
+> {"status":"healthy","timestamp":"2025-xx-xxTxx:xx:xx.xxxZ","message":"CloudArchitect Week 10-1 Docker App is running"}
 > ```
 
 13. 컨테이너 로그를 확인합니다:
@@ -277,6 +323,9 @@ curl http://localhost:8080/health
 ```bash
 docker logs cloudarchitect-lab-app
 ```
+
+> [!NOTE]
+> 컨테이너 내부에서 출력되는 모든 로그(console.log 등)를 확인할 수 있습니다. 애플리케이션 디버깅에 유용합니다.
 
 ✅ **태스크 완료**: Docker 컨테이너가 정상적으로 실행되고 웹 애플리케이션에 접근할 수 있습니다.
 
@@ -310,6 +359,9 @@ echo "계정 ID: $ACCOUNT_ID"
 aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com
 ```
 
+> [!NOTE]
+> AWS CLI로 ECR 인증 토큰을 받아 Docker에 로그인합니다. 파이프(`|`)를 사용하여 비밀번호를 안전하게 전달합니다.
+
 > [!OUTPUT]
 > ```
 > Login Succeeded
@@ -321,11 +373,17 @@ aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS
 docker tag cloudarchitect-lab-app:latest $ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/cloudarchitect-lab-app:latest
 ```
 
+> [!NOTE]
+> 로컬 이미지에 ECR 리포지토리 경로를 포함한 새로운 태그를 추가합니다. 하나의 이미지에 여러 태그를 붙일 수 있습니다.
+
 18. 이미지를 ECR에 푸시합니다:
 
 ```bash
 docker push $ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/cloudarchitect-lab-app:latest
 ```
+
+> [!NOTE]
+> 로컬 이미지를 ECR 리포지토리에 업로드합니다. 이미지 크기에 따라 수 초에서 수 분이 소요될 수 있습니다.
 
 ### 5.3 Amazon ECR 콘솔에서 확인
 
@@ -344,26 +402,69 @@ docker push $ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/cloudarchitect-lab-
 > [!WARNING]
 > 실습 완료 후 **반드시** 리소스를 정리하여 불필요한 비용을 방지하세요.
 
-이 실습에서는 자동 정리 스크립트가 제공되지 않으므로, 아래 단계에 따라 AWS Management Console에서 수동으로 리소스를 삭제합니다.
+### 태스크 1: CloudShell에서 Docker 리소스 정리
 
-### 태스크 1: 최종 확인
+1. CloudShell에서 실행 중인 컨테이너를 정지하고 삭제합니다:
 
-1. 상단 검색창에서 `Resource Groups & Tag Editor`를 검색하고 **Resource Groups & Tag Editor**를 선택합니다.
+```bash
+docker stop cloudarchitect-lab-app
+docker rm cloudarchitect-lab-app
+```
 
-2. 왼쪽 메뉴에서 **Tag Editor**를 선택합니다.
+2. 로컬 Docker 이미지를 삭제합니다:
 
-3. 다음과 같이 검색 조건을 설정합니다:
-   - **Regions**: `Asia Pacific (Seoul) ap-northeast-2`
-   - **Resource types**: `All supported resource types`
-   - **Tags**: Tag key에 `Name`을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
+```bash
+docker rmi cloudarchitect-lab-app:latest
+```
 
-4. [[Search resources]]를 클릭합니다.
+3. ECR 이미지도 삭제합니다 (계정 ID 확인):
 
-5. 검색 결과에 리소스가 표시되지 않으면 정리가 완료된 것입니다.
+```bash
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+docker rmi $ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/cloudarchitect-lab-app:latest
+```
 
-6. 검색된 리소스가 있다면 해당 서비스 콘솔로 이동하여 삭제합니다.
+4. 작업 디렉토리를 삭제합니다:
 
-✅ **리소스 정리 완료**: 모든 리소스가 삭제되었습니다.
+```bash
+rm -rf ~/docker-lab
+```
+
+### 태스크 2: Amazon ECR 리포지토리 삭제
+
+5. ECR 리포지토리를 삭제합니다:
+
+```bash
+aws ecr delete-repository --repository-name cloudarchitect-lab-app --region ap-northeast-2 --force
+```
+
+> [!OUTPUT]
+> ```json
+> {
+>     "repository": {
+>         "repositoryName": "cloudarchitect-lab-app",
+>         "registryId": "xxxxxxxxxxxx"
+>     }
+> }
+> ```
+
+### 태스크 3: 최종 확인
+
+6. 상단 검색창에서 `ECR`을 검색하고 **ECR**을 선택합니다.
+
+7. 왼쪽 메뉴에서 **Repositories**를 선택합니다.
+
+8. `cloudarchitect-lab-app` 리포지토리가 목록에 없는지 확인합니다.
+
+9. CloudShell에서 Docker 이미지 목록을 확인합니다:
+
+```bash
+docker images
+```
+
+10. `cloudarchitect-lab-app` 관련 이미지가 없는지 확인합니다.
+
+✅ **리소스 정리 완료**: 모든 Docker 컨테이너, 이미지, ECR 리포지토리가 삭제되었습니다.
 
 
 ## 💡 핵심 포인트 정리

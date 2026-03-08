@@ -10,11 +10,11 @@ learningObjectives:
   - 인터넷 게이트웨이와 NAT 게이트웨이를 구성하여 외부 연결을 설정할 수 있습니다.
 ---
 
+> [!TIP]
+> 이 실습에서는 **AWS** 클라우드 네트워크 인프라를 처음부터 구축합니다. **VPC**를 생성하고 2개의 **가용 영역**에 **퍼블릭 서브넷**과 **프라이빗 서브넷**을 각각 배치합니다. **Internet Gateway**와 **NAT Gateway**를 생성하여 외부 통신을 설정하고, **라우팅 테이블**로 트래픽 흐름을 제어합니다. 마지막으로 **보안 그룹**을 생성하여 웹 계층과 데이터베이스 계층 간의 접근을 제어하는 다층 보안 아키텍처를 완성합니다.
+
 > [!DOWNLOAD]
 > 사전 구축되는 리소스가 없습니다.
-
-> [!NOTE]
-> 이 실습에서는 AWS VPC 네트워크 인프라를 처음부터 구축합니다. 퍼블릭/프라이빗 서브넷, Internet Gateway, NAT Gateway, 라우팅 테이블, 보안 그룹 등을 구성하여 완전한 클라우드 네트워크 환경을 생성합니다.
 
 > [!ARCHITECTURE] 실습 아키텍처 다이어그램 - VPC 네트워크 아키텍처
 >
@@ -50,8 +50,21 @@ learningObjectives:
 
 3. **Resources to create**에서 **VPC and more**를 선택합니다.
 
-> [!TIP]
-> `VPC and more`를 선택하면 VPC와 함께 서브넷, 라우팅 테이블, 인터넷 게이트웨이, NAT 게이트웨이 등 필요한 리소스를 한 번에 생성할 수 있어 편리합니다.
+> [!CONCEPT] VPC and more로 생성되는 리소스
+>
+> "VPC and more" 옵션을 선택하면 다음 리소스들이 자동으로 생성됩니다:
+>
+> - **VPC 1개**: 논리적으로 격리된 가상 네트워크 공간 (10.0.0.0/16)
+> - **서브넷 4개**: 
+>   - Public 서브넷 2개 (각 AZ에 1개씩, 10.0.0.0/20, 10.0.16.0/20)
+>   - Private 서브넷 2개 (각 AZ에 1개씩, 10.0.128.0/20, 10.0.144.0/20)
+> - **Internet Gateway 1개**: 퍼블릭 서브넷의 인터넷 연결 담당
+> - **NAT Gateway 1개**: 프라이빗 서브넷의 아웃바운드 인터넷 연결 담당
+> - **라우팅 테이블 3개**: 
+>   - Public용 1개 (0.0.0.0/0 → Internet Gateway)
+>   - Private용 2개 (0.0.0.0/0 → NAT Gateway 또는 로컬만)
+>
+> 이 방식은 프로덕션 환경에 적합한 고가용성 네트워크를 빠르게 구축할 수 있습니다. 수동으로 하나씩 생성하는 것보다 실수를 줄이고 시간을 절약할 수 있습니다.
 
 ### 1.2 Amazon VPC 기본 설정
 
@@ -76,29 +89,31 @@ learningObjectives:
 
 ### 1.4 NAT 게이트웨이 및 추가 옵션 설정
 
-11. **NAT gateways**에서 **In 1 AZ**를 선택합니다.
+11. **NAT gateways**에서 **Zonal**을 선택합니다.
+
+12. **NAT gateways** 하위 옵션에서 **In 1 AZ**를 선택합니다.
 
 > [!TIP]
-> NAT Gateway는 Zonal(단일 AZ)과 Regional(다중 AZ) 방식을 선택할 수 있습니다. 이 실습에서는 비용 절감을 위해 In 1 AZ를 선택합니다. Regional NAT Gateway는 고가용성을 제공하지만 추가 비용이 발생합니다.
+> NAT Gateway는 Zonal(단일 AZ)과 Regional(다중 AZ) 방식을 선택할 수 있습니다. 이 실습에서는 비용 절감을 위해 Zonal - In 1 AZ를 선택합니다. Regional NAT Gateway는 고가용성을 제공하지만 추가 비용이 발생합니다.
 
-12. **VPC endpoints**에서 **None**을 선택합니다.
+13. **VPC endpoints**에서 **None**을 선택합니다.
 
-13. **DNS options**는 기본값을 유지합니다 (Enable DNS hostnames, Enable DNS resolution 모두 체크).
+14. **DNS options**는 기본값을 유지합니다 (Enable DNS hostnames, Enable DNS resolution 모두 체크).
 
 > [!NOTE]
 > NAT Gateway는 시간당 요금과 데이터 처리 요금이 발생합니다. 실습 완료 후 반드시 리소스를 정리합니다.
 
 ### 1.5 Amazon VPC 생성
 
-14. **Preview** 창에서 구성한 VPC 리소스 간의 관계를 확인합니다:
-- VPC: project-vpc
+15. **Preview** 창에서 구성한 VPC 리소스 간의 관계를 확인합니다:
+- VPC: CloudArchitect-Lab-vpc
 - Subnets: 4개 (퍼블릭 2개, 프라이빗 2개)
 - Route tables: 3개
 - Network connections: Internet Gateway, NAT Gateway
 
-15. [[Create VPC]] 버튼을 클릭합니다.
+16. [[Create VPC]] 버튼을 클릭합니다.
 
-16. VPC 생성이 완료될 때까지 기다립니다.
+17. VPC 생성이 완료될 때까지 기다립니다.
 
 > [!NOTE]
 > VPC와 모든 네트워크 구성 요소 생성에 약 2-3분이 소요됩니다. 생성 진행 상황이 화면에 표시됩니다.
@@ -110,11 +125,11 @@ learningObjectives:
 
 ### 2.1 Amazon VPC 확인
 
-17. VPC 콘솔에서 왼쪽 메뉴의 **Your VPCs**를 선택합니다.
+18. VPC 콘솔에서 왼쪽 메뉴의 **Your VPCs**를 선택합니다.
 
-18. **CloudArchitect-Lab-vpc**를 찾아 선택합니다.
+19. **CloudArchitect-Lab-vpc**를 찾아 선택합니다.
 
-19. 다음 정보를 확인합니다:
+20. 다음 정보를 확인합니다:
 - **State**: Available
 - **IPv4 CIDR**: `10.0.0.0/16`
 - **DNS hostnames**: Enabled
@@ -122,9 +137,9 @@ learningObjectives:
 
 ### 2.2 서브넷 확인
 
-20. 왼쪽 메뉴에서 **Subnets**를 선택합니다.
+21. 왼쪽 메뉴에서 **Subnets**를 선택합니다.
 
-21. 생성된 4개의 서브넷을 확인합니다:
+22. 생성된 4개의 서브넷을 확인합니다:
 
 | 서브넷 이름 | CIDR | 타입 | AZ |
 |-------------|------|------|-----|
@@ -135,13 +150,13 @@ learningObjectives:
 
 ### 2.3 Internet Gateway 및 NAT Gateway 확인
 
-22. 왼쪽 메뉴에서 **Internet gateways**를 선택합니다.
+23. 왼쪽 메뉴에서 **Internet gateways**를 선택합니다.
 
-23. **CloudArchitect-Lab-igw**가 생성되고 **State**가 "Attached"인지 확인합니다.
+24. **CloudArchitect-Lab-igw**가 생성되고 **State**가 "Attached"인지 확인합니다.
 
-24. 왼쪽 메뉴에서 **NAT gateways**를 선택합니다.
+25. 왼쪽 메뉴에서 **NAT gateways**를 선택합니다.
 
-25. **CloudArchitect-Lab-nat-public1-ap-northeast-2a**가 생성되고 **State**가 "Available"인지 확인합니다.
+26. **CloudArchitect-Lab-nat-public1-ap-northeast-2a**가 생성되고 **State**가 "Available"인지 확인합니다.
 
 > [!OUTPUT]
 > ```
@@ -164,34 +179,51 @@ learningObjectives:
 
 ### 3.1 Public 라우팅 테이블 확인
 
-26. 왼쪽 메뉴에서 **Route tables**를 선택합니다.
+27. 왼쪽 메뉴에서 **Route tables**를 선택합니다.
 
-27. **CloudArchitect-Lab-rtb-public** 라우팅 테이블을 찾아 선택합니다.
+28. **CloudArchitect-Lab-rtb-public** 라우팅 테이블을 찾아 선택합니다.
 
-28. **Routes** 탭에서 다음 라우트를 확인합니다:
+29. **Routes** 탭에서 다음 라우트를 확인합니다:
 
 | 목적지 | 대상 | 설명 |
 |--------|------|------|
 | 10.0.0.0/16 | local | VPC 내부 통신 |
 | 0.0.0.0/0 | igw-xxxxx | 인터넷 게이트웨이 |
 
-29. **Subnet associations** 탭에서 2개의 퍼블릭 서브넷이 연결되어 있는지 확인합니다.
+> [!NOTE] "local" 경로의 의미
+>
+> `10.0.0.0/16 → local` 경로는 VPC 내부 통신을 위한 기본 규칙입니다:
+>
+> - **10.0.0.0/16 범위 내의 모든 IP**는 라우터를 거치지 않고 VPC 내부에서 직접 통신합니다
+> - 예: 10.0.0.5 인스턴스가 10.0.128.10 인스턴스와 통신할 때 Internet Gateway나 NAT Gateway를 거치지 않습니다
+> - 이 규칙은 VPC 생성 시 자동으로 추가되며 삭제할 수 없습니다
+> - 서브넷이 Public이든 Private이든 같은 VPC 내에서는 항상 직접 통신이 가능합니다
+
+30. **Subnet associations** 탭에서 2개의 퍼블릭 서브넷이 연결되어 있는지 확인합니다.
 
 ### 3.2 Private 라우팅 테이블 확인
 
-30. **CloudArchitect-Lab-rtb-private1-ap-northeast-2a** 라우팅 테이블을 찾아 선택합니다.
+31. **CloudArchitect-Lab-rtb-private1-ap-northeast-2a** 라우팅 테이블을 찾아 선택합니다.
 
-31. **Routes** 탭에서 다음 라우트를 확인합니다:
+32. **Routes** 탭에서 다음 라우트를 확인합니다:
 
 | 목적지 | 대상 | 설명 |
 |--------|------|------|
 | 10.0.0.0/16 | local | VPC 내부 통신 |
 | 0.0.0.0/0 | nat-xxxxx | NAT 게이트웨이 |
 
-32. **Subnet associations** 탭에서 프라이빗 서브넷 1개가 연결되어 있는지 확인합니다.
+> [!NOTE] Private 서브넷의 라우팅
+>
+> Private 서브넷의 라우팅 테이블도 `10.0.0.0/16 → local` 규칙을 가지고 있습니다:
+>
+> - VPC 내부 통신(10.0.0.0/16)은 `local`로 직접 연결됩니다
+> - 외부 인터넷 통신(0.0.0.0/0)은 NAT Gateway를 통해 아웃바운드만 가능합니다
+> - 즉, Private 서브넷의 인스턴스는 같은 VPC의 Public 서브넷 인스턴스와 자유롭게 통신할 수 있습니다
+
+33. **Subnet associations** 탭에서 프라이빗 서브넷 1개가 연결되어 있는지 확인합니다.
 
 > [!NOTE]
-> In 1 AZ NAT Gateway를 선택한 경우, 하나의 프라이빗 서브넷만 이 라우팅 테이블을 사용합니다. 다른 프라이빗 서브넷은 별도의 라우팅 테이블(`CloudArchitect-Lab-rtb-private2-ap-northeast-2b`)을 가지며, NAT Gateway 없이 VPC 내부 통신만 가능합니다.
+> In 1 AZ NAT Gateway를 선택한 경우, 하나의 프라이빗 서브넷만 이 라우팅 테이블을 사용합니다. 다른 프라이빗 서브넷은 별도의 라우팅 테이블(**CloudArchitect-Lab-rtb-private2-ap-northeast-2b**)을 가지며, NAT Gateway 없이 VPC 내부 통신만 가능합니다.
 
 > [!TIP]
 > 퍼블릭 서브넷과 프라이빗 서브넷의 차이는 라우팅 테이블에 있습니다. `0.0.0.0/0`이 Internet Gateway로 향하면 퍼블릭, NAT Gateway로 향하면 프라이빗입니다.
@@ -207,23 +239,23 @@ learningObjectives:
 
 ### 4.1 Web Server Security Group 생성
 
-33. 상단 검색창에 `EC2`를 검색하고 **EC2**를 선택합니다.
+34. 상단 검색창에 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-34. EC2 콘솔에서 왼쪽 메뉴의 **Network & Security** 섹션 아래의 **Security Groups**를 선택합니다.
+35. EC2 콘솔에서 왼쪽 메뉴의 **Network & Security** 섹션 아래의 **Security Groups**를 선택합니다.
 
-35. [[Create security group]] 버튼을 클릭합니다.
+36. [[Create security group]] 버튼을 클릭합니다.
 
-36. **Security group name** 필드에 `CloudArchitect-Lab-Web-SG`를 입력합니다.
+37. **Security group name** 필드에 `CloudArchitect-Lab-Web-SG`를 입력합니다.
 
-37. **Description** 필드에 `Web server security group for Lab04`를 입력합니다.
+38. **Description** 필드에 `Web server security group for Lab04`를 입력합니다.
 
-38. **VPC**에서 `CloudArchitect-Lab-vpc`를 선택합니다.
+39. **VPC**에서 **CloudArchitect-Lab-vpc**를 선택합니다.
 
 ### 4.2 Web Security Group 인바운드 규칙 설정
 
-39. **Inbound rules** 섹션에서 [[Add rule]] 버튼을 클릭합니다.
+40. **Inbound rules** 섹션에서 [[Add rule]] 버튼을 클릭합니다.
 
-40. 다음 규칙을 추가합니다:
+41. 다음 규칙을 추가합니다:
 
 | Type | Source type | Source | Description | 용도 |
 |------|-------------|--------|-------------|------|
@@ -234,29 +266,29 @@ learningObjectives:
 > [!TIP]
 > Type을 선택하면 Protocol과 Port range는 자동으로 설정됩니다. Source type을 선택하면 Source 값이 자동으로 입력되거나 선택할 수 있습니다. Description은 선택 사항이지만 규칙의 용도를 명확히 하기 위해 입력하는 것이 좋습니다.
 
-41. 각 규칙을 [[Add rule]] 버튼으로 추가합니다.
-
-42. [[Create security group]] 버튼을 클릭합니다.
-
-### 4.3 Database Security Group 생성
+42. 각 규칙을 [[Add rule]] 버튼으로 추가합니다.
 
 43. [[Create security group]] 버튼을 클릭합니다.
 
-44. **Security group name** 필드에 `CloudArchitect-Lab-DB-SG`를 입력합니다.
+### 4.3 Database Security Group 생성
 
-45. **Description** 필드에 `Database security group for Lab04`를 입력합니다.
+44. [[Create security group]] 버튼을 클릭합니다.
 
-46. **VPC**에서 `CloudArchitect-Lab-vpc`를 선택합니다.
+45. **Security group name** 필드에 `CloudArchitect-Lab-DB-SG`를 입력합니다.
 
-47. **Inbound rules** 섹션에서 [[Add rule]] 버튼을 클릭합니다.
+46. **Description** 필드에 `Database security group for Lab04`를 입력합니다.
 
-48. **Type**에서 **MySQL/Aurora**를 선택합니다.
+47. **VPC**에서 **CloudArchitect-Lab-vpc**를 선택합니다.
 
-49. **Source type**에서 **Custom**을 선택하고, **Source** 필드에 `CloudArchitect-Lab-Web-SG`를 입력합니다.
+48. **Inbound rules** 섹션에서 [[Add rule]] 버튼을 클릭합니다.
 
-50. **Description** 필드에 `Allow MySQL from Web SG`를 입력합니다.
+49. **Type**에서 **MySQL/Aurora**를 선택합니다.
 
-51. [[Create security group]] 버튼을 클릭합니다.
+50. **Source type**에서 **Custom**을 선택하고, **Source** 필드에서 **CloudArchitect-Lab-Web-SG**를 검색하여 선택합니다.
+
+51. **Description** 필드에 `Allow MySQL from Web SG`를 입력합니다.
+
+52. [[Create security group]] 버튼을 클릭합니다.
 
 ✅ **태스크 완료**: Web-SG와 DB-SG 보안 그룹이 계층화된 구조로 생성되었습니다.
 
@@ -276,14 +308,14 @@ learningObjectives:
 
 2. 왼쪽 메뉴의 **Network & Security** 섹션에서 **Security Groups**를 선택합니다.
 
-3. `CloudArchitect-Lab-DB-SG`를 선택하고 **Actions** > **Delete security groups**를 선택합니다.
+3. **CloudArchitect-Lab-DB-SG**를 선택하고 **Actions** > **Delete security groups**를 선택합니다.
 
 > [!TIP]
 > DB 보안 그룹을 먼저 삭제해야 합니다. DB 보안 그룹이 Web 보안 그룹을 Source로 참조하고 있기 때문에, Web 보안 그룹을 먼저 삭제하면 오류가 발생합니다.
 
 4. 확인 대화 상자에서 [[Delete]]를 클릭합니다.
 
-5. `CloudArchitect-Lab-Web-SG`를 선택하고 **Actions** > **Delete security groups**를 선택합니다.
+5. **CloudArchitect-Lab-Web-SG**를 선택하고 **Actions** > **Delete security groups**를 선택합니다.
 
 6. 확인 대화 상자에서 [[Delete]]를 클릭합니다.
 
@@ -295,7 +327,7 @@ learningObjectives:
 
 8. 왼쪽 메뉴에서 **NAT gateways**를 선택합니다.
 
-9. `CloudArchitect-Lab-nat-public1-ap-northeast-2a`를 선택하고 **Actions** > **Delete NAT gateway**를 선택합니다.
+9. **CloudArchitect-Lab-nat-public1-ap-northeast-2a**를 선택하고 **Actions** > **Delete NAT gateway**를 선택합니다.
 
 10. 확인 필드에 `delete`를 입력하고 [[Delete]]를 클릭합니다.
 
@@ -330,12 +362,12 @@ learningObjectives:
 
 15. 왼쪽 메뉴에서 **Your VPCs**를 선택합니다.
 
-16. `CloudArchitect-Lab-vpc`를 선택하고 **Actions** > **Delete VPC**를 선택합니다.
+16. **CloudArchitect-Lab-vpc**를 선택하고 **Actions** > **Delete VPC**를 선택합니다.
 
 17. 삭제 대화 상자에서 함께 삭제될 리소스 목록을 확인합니다:
 - 서브넷 4개 (퍼블릭 2개, 프라이빗 2개)
 - 라우팅 테이블
-- Internet Gateway (`CloudArchitect-Lab-igw`)
+- Internet Gateway (**CloudArchitect-Lab-igw**)
 
 18. 확인 필드에 `delete`를 입력하고 [[Delete]]를 클릭합니다.
 
@@ -367,21 +399,25 @@ learningObjectives:
 ## 💡 핵심 포인트 정리
 
 🌐
-VPC
-AWS 계정 내 논리적으로 격리된 가상 네트워크로, IP 범위 지정, 서브넷 구성, 라우팅, 게이트웨이 등을 완벽하게 제어할 수 있습니다.
+VPC와 CIDR 블록
+VPC는 논리적으로 격리된 가상 네트워크이며, CIDR 블록(예: 10.0.0.0/16)으로 IP 주소 범위를 정의합니다.
 
-🔍
-퍼블릭/프라이빗 서브넷
-퍼블릭 서브넷은 Internet Gateway를 통해 인터넷과 직접 통신하고, 프라이빗 서브넷은 NAT Gateway를 통해 아웃바운드만 허용됩니다.
+📍
+서브넷과 가용 영역
+서브넷은 VPC를 더 작은 네트워크로 나눈 것이며, 각 서브넷은 하나의 가용 영역(AZ)에 속합니다.
+
+🌍
+퍼블릭 vs 프라이빗 서브넷
+퍼블릭 서브넷은 Internet Gateway로 인터넷과 직접 통신하고, 프라이빗 서브넷은 NAT Gateway를 통해 아웃바운드만 가능합니다.
+
+🗺️
+라우팅 테이블
+서브넷의 트래픽이 어디로 전달될지 결정하는 규칙 집합으로, 목적지 IP와 타겟(IGW, NAT 등)을 매핑합니다.
 
 🚪
-Internet & NAT Gateway
-Internet Gateway는 양방향 인터넷 연결을, NAT Gateway는 프라이빗 서브넷의 아웃바운드 전용 인터넷 접근을 제공합니다.
+Internet Gateway와 NAT Gateway
+IGW는 퍼블릭 서브넷의 양방향 인터넷 통신을, NAT Gateway는 프라이빗 서브넷의 아웃바운드 통신을 담당합니다.
 
-🛣️
-라우팅 테이블
-네트워크 트래픽 흐름을 제어하는 규칙의 집합으로, 서브넷의 퍼블릭/프라이빗 성격을 결정합니다.
-
-🛡️
-보안 그룹 계층화
-웹 서버는 인터넷에서 HTTP/HTTPS를 허용하고, DB 서버는 웹 서버 보안 그룹에서만 접근 가능하도록 다중 방어 계층을 구축합니다.
+🔒
+보안 그룹
+인스턴스 레벨의 가상 방화벽으로, 인바운드/아웃바운드 트래픽을 제어하며 상태 저장(Stateful) 방식으로 동작합니다.

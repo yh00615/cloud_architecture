@@ -11,15 +11,15 @@ learningObjectives:
   - API의 효과적인 배포 및 관리 방법을 습득할 수 있습니다.
 ---
 
+> [!TIP]
+> 이 실습에서는 **API Gateway**로 **REST API**를 생성하고 **Lambda 함수**와 통합합니다. 리소스와 메서드를 정의하여 **/users** 경로에 **GET과 POST** 요청을 처리하도록 설정합니다. **Lambda 프록시 통합**으로 API Gateway가 요청을 Lambda에 전달하고 응답을 반환하도록 구성합니다. **CORS**를 활성화하여 브라우저에서 API를 호출할 수 있도록 하고, **스테이지**에 배포하여 실제 엔드포인트를 생성합니다.
+
 > [!DOWNLOAD]
 > [week9-3-api-gateway.zip](/files/week9/week9-3-api-gateway.zip)
 >
-> - `setup-lab13-student.sh` - 사전 환경 구축 스크립트 (Amazon DynamoDB 테이블, AWS IAM 역할, AWS Lambda 함수, 샘플 데이터 생성)
-> - `cleanup-lab13-student.sh` - 리소스 정리 스크립트
-> - 태스크 0: 사전 환경 구축 (setup-lab13-student.sh 실행)
-
-> [!NOTE]
-> 이 실습에서는 Amazon API Gateway를 생성하고 AWS Lambda 함수와 연동하여 RESTful API를 구축합니다. 사전 구축된 Lambda 함수와 DynamoDB 테이블을 확인한 후, API Gateway를 통해 HTTP 엔드포인트를 생성하고 테스트합니다.
+> - `setup-9-3.sh` - 사전 환경 구축 스크립트 (Amazon DynamoDB 테이블, AWS IAM 역할, AWS Lambda 함수, 샘플 데이터 생성)
+> - `cleanup-9-3.sh` - 리소스 정리 스크립트
+> - 태스크 0: 사전 환경 구축 (setup-9-3.sh 실행)
 
 > [!ARCHITECTURE] 실습 아키텍처 다이어그램 - 서버리스 API 아키텍처
 >
@@ -38,11 +38,14 @@ learningObjectives:
 
 ## 태스크 0: 사전 환경 구축
 
+> [!NOTE]
+> 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
+
 1. 위 DOWNLOAD 섹션에서 `week9-3-api-gateway.zip` 파일을 다운로드합니다.
 
 2. AWS Management Console에 로그인한 후 상단의 **CloudShell** 아이콘을 선택하여 CloudShell을 실행합니다.
 
-3. CloudShell 상단의 **Actions** > `Upload file`을 선택하여 다운로드한 ZIP 파일을 업로드합니다.
+3. CloudShell 상단의 **Actions** > **Upload file**을 선택하여 다운로드한 ZIP 파일을 업로드합니다.
 
 4. 업로드가 완료되면 다음 명령어로 압축을 해제합니다:
 
@@ -53,8 +56,8 @@ unzip week9-3-api-gateway.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-lab13-student.sh
-./setup-lab13-student.sh
+chmod +x setup-9-3.sh
+./setup-9-3.sh
 ```
 
 6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
@@ -72,6 +75,13 @@ chmod +x setup-lab13-student.sh
 | 샘플 데이터 | 사용자 2개 레코드 (김철수, 이영희) |
 
 ✅ **태스크 완료**: 사전 환경 구축이 완료되었습니다.
+
+> [!TIP]
+> **CloudShell 파일 정리**: 실습이 완전히 종료된 후, 업로드한 ZIP 파일과 스크립트를 삭제하여 CloudShell 스토리지를 정리할 수 있습니다:
+> ```bash
+> rm -f week9-3-api-gateway.zip setup-9-3.sh cleanup-9-3.sh
+> ```
+> CloudShell 스토리지는 리전별로 1GB까지 무료 제공되며, 파일 정리는 선택사항입니다.
 
 
 ## 태스크 1: 사전 구축된 환경 확인
@@ -159,13 +169,13 @@ chmod +x setup-lab13-student.sh
 
 29. `/users` 리소스가 선택된 상태에서 [[Create method]] 버튼을 클릭합니다.
 
-30. **Method type**에서 `GET`을 선택합니다.
+30. **Method type**에서 **GET**을 선택합니다.
 
-31. **Integration type**에서 `Lambda Function`을 선택합니다.
+31. **Integration type**에서 **Lambda Function**을 선택합니다.
 
 32. **Lambda proxy integration** 토글을 활성화합니다.
 
-33. **Lambda function** 필드에서 `CloudArchitect-Lab-UsersAPI`를 선택합니다.
+33. **Lambda function** 필드에서 **CloudArchitect-Lab-UsersAPI**를 선택합니다.
 
 34. [[Create method]] 버튼을 클릭합니다.
 
@@ -175,13 +185,13 @@ chmod +x setup-lab13-student.sh
 
 36. `/users` 리소스가 선택된 상태에서 [[Create method]] 버튼을 클릭합니다.
 
-37. **Method type**에서 `POST`를 선택합니다.
+37. **Method type**에서 **POST**를 선택합니다.
 
-38. **Integration type**에서 `Lambda Function`을 선택합니다.
+38. **Integration type**에서 **Lambda Function**을 선택합니다.
 
 39. **Lambda proxy integration** 토글을 활성화합니다.
 
-40. **Lambda function** 필드에서 `CloudArchitect-Lab-UsersAPI`를 선택합니다.
+40. **Lambda function** 필드에서 **CloudArchitect-Lab-UsersAPI**를 선택합니다.
 
 41. [[Create method]] 버튼을 클릭합니다.
 
@@ -191,7 +201,7 @@ chmod +x setup-lab13-student.sh
 
 43. `/users` 리소스를 선택한 상태에서 [[Enable CORS]] 버튼을 클릭합니다.
 
-44. **Gateway responses**와 **Methods** 섹션에서 `GET`과 `POST`를 체크합니다.
+44. **Gateway responses**와 **Methods** 섹션에서 **GET**과 **POST**를 체크합니다.
 
 45. **Access-Control-Allow-Origin**에 `*`가 입력되어 있는지 확인합니다.
 
@@ -211,7 +221,7 @@ chmod +x setup-lab13-student.sh
 
 48. 화면 오른쪽 상단의 주황색 [[Deploy API]] 버튼을 클릭합니다.
 
-49. **Stage** 드롭다운에서 `*New Stage*`를 선택합니다.
+49. **Stage** 드롭다운에서 ***New Stage***를 선택합니다.
 
 50. **Stage name**에 `dev`를 입력합니다.
 
@@ -324,7 +334,7 @@ curl -s -X POST "https://[Invoke URL]/users" \
 2. 다음 명령어로 정리 스크립트를 실행합니다:
 
 ```bash
-./cleanup-lab13-student.sh
+./cleanup-9-3.sh
 ```
 
 3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.

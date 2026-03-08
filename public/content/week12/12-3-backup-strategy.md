@@ -10,15 +10,15 @@ learningObjectives:
   - 다양한 AWS 재해 복구 전략 유형(백업/복원, 파일럿 라이트, 웜 스탠바이, 다중 사이트)을 비교할 수 있습니다.
 ---
 
+> [!TIP]
+> 이 실습에서는 **AWS Backup**으로 **EC2 인스턴스**의 백업 전략을 구현합니다. **백업 볼트**를 생성하여 백업 데이터를 안전하게 저장하고, **백업 계획**으로 자동 백업 스케줄을 설정합니다. **태그 기반 리소스 선택**으로 특정 태그를 가진 EC2 인스턴스를 자동으로 백업 대상에 포함합니다. 수동 백업을 생성하고, **복구 시점**을 사용하여 EC2 인스턴스를 이전 상태로 복원하는 과정을 실습합니다.
+
 > [!DOWNLOAD]
 > [week12-3-backup-strategy.zip](/files/week12/week12-3-backup-strategy.zip)
 >
-> - `setup-lab17-student.sh` - 사전 환경 구축 스크립트 (VPC, Subnet, Security Group, Amazon EC2 인스턴스, AWS IAM 백업 역할 등 생성)
-> - `cleanup-lab17-student.sh` - 리소스 정리 스크립트
-> - 태스크 0: 사전 환경 구축 (setup-lab17-student.sh 실행)
-
-> [!NOTE]
-> 이 실습에서는 AWS Backup을 사용하여 EC2 인스턴스의 백업 전략을 구현합니다. 백업 볼트, 백업 계획을 생성하고 수동 백업 및 복원 프로세스를 체험합니다.
+> - `setup-12-3.sh` - 사전 환경 구축 스크립트 (VPC, Subnet, Security Group, Amazon EC2 인스턴스, AWS IAM 백업 역할 등 생성)
+> - `cleanup-12-3.sh` - 리소스 정리 스크립트
+> - 태스크 0: 사전 환경 구축 (setup-12-3.sh 실행)
 
 > [!CONCEPT] AWS Backup이란?
 >
@@ -31,11 +31,14 @@ learningObjectives:
 
 ## 태스크 0: 사전 환경 구축
 
+> [!NOTE]
+> 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
+
 1. 위 DOWNLOAD 섹션에서 `week12-3-backup-strategy.zip` 파일을 다운로드합니다.
 
 2. AWS Management Console에 로그인한 후 상단의 **CloudShell** 아이콘을 선택하여 CloudShell을 실행합니다.
 
-3. CloudShell 상단의 **Actions** > `Upload file`을 선택하여 다운로드한 ZIP 파일을 업로드합니다.
+3. CloudShell 상단의 **Actions** → **Upload file**을 선택하여 다운로드한 ZIP 파일을 업로드합니다.
 
 4. 업로드가 완료되면 다음 명령어로 압축을 해제합니다:
 
@@ -46,8 +49,8 @@ unzip week12-3-backup-strategy.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-lab17-student.sh
-./setup-lab17-student.sh
+chmod +x setup-12-3.sh
+./setup-12-3.sh
 ```
 
 6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
@@ -67,6 +70,13 @@ chmod +x setup-lab17-student.sh
 
 ✅ **태스크 완료**: 사전 환경 구축이 완료되었습니다.
 
+> [!TIP]
+> **CloudShell 파일 정리**: 실습이 완전히 종료된 후, 업로드한 ZIP 파일과 스크립트를 삭제하여 CloudShell 스토리지를 정리할 수 있습니다:
+> ```bash
+> rm -f week12-3-backup-strategy.zip setup-12-3.sh cleanup-12-3.sh
+> ```
+> CloudShell 스토리지는 리전별로 1GB까지 무료 제공되며, 파일 정리는 선택사항입니다.
+
 
 ## 태스크 1: 사전 구축된 환경 확인
 
@@ -80,7 +90,7 @@ chmod +x setup-lab17-student.sh
 
 12. 하단의 **Tags** 탭을 선택하여 백업용 태그를 확인합니다:
 - **Project**: `CloudArchitect`
-- **Lab**: `Lab17`
+- **Week**: `Week12-3`
 - **Purpose**: `Backup-Test`
 
 > [!NOTE]
@@ -108,11 +118,13 @@ chmod +x setup-lab17-student.sh
 
 16. [[Create backup vault]] 버튼을 클릭합니다.
 
-17. **Backup vault name**에 `CloudArchitect-Lab-BackupVault`를 입력합니다.
+17. **Vault name**에 `CloudArchitect-Lab-BackupVault`를 입력합니다.
 
-18. **Encryption key** 섹션에서 기본 AWS 관리형 키를 유지합니다.
+18. **Vault type**에서 **Backup vault**를 선택합니다 (기본값).
 
-19. [[Create backup vault]] 버튼을 클릭합니다.
+19. **Encryption key** 섹션의 **Choose KMS key**에서 기본 AWS 관리형 키를 유지합니다.
+
+20. [[Create vault]] 버튼을 클릭합니다.
 
 ✅ **태스크 완료**: 백업 데이터를 저장할 볼트가 생성되었습니다.
 
@@ -130,56 +142,58 @@ chmod +x setup-lab17-student.sh
 
 ### 3.1 백업 계획 생성
 
-20. 왼쪽 메뉴에서 **My account** 섹션 아래의 **Backup plans**를 선택합니다.
+21. 왼쪽 메뉴에서 **My account** 섹션 아래의 **Backup plans**를 선택합니다.
 
-21. [[Create backup plan]] 버튼을 클릭합니다.
+22. [[Create backup plan]] 버튼을 클릭합니다.
 
-22. `Build a new plan`을 선택합니다.
+23. **Build a new plan**을 선택합니다.
 
-23. **Backup plan name**에 `CloudArchitect-Lab-BackupPlan`을 입력합니다.
+24. **Backup plan name**에 `CloudArchitect-Lab-BackupPlan`을 입력합니다.
 
 ### 3.2 백업 규칙 설정
 
-24. **Backup rule configuration** 섹션에서 **Backup rule name**에 `DailyBackups`를 입력합니다.
+25. **Backup rule configuration** 섹션에서 **Backup rule name**에 `DailyBackups`를 입력합니다.
 
-25. **Backup vault** 드롭다운에서 `CloudArchitect-Lab-BackupVault`를 선택합니다.
+26. **Backup vault** 드롭다운에서 `CloudArchitect-Lab-BackupVault`를 선택합니다.
 
-26. **Backup frequency**를 `Daily`로 설정합니다.
+27. **Backup frequency**를 `Daily`로 설정합니다.
 
-27. **Backup window**의 **Start time**은 기본값을 유지합니다.
+28. **Backup window**의 **Start time**은 기본값을 유지합니다.
 
-28. **Lifecycle** 섹션에서 **Total retention period**를 `7 days`로 설정합니다.
+29. **Lifecycle** 섹션에서 **Total retention period**를 `7 days`로 설정합니다.
 
-29. [[Create plan]] 버튼을 클릭합니다.
+30. [[Create plan]] 버튼을 클릭합니다.
 
 ### 3.3 리소스 할당
 
-30. 백업 계획 상세 페이지에서 [[Assign resources]] 버튼을 클릭합니다.
+31. 백업 계획 상세 페이지에서 [[Assign resources]] 버튼을 클릭합니다.
 
-31. **Resource assignment name**에 `CloudArchitect-Lab-BackupSelection`을 입력합니다.
+32. **Resource assignment name**에 `CloudArchitect-Lab-BackupSelection`을 입력합니다.
 
-32. **IAM role**에서 `Choose an IAM role`을 선택한 후 `CloudArchitect-Lab-BackupRole`을 선택합니다.
+33. **IAM role**에서 **Choose an IAM role**을 선택한 후 `CloudArchitect-Lab-BackupRole`을 선택합니다.
 
-33. **Define resource selection**에서 `Include specific resource types`를 선택합니다.
+34. **Define resource selection**에서 **Include specific resource types**를 선택합니다.
 
-34. **Select resource types** 드롭다운에서 `EC2`를 선택합니다.
+35. **Select specific resource types** 섹션의 **Select resource types** 드롭다운에서 **EC2**를 선택합니다.
 
-35. **Refine selection using tags** 섹션에서 [[Add tags]] 버튼을 클릭합니다.
+36. **Refine selection using tags** 섹션에서 [[Add tags]] 버튼을 클릭합니다.
 
-36. 첫 번째 태그 조건을 설정합니다:
+37. 첫 번째 태그 조건을 설정합니다:
 - **Key**: `Project`
-- **Condition for value**: `Equals`
+- **Condition for value**: **Equals**
 - **Value**: `CloudArchitect`
 
-37. [[Add tag]] 버튼을 클릭하여 두 번째 태그 조건을 추가합니다:
-- **Key**: `Lab`
-- **Condition for value**: `Equals`
-- **Value**: `Lab17`
+38. [[Add tag]] 버튼을 클릭하여 두 번째 태그 조건을 추가합니다:
+- **Key**: `Week`
+- **Condition for value**: **Equals**
+- **Value**: `Week12-3`
 
-38. [[Assign resources]] 버튼을 클릭합니다.
+39. [[Assign resources]] 버튼을 클릭합니다.
+
+40. 리소스 할당이 완료되면 백업 계획 상세 페이지로 돌아갑니다.
 
 > [!NOTE]
-> 두 태그 조건은 AND 조건으로 동작합니다. `Project=CloudArchitect`와 `Lab=Lab17` 태그를 모두 가진 EC2 인스턴스만 백업 대상으로 선택됩니다. 이 방식을 사용하면 새 인스턴스에 동일한 태그만 추가하면 자동으로 백업 대상에 포함되어 관리가 편리합니다.
+> 두 태그 조건은 AND 조건으로 동작합니다. `Project=CloudArchitect`와 `Week=Week12-3` 태그를 모두 가진 EC2 인스턴스만 백업 대상으로 선택됩니다. 이 방식을 사용하면 새 인스턴스에 동일한 태그만 추가하면 자동으로 백업 대상에 포함되어 관리가 편리합니다.
 
 ✅ **태스크 완료**: 백업 계획이 생성되고 태그 기반으로 EC2 인스턴스가 백업 대상에 할당되었습니다.
 
@@ -189,28 +203,28 @@ chmod +x setup-lab17-student.sh
 > [!NOTE]
 > 백업 계획은 설정된 스케줄에 따라 자동으로 실행되지만, 즉시 백업이 필요한 경우 수동(온디맨드) 백업을 실행할 수 있습니다. 이 태스크에서는 수동 백업을 실행하여 백업 프로세스를 직접 체험합니다.
 
-39. AWS Backup 콘솔의 왼쪽 메뉴에서 **Dashboard**를 선택합니다.
+40. AWS Backup 콘솔의 왼쪽 메뉴에서 **Dashboard**를 선택합니다.
 
-40. 대시보드 화면 오른쪽 상단의 [[Create on-demand backup]] 버튼을 클릭합니다.
+41. 대시보드 화면 오른쪽 상단의 [[Create on-demand backup]] 버튼을 클릭합니다.
 
-40. **Resource type**에서 `EC2`를 선택합니다.
+42. **Resource type**에서 **EC2**를 선택합니다.
 
-41. **Instance ID** 드롭다운에서 `CloudArchitect-Lab-TestInstance`를 선택합니다.
+43. **Instance ID** 드롭다운에서 `CloudArchitect-Lab-TestInstance`를 선택합니다.
 
-42. **Backup vault** 드롭다운에서 `CloudArchitect-Lab-BackupVault`를 선택합니다.
+44. **Backup vault** 드롭다운에서 `CloudArchitect-Lab-BackupVault`를 선택합니다.
 
-43. **IAM role**에서 `Choose an IAM role`을 선택한 후 `CloudArchitect-Lab-BackupRole`을 선택합니다.
+45. **IAM role**에서 **Choose an IAM role**을 선택한 후 `CloudArchitect-Lab-BackupRole`을 선택합니다.
 
-44. **Total retention period**를 `7 days`로 설정합니다.
+46. **Total retention period**를 `7 days`로 설정합니다.
 
-45. [[Create on-demand backup]] 버튼을 클릭합니다.
+47. [[Create on-demand backup]] 버튼을 클릭합니다.
 
-46. 자동으로 왼쪽 메뉴의 **Jobs** 페이지가 열리고 **Backup jobs** 탭에서 백업 작업 상태를 확인할 수 있습니다.
+48. 자동으로 왼쪽 메뉴의 **Jobs** 페이지가 열리고 **Backup jobs** 탭에서 백업 작업 상태를 확인할 수 있습니다.
 
 > [!NOTE]
 > EC2 인스턴스 백업에 약 10-15분이 소요됩니다. **Status** 열에서 "Created" → "Running" → "Completed" 순서로 진행됩니다. 페이지를 새로고침하여 상태를 확인합니다. 대기하는 동안 다음 태스크를 미리 읽어봅니다.
 
-47. 백업 작업 상태가 "Completed"로 변경될 때까지 기다립니다.
+49. 백업 작업 상태가 "Completed"로 변경될 때까지 기다립니다.
 
 ✅ **태스크 완료**: EC2 인스턴스의 수동 백업이 완료되었습니다.
 
@@ -220,28 +234,28 @@ chmod +x setup-lab17-student.sh
 > [!IMPORTANT]
 > 태스크 4의 백업 작업이 "Completed" 상태여야 복원을 진행할 수 있습니다. Jobs 페이지에서 Status를 확인합니다.
 
-48. 왼쪽 메뉴에서 **My account** 섹션 아래의 **Protected resources**를 선택합니다.
+50. 왼쪽 메뉴에서 **My account** 섹션 아래의 **Protected resources**를 선택합니다.
 
-49. 리소스 목록에서 `CloudArchitect-Lab-TestInstance`를 선택합니다.
+51. 리소스 목록에서 `CloudArchitect-Lab-TestInstance`를 선택합니다.
 
-50. **Recovery points** 섹션에서 생성된 복구 시점의 라디오 버튼을 선택합니다.
+52. **Recovery points** 섹션에서 생성된 복구 시점의 라디오 버튼을 선택합니다.
 
-51. [[Restore]] 버튼을 클릭합니다.
+53. [[Restore]] 버튼을 클릭합니다.
 
-52. **Instance configuration** 섹션에서 다음 설정을 확인합니다:
+54. **Instance configuration** 섹션에서 다음 설정을 확인합니다:
 - **Instance type**: `t3.micro` (원본과 동일)
 - **VPC**: 원본 VPC 선택
 - **Subnet**: 원본 서브넷 선택
 - **Security groups**: 원본 보안 그룹 선택
 
-53. **Restore role**에서 `CloudArchitect-Lab-BackupRole`을 선택합니다.
+55. **Restore role**에서 `CloudArchitect-Lab-BackupRole`을 선택합니다.
 
-54. [[Restore backup]] 버튼을 클릭합니다.
+56. [[Restore backup]] 버튼을 클릭합니다.
 
 > [!NOTE]
 > EC2 인스턴스 복원에 약 5-10분이 소요됩니다. Jobs 페이지의 **Restore jobs** 탭에서 진행 상태를 확인합니다.
 
-55. 복원이 완료되면 Amazon EC2 콘솔로 이동하여 새로 생성된 복원 인스턴스를 확인합니다.
+57. 복원이 완료되면 Amazon EC2 콘솔로 이동하여 새로 생성된 복원 인스턴스를 확인합니다.
 
 > [!OUTPUT]
 > ```
@@ -252,24 +266,24 @@ chmod +x setup-lab17-student.sh
 > (복원된 인스턴스 - 이름 없음)       | Running        | t3.micro
 > ```
 
-56. 복원된 인스턴스의 **Public IPv4 address**를 복사합니다.
+58. 복원된 인스턴스의 **Public IPv4 address**를 복사합니다.
 
-57. 새 브라우저 탭에서 `http://[복원된 인스턴스 IP]`로 접속합니다.
+59. 새 브라우저 탭에서 `http://[복원된 인스턴스 IP]`로 접속합니다.
 
-58. 원본 인스턴스와 동일한 웹 페이지가 표시되는지 확인합니다.
+60. 원본 인스턴스와 동일한 웹 페이지가 표시되는지 확인합니다.
 
 ✅ **태스크 완료**: 백업에서 EC2 인스턴스가 성공적으로 복원되었습니다.
 
 
 ## 태스크 6: AWS Backup 대시보드 확인
 
-59. AWS Backup 콘솔의 왼쪽 메뉴에서 **Dashboard**를 선택합니다.
+61. AWS Backup 콘솔의 왼쪽 메뉴에서 **Dashboard**를 선택합니다.
 
-60. **Jobs status over time** 섹션에서 백업/복원 작업 상태 그래프를 확인합니다.
+62. **Jobs status over time** 섹션에서 백업/복원 작업 상태 그래프를 확인합니다.
 
-61. **Backup job status overview**에서 Completed, Failed 작업 수를 확인합니다.
+63. **Backup job status overview**에서 Completed, Failed 작업 수를 확인합니다.
 
-62. **Backup job health** 섹션에서 백업 성공률을 확인합니다.
+64. **Backup job health** 섹션에서 백업 성공률을 확인합니다.
 
 > [!TIP]
 > 실무에서는 AWS Backup 대시보드를 주기적으로 확인하여 백업 상태를 모니터링합니다. CloudWatch와 연동하면 백업 실패 시 자동으로 알림을 받을 수 있습니다.
@@ -288,7 +302,7 @@ chmod +x setup-lab17-student.sh
 2. 다음 명령어로 정리 스크립트를 실행합니다:
 
 ```bash
-./cleanup-lab17-student.sh
+./cleanup-12-3.sh
 ```
 
 3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.

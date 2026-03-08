@@ -10,15 +10,15 @@ learningObjectives:
   - 메트릭 필터를 생성하여 로그 기반 모니터링을 구성할 수 있습니다.
 ---
 
+> [!TIP]
+> 이 실습에서는 **CloudWatch Logs**로 **EC2 인스턴스**의 로그를 수집하고 분석합니다. **CloudWatch Agent**를 설치하여 **Apache 액세스 로그**와 **시스템 로그**를 CloudWatch Logs로 전송합니다. **Logs Insights**에서 쿼리 언어로 로그를 검색하고 필터링하여 특정 패턴을 찾습니다. **메트릭 필터**를 생성하여 로그에서 에러 발생 횟수를 추출하고, 이를 대시보드에 표시합니다.
+
 > [!DOWNLOAD]
 > [week7-2-cloudwatch-logs.zip](/files/week7/week7-2-cloudwatch-logs.zip)
 >
-> - `setup-4-2-student.sh` - 사전 환경 구축 스크립트 (VPC, Subnet, Security Group, EC2 인스턴스, Nginx, CloudWatch Agent, IAM 역할 등 생성)
-> - `cleanup-4-2-student.sh` - 리소스 정리 스크립트
-> - 태스크 0: 사전 환경 구축 (setup-4-2-student.sh 실행)
-
-> [!NOTE]
-> 이 실습에서는 CloudWatch Logs를 사용하여 실시간 로그 수집, 분석, 모니터링을 학습합니다. 사전 구축된 EC2 + Nginx + CloudWatch Agent 환경에서 자동으로 생성되는 로그 데이터를 활용합니다.
+> - `setup-7-2.sh` - 사전 환경 구축 스크립트 (VPC, Subnet, Security Group, EC2 인스턴스, Nginx, CloudWatch Agent, IAM 역할 등 생성)
+> - `cleanup-7-2.sh` - 리소스 정리 스크립트
+> - 태스크 0: 사전 환경 구축 (setup-7-2.sh 실행)
 
 > [!CONCEPT] Amazon CloudWatch Logs란?
 >
@@ -33,11 +33,14 @@ learningObjectives:
 
 ## 태스크 0: 사전 환경 구축
 
+> [!NOTE]
+> 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
+
 1. 위 DOWNLOAD 섹션에서 `week7-2-cloudwatch-logs.zip` 파일을 다운로드합니다.
 
 2. AWS Management Console에 로그인한 후 상단의 **CloudShell** 아이콘을 선택하여 CloudShell을 실행합니다.
 
-3. CloudShell 상단의 **Actions** > `Upload file`을 선택하여 다운로드한 ZIP 파일을 업로드합니다.
+3. CloudShell 상단의 **Actions** > **Upload file**을 선택하여 다운로드한 ZIP 파일을 업로드합니다.
 
 4. 업로드가 완료되면 다음 명령어로 압축을 해제합니다:
 
@@ -48,8 +51,8 @@ unzip week7-2-cloudwatch-logs.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-4-2-student.sh
-./setup-4-2-student.sh
+chmod +x setup-7-2.sh
+./setup-7-2.sh
 ```
 
 6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
@@ -69,6 +72,13 @@ chmod +x setup-4-2-student.sh
 | CloudWatch Logs 그룹 | /aws/ec2/nginx/access, /aws/ec2/nginx/error |
 
 ✅ **태스크 완료**: 사전 환경 구축이 완료되었습니다.
+
+> [!TIP]
+> **CloudShell 파일 정리**: 실습이 완전히 종료된 후, 업로드한 ZIP 파일과 스크립트를 삭제하여 CloudShell 스토리지를 정리할 수 있습니다:
+> ```bash
+> rm -f week7-2-cloudwatch-logs.zip setup-7-2.sh cleanup-7-2.sh
+> ```
+> CloudShell 스토리지는 리전별로 1GB까지 무료 제공되며, 파일 정리는 선택사항입니다.
 
 
 ## 태스크 1: 사전 구축된 환경 확인
@@ -107,7 +117,7 @@ chmod +x setup-4-2-student.sh
 
 15. 상단 검색창에서 `CloudWatch`를 검색하고 **CloudWatch**를 선택합니다.
 
-16. 왼쪽 메뉴에서 **Logs** 섹션을 확장하고 **Log groups**를 선택합니다.
+16. 왼쪽 메뉴에서 **Logs**를 선택하여 확장한 후 **Log Management**를 선택합니다.
 
 17. `/aws/ec2/nginx/access` 로그 그룹을 선택합니다.
 
@@ -117,7 +127,7 @@ chmod +x setup-4-2-student.sh
 
 ### 2.2 Error 로그 그룹 확인
 
-20. 왼쪽 메뉴에서 **Log groups**를 다시 선택합니다.
+20. 왼쪽 메뉴에서 **Log Management**를 다시 선택합니다.
 
 21. `/aws/ec2/nginx/error` 로그 그룹을 선택합니다.
 
@@ -149,7 +159,7 @@ chmod +x setup-4-2-student.sh
 
 ### 3.2 Error 로그 스트림 확인
 
-27. 왼쪽 메뉴에서 **Log groups**를 선택합니다.
+27. 왼쪽 메뉴에서 **Log Management**를 선택합니다.
 
 28. `/aws/ec2/nginx/error` 로그 그룹의 로그 스트림을 선택합니다.
 
@@ -213,11 +223,11 @@ chmod +x setup-4-2-student.sh
 
 ### 5.1 기본 로그 분석 쿼리
 
-42. 왼쪽 메뉴에서 **Logs** 섹션을 확장하고 **Logs Insights**를 선택합니다.
+42. 왼쪽 메뉴에서 **Logs**를 선택하여 확장한 후 **Logs Insights**를 선택합니다.
 
 43. **Select log group(s)**에서 `/aws/ec2/nginx/access`를 선택합니다.
 
-44. 시간 범위를 `Last 1 hour`로 설정합니다.
+44. 시간 범위를 **Last 1 hour**로 설정합니다.
 
 45. 쿼리 편집기에 다음 쿼리를 입력합니다:
 
@@ -306,7 +316,7 @@ fields @timestamp
 2. 다음 명령어로 정리 스크립트를 실행합니다:
 
 ```bash
-./cleanup-4-2-student.sh
+./cleanup-7-2.sh
 ```
 
 3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.
@@ -327,7 +337,7 @@ fields @timestamp
 
 1. 상단 검색창에서 `CloudWatch`를 검색하고 **CloudWatch**를 선택합니다.
 
-2. 왼쪽 메뉴에서 **Log groups**를 선택합니다.
+2. 왼쪽 메뉴에서 **Log Management**를 선택합니다.
 
 3. `/aws/ec2/nginx/access` 로그 그룹을 선택하고 **Actions** > **Delete log group(s)**를 선택합니다.
 
@@ -369,6 +379,9 @@ fields @timestamp
    - **Regions**: `Asia Pacific (Seoul) ap-northeast-2`
    - **Resource types**: `All supported resource types`
    - **Tags**: Tag key에 `Name`을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
+
+> [!NOTE]
+> 7주차 실습은 setup 스크립트로 리소스를 생성하므로 Name 태그로 검색합니다. 수동으로 생성한 리소스가 있다면 StudentId 태그로도 검색할 수 있습니다.
 
 19. [[Search resources]]를 클릭합니다.
 

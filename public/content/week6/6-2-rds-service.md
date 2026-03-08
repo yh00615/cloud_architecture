@@ -10,15 +10,15 @@ learningObjectives:
   - Amazon RDS의 고가용성(Multi-AZ) 및 백업 전략을 설명할 수 있습니다.
 ---
 
+> [!TIP]
+> 이 실습에서는 **Amazon RDS**로 관리형 **MySQL 데이터베이스**를 생성합니다. **DB 서브넷 그룹**으로 여러 **가용 영역**의 **프라이빗 서브넷**을 지정하고, **보안 그룹**으로 특정 소스에서만 접근하도록 제한합니다. **RDS 인스턴스**를 생성한 후 **엔드포인트**로 **MySQL 클라이언트**에서 연결하여 데이터베이스를 조작합니다. **자동 백업** 설정을 확인하고, **수동 스냅샷**을 생성하여 데이터 보호 방법을 학습합니다.
+
 > [!DOWNLOAD]
 > [week6-2-rds-service.zip](/files/week6/week6-2-rds-service.zip)
 >
-> - `setup-3-2-student.sh` - 사전 환경 구축 스크립트 (VPC, Public/Private Subnets, Route Table, Security Group, EC2 인스턴스 등 생성)
-> - `cleanup-3-2-student.sh` - 리소스 정리 스크립트
-> - 태스크 0: 사전 환경 구축 (setup-3-2-student.sh 실행)
-
-> [!NOTE]
-> 이 실습에서는 Amazon RDS를 사용하여 관리형 데이터베이스 서비스를 구축하고 EC2 인스턴스를 통해 데이터베이스에 접속하는 방법을 학습합니다. RDS 인스턴스는 Free tier 또는 Sandbox 템플릿을 사용하며, 실습 후 반드시 리소스를 정리합니다.
+> - `setup-6-2.sh` - 사전 환경 구축 스크립트 (VPC, Public/Private Subnets, Route Table, Security Group, EC2 인스턴스 등 생성)
+> - `cleanup-6-2.sh` - 리소스 정리 스크립트
+> - 태스크 0: 사전 환경 구축 (setup-6-2.sh 실행)
 
 > [!ARCHITECTURE] 실습 아키텍처 다이어그램 - RDS 서비스 아키텍처
 >
@@ -37,11 +37,14 @@ learningObjectives:
 
 ## 태스크 0: 사전 환경 구축
 
+> [!NOTE]
+> 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
+
 1. 위 DOWNLOAD 섹션에서 `week6-2-rds-service.zip` 파일을 다운로드합니다.
 
 2. AWS Management Console에 로그인한 후 상단의 **CloudShell** 아이콘을 선택하여 CloudShell을 실행합니다.
 
-3. CloudShell 상단의 **Actions** > `Upload file`을 선택하여 다운로드한 ZIP 파일을 업로드합니다.
+3. CloudShell 상단의 **Actions** > **Upload file**을 선택하여 다운로드한 ZIP 파일을 업로드합니다.
 
 4. 업로드가 완료되면 다음 명령어로 압축을 해제합니다:
 
@@ -52,8 +55,8 @@ unzip week6-2-rds-service.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-3-2-student.sh
-./setup-3-2-student.sh
+chmod +x setup-6-2.sh
+./setup-6-2.sh
 ```
 
 6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
@@ -75,6 +78,13 @@ chmod +x setup-3-2-student.sh
 | EC2 인스턴스 | CloudArchitect-Lab-RDS-Client |
 
 ✅ **태스크 완료**: 사전 환경 구축이 완료되었습니다.
+
+> [!TIP]
+> **CloudShell 파일 정리**: 실습이 완전히 종료된 후, 업로드한 ZIP 파일과 스크립트를 삭제하여 CloudShell 스토리지를 정리할 수 있습니다:
+> ```bash
+> rm -f week6-2-rds-service.zip setup-6-2.sh cleanup-6-2.sh
+> ```
+> CloudShell 스토리지는 리전별로 1GB까지 무료 제공되며, 파일 정리는 선택사항입니다.
 
 
 ## 태스크 1: 사전 구축 환경 확인
@@ -137,11 +147,11 @@ chmod +x setup-3-2-student.sh
 
 21. **Description**에 `CloudArchitect Lab DB Subnet Group`을 입력합니다.
 
-22. **VPC**에서 `CloudArchitect-Lab-VPC`를 선택합니다.
+22. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
 23. **Add subnets** 섹션에서 다음 2개의 가용 영역과 서브넷을 선택합니다:
-    - **Availability Zones**: `ap-northeast-2a`와 `ap-northeast-2c`를 선택합니다
-    - **Subnets**: `CloudArchitect-Lab-Private-Subnet-1` (ap-northeast-2a)과 `CloudArchitect-Lab-Private-Subnet-2` (ap-northeast-2c)를 선택합니다
+    - **Availability Zones**: **ap-northeast-2a**와 **ap-northeast-2c**를 선택합니다
+    - **Subnets**: **CloudArchitect-Lab-Private-Subnet-1** (ap-northeast-2a)과 **CloudArchitect-Lab-Private-Subnet-2** (ap-northeast-2c)를 선택합니다
 
 24. [[Create]] 버튼을 클릭합니다.
 
@@ -166,7 +176,7 @@ chmod +x setup-3-2-student.sh
 
 29. **Description**에 `CloudArchitect Lab RDS Security Group`을 입력합니다.
 
-30. **VPC**에서 `CloudArchitect-Lab-VPC`를 선택합니다.
+30. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
 ### 3.2 인바운드 규칙 설정
 
@@ -178,7 +188,7 @@ chmod +x setup-3-2-student.sh
 |------|-----|
 | Type | MySQL/Aurora |
 | Port range | 3306 |
-| Source | `CloudArchitect-Lab-EC2-SG` (EC2 보안 그룹 선택) |
+| Source | **CloudArchitect-Lab-EC2-SG** (EC2 보안 그룹 검색하여 선택) |
 
 > [!TIP]
 > Source에 IP 대신 EC2 보안 그룹을 지정하면, 해당 보안 그룹이 연결된 인스턴스에서만 접근이 허용됩니다. IP가 변경되어도 규칙을 수정할 필요가 없어 관리가 편리합니다.
@@ -208,7 +218,10 @@ chmod +x setup-3-2-student.sh
 
 36. [[Create database]] 버튼을 클릭합니다.
 
-37. **Choose a database creation method**에서 **Standard create**를 선택합니다.
+37. **Choose a database creation method**에서 **Full configuration**을 선택합니다.
+
+> [!NOTE]
+> Full configuration을 선택하면 가용성, 보안, 백업, 유지 관리 등 모든 구성 옵션을 직접 설정할 수 있습니다. Easy create는 권장 모범 사례 구성을 자동으로 적용하지만, 일부 설정은 데이터베이스 생성 후에만 변경할 수 있습니다.
 
 ### 4.2 엔진 및 템플릿 설정
 
@@ -233,31 +246,44 @@ chmod +x setup-3-2-student.sh
 
 44. **Connectivity** 섹션으로 스크롤합니다.
 
-45. **Compute resource**에서 `Don't connect to an EC2 compute resource`를 선택합니다.
+45. **Compute resource**에서 **Don't connect to an EC2 compute resource**를 선택합니다.
 
-46. **Virtual private cloud (VPC)**에서 `CloudArchitect-Lab-VPC`를 선택합니다.
+46. **Virtual private cloud (VPC)**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
-47. **DB subnet group**에서 `cloudarchitect-lab-db-subnet-group`을 선택합니다.
+47. **DB subnet group**에서 **cloudarchitect-lab-db-subnet-group**을 선택합니다.
 
-48. **Public access**에서 `No`를 선택합니다.
+48. **Public access**에서 **No**를 선택합니다.
 
-49. **VPC security group (firewall)**에서 `Choose existing`을 선택합니다.
+49. **VPC security group (firewall)**에서 **Choose existing**을 선택합니다.
 
-50. **Existing VPC security groups** 드롭다운에서 `CloudArchitect-Lab-RDS-SG`를 선택합니다.
+50. **Existing VPC security groups** 드롭다운에서 **CloudArchitect-Lab-RDS-SG**를 검색하여 선택합니다.
 
-51. `default` 보안 그룹 옆의 [[X]] 버튼을 클릭하여 제거합니다.
+51. **default** 보안 그룹 옆의 [[X]] 버튼을 클릭하여 제거합니다.
 
 ### 4.5 추가 설정 및 생성
 
 52. 페이지 최하단으로 스크롤하여 **Additional configuration** 섹션을 찾습니다. 접힌 상태라면 섹션 제목을 클릭하여 확장합니다.
 
-54. **Database options**에서:
+53. **Database options**에서:
     - **Initial database name**: `cloudarchitect`를 입력합니다
 
 > [!NOTE]
 > Initial database name을 지정하지 않으면 RDS 인스턴스에 기본 데이터베이스가 생성되지 않습니다. 연결 후 수동으로 데이터베이스를 생성해야 합니다.
 
-55. **Deletion protection** 섹션에서:
+54. **Additional configuration** 섹션 내에서 아래로 스크롤하여 **Tags** 항목을 찾습니다.
+
+55. [[Add new tag]] 버튼을 클릭하고 첫 번째 태그를 입력합니다:
+- **Key**: `Name`
+- **Value**: `CloudArchitect-Lab-MySQL`
+
+56. [[Add new tag]] 버튼을 다시 클릭하고 두 번째 태그를 추가합니다:
+- **Key**: `StudentId`
+- **Value**: `[본인 학번]` (예: 20241234)
+
+> [!TIP]
+> StudentId 태그를 추가하면 공유 AWS 계정에서 본인의 RDS 인스턴스를 쉽게 구분하고, Tag Editor로 본인 학번으로 검색하여 모든 실습 리소스를 한 번에 확인할 수 있습니다.
+
+57. **Deletion protection** 섹션에서:
     - ☐ **Enable deletion protection**: 체크를 해제합니다
 
 > [!WARNING]
@@ -270,10 +296,17 @@ chmod +x setup-3-2-student.sh
 > - **Option group**: `default:mysql-8-0` (기본값) 유지
 > - **Log exports**: 모든 체크박스 해제 (CloudWatch Log Groups 자동 생성 방지)
 
-56. 모든 설정을 확인한 후 [[Create database]] 버튼을 클릭합니다.
+58. 모든 설정을 확인한 후 [[Create database]] 버튼을 클릭합니다.
 
-> [!NOTE]
-> RDS MySQL 인스턴스 생성에는 약 10-15분이 소요됩니다. 생성이 완료될 때까지 기다립니다. 대기하는 동안 RDS 콘솔에서 인스턴스 상태가 "Creating"에서 "Available"로 변경되는 과정을 확인할 수 있습니다.
+> [!NOTE] RDS 인스턴스 생성 대기 중
+>
+> RDS 인스턴스 생성에는 약 10-15분이 소요됩니다. 대기하는 동안 다음을 수행할 수 있습니다:
+>
+> 1. **태스크 5 미리 읽기**: 다음 단계에서 수행할 작업을 미리 파악합니다
+> 2. **RDS 개념 복습**: 이 가이드의 CONCEPT 블록들을 다시 읽어봅니다
+> 3. **AWS 문서 탐색**: [Amazon RDS 사용 설명서](https://docs.aws.amazon.com/rds/)를 참고합니다
+>
+> 생성 진행 상황은 RDS 콘솔에서 확인할 수 있으며, Status가 "Creating" → "Available"로 변경되면 완료입니다.
 
 ✅ **태스크 완료**: RDS MySQL 인스턴스 생성이 시작되었습니다.
 
@@ -286,30 +319,30 @@ chmod +x setup-3-2-student.sh
 
 ### 5.1 Amazon RDS 인스턴스 상태 확인
 
-57. RDS 콘솔에서 왼쪽 메뉴의 **Databases**를 선택합니다.
+59. RDS 콘솔에서 왼쪽 메뉴의 **Databases**를 선택합니다.
 
-58. `cloudarchitect-lab-mysql` 인스턴스의 상태가 "Available"로 변경될 때까지 기다립니다.
+60. `cloudarchitect-lab-mysql` 인스턴스의 상태가 "Available"로 변경될 때까지 기다립니다.
 
-59. 인스턴스 이름을 선택하여 세부 정보를 확인합니다.
+61. 인스턴스 이름을 선택하여 세부 정보를 확인합니다.
 
-60. **Connectivity & security** 탭에서 **Endpoint**를 복사하여 메모장에 저장합니다.
+62. **Connectivity & security** 탭에서 **Endpoint**를 복사하여 메모장에 저장합니다.
 
 > [!NOTE]
 > 엔드포인트 형식: `cloudarchitect-lab-mysql.xxxxx.ap-northeast-2.rds.amazonaws.com`. 이 값은 EC2에서 RDS에 접속할 때 사용합니다.
 
 ### 5.2 Amazon EC2 인스턴스를 통한 RDS 접속
 
-61. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
+63. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-62. 왼쪽 메뉴에서 **Instances**를 선택합니다.
+64. 왼쪽 메뉴에서 **Instances**를 선택합니다.
 
-63. `CloudArchitect-Lab-RDS-Client` 인스턴스를 선택합니다.
+65. `CloudArchitect-Lab-RDS-Client` 인스턴스를 선택합니다.
 
-64. [[Connect]] 버튼을 클릭합니다.
+66. [[Connect]] 버튼을 클릭합니다.
 
-65. **EC2 Instance Connect** 탭에서 [[Connect]] 버튼을 클릭합니다.
+67. **EC2 Instance Connect** 탭에서 [[Connect]] 버튼을 클릭합니다.
 
-66. MySQL 클라이언트 설치 상태를 확인합니다:
+68. MySQL 클라이언트 설치 상태를 확인합니다:
 
 ```bash
 mysql --version
@@ -321,17 +354,17 @@ mysql --version
 > sudo dnf install -y mariadb105
 > ```
 
-67. RDS 인스턴스에 연결합니다 (엔드포인트를 실제 값으로 교체):
+68. RDS 인스턴스에 연결합니다 (엔드포인트를 실제 값으로 교체):
 
 ```bash
 mysql -h [RDS-엔드포인트] -u admin -p
 ```
 
-68. 패스워드 입력 프롬프트가 나타나면 `CloudArchitect123!`을 입력합니다.
+69. 패스워드 입력 프롬프트가 나타나면 `CloudArchitect123!`을 입력합니다.
 
 ### 5.3 MySQL 연결 확인
 
-69. MySQL 연결이 성공하면 다음과 같은 프롬프트가 표시됩니다:
+70. 패스워드 입력 후 MySQL 연결이 성공하면 다음과 같은 프롬프트가 표시됩니다:
 
 > [!OUTPUT]
 > ```
@@ -341,7 +374,7 @@ mysql -h [RDS-엔드포인트] -u admin -p
 > mysql>
 > ```
 
-70. 연결 상태와 데이터베이스 정보를 확인합니다:
+71. 연결 상태와 데이터베이스 정보를 확인합니다:
 
 ```sql
 SELECT USER(), DATABASE(), VERSION();
@@ -351,7 +384,7 @@ USE cloudarchitect;
 
 ### 5.4 테이블 생성 및 데이터 조작
 
-71. 샘플 테이블을 생성합니다:
+72. 샘플 테이블을 생성합니다:
 
 ```sql
 CREATE TABLE users (
@@ -366,7 +399,7 @@ CREATE TABLE users (
 DESCRIBE users;
 ```
 
-72. 샘플 데이터를 삽입하고 조회합니다:
+73. 샘플 데이터를 삽입하고 조회합니다:
 
 ```sql
 INSERT INTO users (name, email, age, major) VALUES 
@@ -394,13 +427,13 @@ SELECT COUNT(*) as total_users FROM users;
 
 ### 5.5 연결 종료
 
-73. MySQL 세션을 종료합니다:
+74. MySQL 세션을 종료합니다:
 
 ```sql
 EXIT;
 ```
 
-74. EC2 Instance Connect 세션도 종료합니다:
+75. EC2 Instance Connect 세션도 종료합니다:
 
 ```bash
 exit
@@ -420,7 +453,7 @@ exit
 2. 다음 명령어로 정리 스크립트를 실행합니다:
 
 ```bash
-./cleanup-3-2-student.sh
+./cleanup-6-2.sh
 ```
 
 3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.
@@ -507,7 +540,10 @@ exit
 26. 다음과 같이 검색 조건을 설정합니다:
    - **Regions**: `Asia Pacific (Seoul) ap-northeast-2`
    - **Resource types**: `All supported resource types`
-   - **Tags**: Tag key에 `Name`을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
+   - **Tags**: Tag key에 `StudentId`를 선택하고, Tag value에 본인 학번을 입력합니다.
+
+> [!TIP]
+> StudentId 태그로 검색하면 본인이 생성한 리소스만 정확히 확인할 수 있습니다. Name 태그로 검색하려면 Tag key를 `Name`, Tag value를 `CloudArchitect-Lab`로 입력합니다.
 
 27. [[Search resources]]를 클릭합니다.
 
@@ -520,8 +556,24 @@ exit
 
 🛡️
 보안 및 네트워크 제어
-VPC 보안 그룹으로 네트워크 수준에서 데이터베이스 접근을 제어하고, Private 서브넷에 배치하여 외부 접근을 차단합니다.
+VPC 보안 그룹으로 네트워크 수준에서 데이터베이스 접근을 제어하고, Private 서브넷에 배치하여 외부 접근을 차단합니다
 
 💾
 자동 백업 및 스냅샷
-자동 백업(7일 보존)과 수동 스냅샷을 통해 데이터 보호와 특정 시점 복구를 제공합니다.
+자동 백업(7일 보존)과 수동 스냅샷을 통해 데이터 보호와 특정 시점 복구를 제공합니다
+
+🗄️
+관리형 데이터베이스
+Amazon RDS는 패치, 백업, 복제 등을 자동으로 처리하여 데이터베이스 운영 부담을 줄여줍니다
+
+🔐
+DB 서브넷 그룹
+여러 가용 영역의 서브넷을 그룹화하여 RDS 인스턴스가 고가용성을 확보할 수 있도록 합니다
+
+📊
+파라미터 그룹
+데이터베이스 엔진의 설정을 관리하는 템플릿으로, 여러 인스턴스에 동일한 설정을 적용할 수 있습니다
+
+🔌
+엔드포인트 연결
+RDS 엔드포인트를 통해 애플리케이션이 데이터베이스에 연결하며, 실제 IP 주소는 AWS가 관리합니다

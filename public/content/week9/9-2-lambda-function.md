@@ -10,15 +10,15 @@ learningObjectives:
   - AWS Lambda 함수를 배포하고 모니터링할 수 있습니다.
 ---
 
+> [!TIP]
+> 이 실습에서는 서버 없이 코드를 실행하는 **AWS Lambda** 함수를 생성하고, **DynamoDB**와 연동하여 사용자 데이터를 관리하는 **서버리스 API**를 구축합니다.
+
 > [!DOWNLOAD]
 > [week9-2-lambda-function.zip](/files/week9/week9-2-lambda-function.zip)
 >
-> - `setup-lab12-student.sh` - 사전 환경 구축 스크립트 (Amazon DynamoDB 테이블, AWS IAM 역할, 샘플 데이터 생성)
-> - `cleanup-lab12-student.sh` - 리소스 정리 스크립트
-> - 태스크 0: 사전 환경 구축 (setup-lab12-student.sh 실행)
-
-> [!NOTE]
-> 이 실습에서는 AWS Lambda 함수를 생성하고 Amazon DynamoDB와 연동하는 서버리스 애플리케이션을 구축합니다. 사전 구축된 DynamoDB 테이블과 IAM 역할을 확인한 후, Lambda 함수를 직접 생성하고 테스트합니다.
+> - `setup-9-2.sh` - 사전 환경 구축 스크립트 (Amazon DynamoDB 테이블, AWS IAM 역할, 샘플 데이터 생성)
+> - `cleanup-9-2.sh` - 리소스 정리 스크립트
+> - 태스크 0: 사전 환경 구축 (setup-9-2.sh 실행)
 
 > [!CONCEPT] AWS Lambda란?
 >
@@ -33,11 +33,14 @@ learningObjectives:
 
 ## 태스크 0: 사전 환경 구축
 
+> [!NOTE]
+> 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
+
 1. 위 DOWNLOAD 섹션에서 `week9-2-lambda-function.zip` 파일을 다운로드합니다.
 
 2. AWS Management Console에 로그인한 후 상단의 **CloudShell** 아이콘을 선택하여 CloudShell을 실행합니다.
 
-3. CloudShell 상단의 **Actions** > `Upload file`을 선택하여 다운로드한 ZIP 파일을 업로드합니다.
+3. CloudShell 상단의 **Actions** > **Upload file**을 선택하여 다운로드한 ZIP 파일을 업로드합니다.
 
 4. 업로드가 완료되면 다음 명령어로 압축을 해제합니다:
 
@@ -48,8 +51,8 @@ unzip week9-2-lambda-function.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-lab12-student.sh
-./setup-lab12-student.sh
+chmod +x setup-9-2.sh
+./setup-9-2.sh
 ```
 
 6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
@@ -67,6 +70,13 @@ chmod +x setup-lab12-student.sh
 
 ✅ **태스크 완료**: 사전 환경 구축이 완료되었습니다.
 
+> [!TIP]
+> **CloudShell 파일 정리**: 실습이 완전히 종료된 후, 업로드한 ZIP 파일과 스크립트를 삭제하여 CloudShell 스토리지를 정리할 수 있습니다:
+> ```bash
+> rm -f week9-2-lambda-function.zip setup-9-2.sh cleanup-9-2.sh
+> ```
+> CloudShell 스토리지는 리전별로 1GB까지 무료 제공되며, 파일 정리는 선택사항입니다.
+
 
 ## 태스크 1: 사전 구축된 환경 확인
 
@@ -80,9 +90,9 @@ chmod +x setup-lab12-student.sh
 
 9. 왼쪽 메뉴에서 **Tables**를 선택합니다.
 
-10. `CloudArchitect-Lab-Users` 테이블이 생성되어 있는지 확인합니다.
+10. **CloudArchitect-Lab-Users** 테이블이 생성되어 있는지 확인합니다.
 
-11. `CloudArchitect-Lab-Users` 테이블을 선택하여 상세 정보를 확인합니다.
+11. **CloudArchitect-Lab-Users** 테이블을 선택하여 상세 정보를 확인합니다.
 
 12. **General information** 섹션에서 다음 설정을 확인합니다:
 - **Partition key**: `id` (String)
@@ -98,7 +108,7 @@ chmod +x setup-lab12-student.sh
 
 16. 왼쪽 메뉴에서 **Roles**를 선택합니다.
 
-17. 검색창에 `CloudArchitect-Lab`을 입력하여 `CloudArchitect-Lab-LambdaExecutionRole`을 찾습니다.
+17. 검색창에 `CloudArchitect-Lab`을 입력하여 **CloudArchitect-Lab-LambdaExecutionRole**을 찾습니다.
 
 18. 해당 역할을 선택합니다.
 
@@ -133,15 +143,15 @@ chmod +x setup-lab12-student.sh
 
 23. **Function name**에 `CloudArchitect-Lab-UsersAPI`를 입력합니다.
 
-24. **Runtime**에서 `Python 3.12`를 선택합니다.
+24. **Runtime**에서 **Python 3.14**를 선택합니다.
 
 ### 2.2 실행 역할 설정
 
-25. **Change default execution role** 섹션을 확장합니다. 이 섹션은 **Runtime settings** 아래에 접힌 상태로 있습니다.
+25. **Change default execution role** 섹션을 확장합니다.
 
-26. **Use an existing role**을 선택합니다.
+26. **Execution role**에서 **Use an existing role**을 선택합니다.
 
-27. **Existing role** 드롭다운에서 `CloudArchitect-Lab-LambdaExecutionRole`을 선택합니다.
+27. **Existing role** 드롭다운에서 **CloudArchitect-Lab-LambdaExecutionRole**을 선택합니다.
 
 28. [[Create function]] 버튼을 클릭합니다.
 
@@ -163,55 +173,99 @@ chmod +x setup-lab12-student.sh
 
 ```python
 """
-CloudArchitect Lab12 - Lambda와 DynamoDB 연동
+CloudArchitect Week 9-2 - Lambda와 DynamoDB 연동
 사용자 프로필을 관리하는 서버리스 API 함수입니다.
+
+이 Lambda 함수는 RESTful API 형태로 DynamoDB 테이블의 사용자 데이터를 관리합니다.
+- GET /users: 전체 사용자 목록 조회
+- GET /users/{id}: 특정 사용자 프로필 조회
+- POST /users: 새 사용자 생성 또는 기존 사용자 업데이트
 """
 
 import json
 import boto3
 from decimal import Decimal
 
-# DynamoDB 테이블 연결
+# DynamoDB 리소스 및 테이블 연결
+# boto3.resource()는 고수준 API로 객체 지향적인 방식으로 DynamoDB를 사용할 수 있습니다
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('CloudArchitect-Lab-Users')
 
 def decimal_default(obj):
-    """DynamoDB의 Decimal 타입을 JSON 직렬화 가능한 float로 변환합니다."""
+    """
+    DynamoDB의 Decimal 타입을 JSON 직렬화 가능한 float로 변환합니다.
+    
+    DynamoDB는 숫자를 Decimal 타입으로 저장하는데, 
+    Python의 json.dumps()는 Decimal을 직렬화할 수 없어 오류가 발생합니다.
+    이 함수를 json.dumps()의 default 파라미터로 전달하여 변환을 처리합니다.
+    
+    Args:
+        obj: 직렬화할 객체
+        
+    Returns:
+        float: Decimal을 float로 변환한 값
+        
+    Raises:
+        TypeError: Decimal이 아닌 타입이 전달된 경우
+    """
     if isinstance(obj, Decimal):
         return float(obj)
     raise TypeError
 
 def lambda_handler(event, context):
     """
-    Lambda 핸들러 함수
+    Lambda 핸들러 함수 - API Gateway 프록시 통합 이벤트를 처리합니다.
+    
     HTTP 메서드와 경로에 따라 사용자 데이터를 조회하거나 생성합니다.
+    
+    Args:
+        event (dict): API Gateway에서 전달하는 이벤트 객체
+            - httpMethod: HTTP 메서드 (GET, POST 등)
+            - path: 요청 경로 (/users, /users/{id} 등)
+            - pathParameters: 경로 파라미터 (예: {"id": "user001"})
+            - queryStringParameters: 쿼리 문자열 (예: {"profileType": "basic"})
+            - body: 요청 본문 (JSON 문자열)
+        context (object): Lambda 실행 컨텍스트 정보
+        
+    Returns:
+        dict: API Gateway 프록시 통합 응답 형식
+            - statusCode: HTTP 상태 코드
+            - headers: 응답 헤더
+            - body: 응답 본문 (JSON 문자열)
     """
     try:
-        # HTTP 메서드와 경로 확인
+        # 이벤트에서 HTTP 메서드와 경로 추출
+        # API Gateway가 전달하는 표준 필드입니다
         http_method = event.get('httpMethod', 'GET')
         path = event.get('path', '/users')
         
+        # ===== GET /users - 전체 사용자 목록 조회 =====
         if http_method == 'GET' and path == '/users':
-            # 모든 사용자 조회
+            # DynamoDB scan() 작업: 테이블의 모든 항목을 조회합니다
+            # 주의: 대용량 테이블에서는 성능 문제가 있을 수 있으므로 프로덕션에서는 Query 사용을 권장합니다
             response = table.scan()
             
+            # HTTP 200 OK 응답 반환
             return {
                 'statusCode': 200,
                 'headers': {
                     'Content-Type': 'application/json'
                 },
                 'body': json.dumps({
-                    'message': 'CloudArchitect Lab12 - Lambda와 DynamoDB 연동',
-                    'users': response['Items'],
-                    'count': response['Count']
+                    'message': 'CloudArchitect Week 9-2 - Lambda와 DynamoDB 연동',
+                    'users': response['Items'],  # 조회된 사용자 목록
+                    'count': response['Count']   # 조회된 항목 수
                 }, default=decimal_default, ensure_ascii=False)
             }
-            
+        
+        # ===== GET /users/{id} - 특정 사용자 프로필 조회 =====
         elif http_method == 'GET' and path.startswith('/users/'):
-            # 특정 사용자 조회
+            # 경로 파라미터에서 사용자 ID 추출
+            # API Gateway가 /users/{id} 형태의 경로를 파싱하여 pathParameters에 저장합니다
             path_parameters = event.get('pathParameters', {})
             user_id = path_parameters.get('id') if path_parameters else None
             
+            # ID가 없으면 400 Bad Request 반환
             if not user_id:
                 return {
                     'statusCode': 400,
@@ -223,18 +277,24 @@ def lambda_handler(event, context):
                     }, ensure_ascii=False)
                 }
             
-            # 쿼리 파라미터에서 profileType 확인
+            # 쿼리 파라미터에서 프로필 타입 확인
+            # 예: /users/user001?profileType=detailed
             query_params = event.get('queryStringParameters') or {}
             profile_type = query_params.get('profileType', 'basic')
             
+            # DynamoDB get_item() 작업: 파티션 키로 특정 항목 조회
+            # scan()보다 훨씬 빠르고 효율적입니다
             response = table.get_item(
                 Key={'id': user_id}
             )
             
+            # 사용자가 존재하는 경우
             if 'Item' in response:
                 user_data = response['Item']
                 
-                # profileType에 따라 반환 데이터 조정
+                # profileType에 따라 반환 데이터 필터링
+                # basic: 기본 정보만 (id, name, email)
+                # detailed: 모든 정보 (age, department 포함)
                 if profile_type == 'basic':
                     filtered_data = {
                         'id': user_data['id'],
@@ -244,6 +304,7 @@ def lambda_handler(event, context):
                 else:  # detailed
                     filtered_data = user_data
                 
+                # HTTP 200 OK 응답 반환
                 return {
                     'statusCode': 200,
                     'headers': {
@@ -255,6 +316,7 @@ def lambda_handler(event, context):
                     }, default=decimal_default, ensure_ascii=False)
                 }
             else:
+                # 사용자가 존재하지 않는 경우 404 Not Found 반환
                 return {
                     'statusCode': 404,
                     'headers': {
@@ -266,13 +328,18 @@ def lambda_handler(event, context):
                     }, ensure_ascii=False)
                 }
         
+        # ===== POST /users - 사용자 생성/업데이트 =====
         elif http_method == 'POST' and path == '/users':
-            # 사용자 생성/업데이트
+            # 요청 본문(JSON 문자열)을 파싱하여 딕셔너리로 변환
             body = json.loads(event.get('body', '{}'))
             
+            # id 필드가 있는 경우에만 처리
             if 'id' in body:
+                # DynamoDB put_item() 작업: 항목 생성 또는 덮어쓰기
+                # 동일한 id가 있으면 업데이트, 없으면 새로 생성됩니다
                 table.put_item(Item=body)
                 
+                # HTTP 201 Created 응답 반환
                 return {
                     'statusCode': 201,
                     'headers': {
@@ -284,6 +351,7 @@ def lambda_handler(event, context):
                     }, ensure_ascii=False)
                 }
             else:
+                # id가 없으면 400 Bad Request 반환
                 return {
                     'statusCode': 400,
                     'headers': {
@@ -294,7 +362,9 @@ def lambda_handler(event, context):
                     }, ensure_ascii=False)
                 }
         
+        # ===== 지원하지 않는 메서드/경로 =====
         else:
+            # HTTP 405 Method Not Allowed 응답 반환
             return {
                 'statusCode': 405,
                 'headers': {
@@ -304,8 +374,11 @@ def lambda_handler(event, context):
                     'error': f'지원하지 않는 HTTP 메서드: {http_method} {path}'
                 }, ensure_ascii=False)
             }
-        
+    
+    # ===== 예외 처리 =====
     except Exception as e:
+        # 모든 예외를 캐치하여 500 Internal Server Error 반환
+        # 프로덕션에서는 로깅을 추가하고 민감한 정보를 노출하지 않도록 주의해야 합니다
         return {
             'statusCode': 500,
             'headers': {
@@ -384,7 +457,7 @@ def lambda_handler(event, context):
 
 ### 4.2 전체 사용자 목록 조회 테스트
 
-42. **Test** 탭에서 **Event name** 드롭다운 옆의 [[Create new event]] 버튼을 클릭합니다.
+42. **Test** 탭에서 **Create new event**를 선택합니다.
 
 43. **Event name**에 `GetAllUsers`를 입력합니다.
 
@@ -405,13 +478,13 @@ def lambda_handler(event, context):
 > ```json
 > {
 >   "statusCode": 200,
->   "body": "{\"message\": \"CloudArchitect Lab12 - Lambda와 DynamoDB 연동\", \"users\": [...], \"count\": 2}"
+>   "body": "{\"message\": \"CloudArchitect Week 9-2 - Lambda와 DynamoDB 연동\", \"users\": [...], \"count\": 2}"
 > }
 > ```
 
 ### 4.3 사용자 생성 테스트
 
-47. 같은 방법으로 새 테스트 이벤트를 생성합니다.
+47. **Test** 탭에서 **Create new event**를 선택합니다.
 
 48. **Event name**에 `CreateUser`를 입력합니다.
 
@@ -437,11 +510,11 @@ def lambda_handler(event, context):
 > }
 > ```
 
-52. DynamoDB 콘솔로 이동하여 `CloudArchitect-Lab-Users` 테이블의 **Explore table items**를 선택합니다.
+52. DynamoDB 콘솔로 이동하여 **CloudArchitect-Lab-Users** 테이블의 **Explore table items**를 선택합니다.
 
 53. 박민수(user003) 레코드가 추가되었는지 확인합니다.
 
-54. Lambda 콘솔로 이동하여 `CloudArchitect-Lab-UsersAPI` 함수를 선택합니다.
+54. Lambda 콘솔로 이동하여 **CloudArchitect-Lab-UsersAPI** 함수를 선택합니다.
 
 55. **Test** 탭에서 이벤트 드롭다운에서 `GetAllUsers`를 선택하고 [[Test]] 버튼을 클릭합니다.
 
@@ -459,8 +532,7 @@ def lambda_handler(event, context):
 58. 다음 메트릭 그래프를 확인합니다:
 - **Invocations**: 함수 호출 횟수
 - **Duration**: 실행 시간 (밀리초)
-- **Errors**: 오류 발생 횟수
-- **Throttles**: 동시 실행 제한 발생 횟수
+- **Error count and success rate**: 오류 발생 횟수와 성공률
 
 > [!TIP]
 > **Duration** 그래프에서 함수 실행 시간을 확인할 수 있습니다. 첫 번째 호출(Cold Start)은 이후 호출보다 시간이 더 걸립니다. Lambda가 실행 환경을 초기화하는 시간이 포함되기 때문입니다.
@@ -501,7 +573,7 @@ def lambda_handler(event, context):
 2. 다음 명령어로 정리 스크립트를 실행합니다:
 
 ```bash
-./cleanup-lab12-student.sh
+./cleanup-9-2.sh
 ```
 
 3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.
@@ -521,7 +593,7 @@ def lambda_handler(event, context):
 
 2. 왼쪽 메뉴에서 **Functions**를 선택합니다.
 
-3. `CloudArchitect-Lab-UsersAPI` 함수를 선택하고 **Actions** > **Delete**를 선택합니다.
+3. **CloudArchitect-Lab-UsersAPI** 함수를 선택하고 **Actions** > **Delete**를 선택합니다.
 
 4. 확인 필드에 `delete`를 입력하고 [[Delete]]를 클릭합니다.
 
@@ -531,7 +603,7 @@ def lambda_handler(event, context):
 
 6. 왼쪽 메뉴에서 **Tables**를 선택합니다.
 
-7. `CloudArchitect-Lab-Users` 테이블을 선택하고 **Delete**를 클릭합니다.
+7. **CloudArchitect-Lab-Users** 테이블을 선택하고 **Delete**를 클릭합니다.
 
 8. **Delete all CloudWatch alarms for this table** 체크박스를 선택합니다.
 
@@ -543,7 +615,7 @@ def lambda_handler(event, context):
 
 11. 왼쪽 메뉴에서 **Roles**를 선택합니다.
 
-12. `CloudArchitect-Lab-LambdaExecutionRole`을 검색하여 선택합니다.
+12. **CloudArchitect-Lab-LambdaExecutionRole**을 검색하여 선택합니다.
 
 13. **Delete** 버튼을 클릭합니다.
 
@@ -579,22 +651,26 @@ def lambda_handler(event, context):
 
 ## 💡 핵심 포인트 정리
 
-🏗️
-서버리스 아키텍처
-AWS Lambda와 Amazon DynamoDB를 연동하여 서버 관리 없이 애플리케이션을 구축했습니다
+⚙️
+Lambda 함수 구성 요소
+런타임(실행 언어), 핸들러(진입점 함수), 실행 역할(IAM), 메모리(128MB~10GB), 타임아웃(최대 15분)을 설정합니다.
 
 🔐
-IAM 역할 연동
-Lambda 함수에 IAM 역할을 연결하여 액세스 키 없이 DynamoDB에 안전하게 접근했습니다
+IAM 역할 기반 권한
+Lambda에 IAM 역할을 연결하면 액세스 키 없이도 다른 AWS 서비스(DynamoDB, S3 등)에 안전하게 접근할 수 있습니다.
 
-💾
-DynamoDB CRUD
-Lambda 함수에서 `scan`, `get_item`, `put_item` 작업으로 데이터를 조회하고 생성했습니다
+⚡
+서버리스 컴퓨팅
+서버를 직접 관리하지 않고 코드만 작성하면 AWS가 자동으로 실행 환경을 제공하고 확장합니다.
 
-🧪
-테스트 이벤트
-JSON 형식의 테스트 이벤트를 작성하여 API Gateway 연동 전에 함수 동작을 검증했습니다
+🔄
+이벤트 기반 실행
+Lambda는 API 요청, 파일 업로드 등의 이벤트가 발생할 때만 실행되며, event 객체로 입력 데이터를 받습니다.
 
 📊
-CloudWatch 모니터링
-Lambda 함수의 호출 횟수, 실행 시간, 메모리 사용량을 CloudWatch에서 확인했습니다
+CloudWatch 자동 로깅
+함수 실행 로그와 메트릭(실행 시간, 메모리 사용량)이 자동으로 CloudWatch에 기록되어 모니터링할 수 있습니다.
+
+💰
+사용한 만큼만 과금
+함수가 실행된 시간(밀리초)과 호출 횟수에 따라서만 비용이 청구되며, 대기 시간에는 비용이 없습니다.

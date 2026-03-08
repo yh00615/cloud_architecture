@@ -15,6 +15,8 @@ import jsonHighlight from '@cloudscape-design/code-view/highlight/json';
 import yamlHighlight from '@cloudscape-design/code-view/highlight/yaml';
 import { createHighlight } from '@cloudscape-design/code-view/highlight';
 import { SqlHighlightRules } from 'ace-code/src/mode/sql_highlight_rules';
+import { HtmlHighlightRules } from 'ace-code/src/mode/html_highlight_rules';
+import { CssHighlightRules } from 'ace-code/src/mode/css_highlight_rules';
 import { AWSButton } from '@/components/ui/AWSButton';
 import { UserValue } from '@/components/ui/UserValue';
 import { FileDownload } from '@/components/education/FileDownload';
@@ -26,6 +28,8 @@ import '@/styles/markdown-renderer.css';
 import '@/styles/guide-images.css';
 // SQL 하이라이터 생성
 const sqlHighlight = createHighlight(new SqlHighlightRules());
+const htmlHighlight = createHighlight(new HtmlHighlightRules());
+const cssHighlight = createHighlight(new CssHighlightRules());
 
 interface MarkdownRendererProps {
   content: string;
@@ -280,12 +284,11 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             break;
           case 'html':
           case 'xml':
-            // HTML은 기본 하이라이트 사용
-            highlight = undefined;
+            highlight = htmlHighlight;
             break;
           case 'css':
           case 'scss':
-            highlight = undefined;
+            highlight = cssHighlight;
             break;
           case 'redis':
           case 'plaintext':
