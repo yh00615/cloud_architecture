@@ -45,29 +45,43 @@ learningObjectives:
 
 5. **Provide user access to the AWS Management Console** 체크박스를 체크합니다.
 
-6. **I want to create an IAM user**를 선택합니다.
+6. **Console password**에서 **Custom password**를 선택합니다.
 
-7. [[Next]] 버튼을 클릭합니다.
+7. 비밀번호 입력 필드에 `CloudArchitect123!`을 입력합니다.
 
-8. **Permissions options**에서 **Attach policies directly**를 선택합니다.
+> [!NOTE]
+> 실습 환경에서는 간단한 비밀번호를 사용합니다. 프로덕션 환경에서는 복잡한 비밀번호와 MFA(다중 인증)를 반드시 사용해야 합니다.
 
-9. 검색창에 `ReadOnlyAccess`를 입력하고 해당 정책 옆의 체크박스를 체크합니다.
+8. **Users must create a new password at next sign-in** 체크박스의 체크를 해제합니다.
+
+> [!TIP]
+> 실습에서는 편의를 위해 비밀번호 변경을 요구하지 않습니다. 실제 환경에서는 이 옵션을 체크하여 첫 로그인 시 사용자가 비밀번호를 변경하도록 하는 것이 보안 모범 사례입니다.
+
+9. [[Next]] 버튼을 클릭합니다.
+
+10. **Permissions options**에서 **Attach policies directly**를 선택합니다.
+
+11. 검색창에 `ReadOnlyAccess`를 입력합니다.
+
+12. **Filter by Type** 드롭다운을 클릭하고 **AWS managed - job function**을 선택합니다.
+
+13. **ReadOnlyAccess** 정책 옆의 체크박스를 체크합니다.
 
 > [!NOTE]
 > **ReadOnlyAccess**는 AWS 관리형 정책으로, 거의 모든 AWS 서비스에 대한 읽기 전용 권한을 제공합니다. 리소스를 조회할 수 있지만 생성, 수정, 삭제는 할 수 없습니다.
 
-10. [[Next]] 버튼을 클릭합니다.
+14. [[Next]] 버튼을 클릭합니다.
 
-11. 설정을 검토한 후 [[Create user]] 버튼을 클릭합니다.
+15. 설정을 검토한 후 [[Create user]] 버튼을 클릭합니다.
 
-12. 사용자 생성이 완료되면 **Console sign-in details** 페이지가 표시됩니다.
+16. 사용자 생성이 완료되면 **Console sign-in details** 페이지가 표시됩니다.
 
-13. **Console sign-in URL**과 **Username**을 복사하여 메모장에 저장합니다.
+17. **Console sign-in URL**과 **Username**을 복사하여 메모장에 저장합니다.
 
 > [!IMPORTANT]
 > Console sign-in URL은 이 페이지를 벗어나면 다시 확인하기 어렵습니다. 반드시 메모장에 저장합니다.
 
-14. [[Return to users list]] 버튼을 클릭합니다.
+18. [[Return to users list]] 버튼을 클릭합니다.
 
 ✅ **태스크 완료**: CloudArchitect-Lab-DeveloperUser 사용자가 ReadOnlyAccess 권한과 함께 생성되었습니다.
 
@@ -84,34 +98,36 @@ learningObjectives:
 
 ### 2.1 그룹 생성 시작
 
-15. IAM 콘솔에서 왼쪽 메뉴의 **Access management** 섹션 아래의 **User groups**를 선택합니다.
+19. IAM 콘솔에서 왼쪽 메뉴의 **Access management** 섹션 아래의 **User groups**를 선택합니다.
 
-16. [[Create group]] 버튼을 클릭합니다.
+20. [[Create group]] 버튼을 클릭합니다.
 
-17. **Group name** 필드에 `CloudArchitect-Lab-Developers`를 입력합니다.
+21. **Group name** 필드에 `CloudArchitect-Lab-Developers`를 입력합니다.
 
 > [!TIP]
 > 그룹 이름은 계정 내에서 고유해야 합니다. 팀이나 역할 기반으로 이름을 지정하면 관리가 편리합니다 (예: Developers, Admins, ReadOnly-Users).
 
 ### 2.2 정책 연결
 
-18. **Attach permissions policies** 섹션에서 검색창에 `ReadOnlyAccess`를 입력합니다.
+22. **Attach permissions policies** 섹션에서 검색창에 `ReadOnlyAccess`를 입력합니다.
 
-19. `ReadOnlyAccess` 정책 옆의 체크박스를 체크합니다.
+23. **Filter by Type** 드롭다운을 클릭하고 **AWS managed - job function**을 선택합니다.
 
-20. [[Create user group]] 버튼을 클릭합니다.
+24. **ReadOnlyAccess** 정책 옆의 체크박스를 체크합니다.
+
+25. [[Create user group]] 버튼을 클릭합니다.
 
 ### 2.3 사용자를 그룹에 추가
 
-21. 생성된 그룹 목록에서 **CloudArchitect-Lab-Developers**를 선택합니다.
+26. 생성된 그룹 목록에서 **CloudArchitect-Lab-Developers**를 선택합니다.
 
-22. **Users** 탭을 선택합니다.
+27. **Users** 탭을 선택합니다.
 
-23. [[Add users]] 버튼을 클릭합니다.
+28. [[Add users]] 버튼을 클릭합니다.
 
-24. **CloudArchitect-Lab-DeveloperUser** 사용자를 체크합니다.
+29. **CloudArchitect-Lab-DeveloperUser** 사용자를 체크합니다.
 
-25. [[Add users]] 버튼을 클릭합니다.
+30. [[Add users]] 버튼을 클릭합니다.
 
 ✅ **태스크 완료**: 사용자가 그룹에 추가되었습니다. 이제 사용자는 그룹의 권한을 상속받습니다.
 
@@ -127,13 +143,13 @@ learningObjectives:
 
 ### 3.1 정책 생성
 
-26. IAM 콘솔에서 왼쪽 메뉴의 **Access management** 섹션 아래의 **Policies**를 선택합니다.
+31. IAM 콘솔에서 왼쪽 메뉴의 **Access management** 섹션 아래의 **Policies**를 선택합니다.
 
-27. [[Create policy]] 버튼을 클릭합니다.
+32. [[Create policy]] 버튼을 클릭합니다.
 
-28. 상단의 **JSON** 탭을 선택합니다.
+33. 상단의 **JSON** 탭을 선택합니다.
 
-29. 기존 JSON 내용을 모두 삭제하고 다음 정책 문서를 입력합니다:
+34. 기존 JSON 내용을 모두 삭제하고 다음 정책 문서를 입력합니다:
 
 ```json
 {
@@ -164,34 +180,34 @@ learningObjectives:
 > - **Action**: 허용할 AWS API 작업을 지정합니다 (`s3:GetObject`, `s3:PutObject`, `s3:ListBucket`).
 > - **Resource**: 정책이 적용되는 대상 리소스의 ARN입니다. `cloudarchitect-lab-*`로 시작하는 버킷에만 적용됩니다.
 
-30. [[Next]] 버튼을 클릭합니다.
+35. [[Next]] 버튼을 클릭합니다.
 
-31. **Policy name** 필드에 `CloudArchitect-Lab-S3-Limited-Access`를 입력합니다.
+36. **Policy name** 필드에 `CloudArchitect-Lab-S3-Limited-Access`를 입력합니다.
 
-32. **Description** 필드에 `Lab practice - Limited S3 access policy`를 입력합니다.
+37. **Description** 필드에 `Lab practice - Limited S3 access policy`를 입력합니다.
 
-33. [[Create policy]] 버튼을 클릭합니다.
+38. [[Create policy]] 버튼을 클릭합니다.
 
 ✅ **정책 생성 완료**: CloudArchitect-Lab-S3-Limited-Access 정책이 생성되었습니다.
 
 ### 3.2 그룹에 정책 연결
 
-34. IAM 콘솔에서 왼쪽 메뉴의 **Access management** 섹션 아래의 **User groups**를 선택합니다.
+39. IAM 콘솔에서 왼쪽 메뉴의 **Access management** 섹션 아래의 **User groups**를 선택합니다.
 
-35. **CloudArchitect-Lab-Developers** 그룹을 선택합니다.
+40. **CloudArchitect-Lab-Developers** 그룹을 선택합니다.
 
-36. **Permissions** 탭을 선택합니다.
+41. **Permissions** 탭을 선택합니다.
 
-37. [[Add permissions]] 버튼을 클릭한 후 드롭다운에서 **Attach policies**를 선택합니다.
+42. [[Add permissions]] 버튼을 클릭한 후 드롭다운에서 **Attach policies**를 선택합니다.
 
 > [!NOTE]
 > **Add permissions** 버튼은 **Permissions** 탭 오른쪽 상단에 있습니다. 클릭하면 "Attach policies", "Create inline policy" 등의 옵션이 표시됩니다.
 
-38. 검색창에 `CloudArchitect-Lab-S3-Limited-Access`를 입력합니다.
+43. 검색창에 `CloudArchitect-Lab-S3-Limited-Access`를 입력합니다.
 
-39. 생성한 정책 옆의 체크박스를 체크합니다.
+44. 생성한 정책 옆의 체크박스를 체크합니다.
 
-40. [[Attach policies]] 버튼을 클릭합니다.
+45. [[Attach policies]] 버튼을 클릭합니다.
 
 > [!TIP]
 > 그룹의 **Permissions** 탭에서 현재 연결된 정책 목록을 확인할 수 있습니다. ReadOnlyAccess와 CloudArchitect-Lab-S3-Limited-Access 두 개의 정책이 표시되어야 합니다.
@@ -207,35 +223,45 @@ learningObjectives:
 
 ### 4.1 정책 시뮬레이터 사용
 
-41. 새 브라우저 탭을 열고 주소창에 `https://policysim.aws.amazon.com/`을 입력하고 Enter를 누릅니다.
+46. 새 브라우저 탭을 열고 주소창에 `https://policysim.aws.amazon.com/`을 입력하고 Enter를 누릅니다.
 
-42. 정책 시뮬레이터가 열리면 왼쪽 **Users, Groups, and Roles** 패널에서 **Users**를 확장합니다.
+47. 정책 시뮬레이터가 열리면 왼쪽 **Users, Groups, and Roles** 패널에서 **Users**를 확장합니다.
 
-43. `CloudArchitect-Lab-DeveloperUser` 사용자를 선택합니다.
+48. **CloudArchitect-Lab-DeveloperUser** 사용자를 선택합니다.
 
-44. 선택된 사용자에게 연결된 정책들이 오른쪽 **Policies** 패널에 표시되는 것을 확인합니다:
+49. 왼쪽 **IAM Policies** 섹션에 사용자에게 연결된 정책들이 표시됩니다. 다음 정책들의 체크박스를 모두 체크합니다:
+- **ReadOnlyAccess**
+- **CloudArchitect-Lab-S3-Limited-Access**
+
+> [!TIP]
+> 정책 시뮬레이터는 체크된 정책들만 시뮬레이션에 포함합니다. 모든 정책을 체크해야 사용자의 실제 권한을 정확히 테스트할 수 있습니다.
+
+50. 선택된 정책들이 오른쪽 **Policies** 패널에도 표시되는 것을 확인합니다:
 - **AWS Managed Policies**: ReadOnlyAccess
 - **Customer Managed Policies**: CloudArchitect-Lab-S3-Limited-Access
 
+> [!NOTE]
+> 오른쪽 패널에서 정책 이름을 클릭하면 왼쪽에 해당 정책의 JSON 내용이 표시됩니다. 정책의 구조와 권한 범위를 확인할 수 있습니다.
+
 ### 4.2 허용되는 작업 테스트
 
-45. **Policy Simulator** 섹션에서 **Select service** 드롭다운을 선택하고 `Amazon S3`를 선택합니다.
+51. **Policy Simulator** 섹션에서 **Select service** 드롭다운을 선택하고 **Amazon S3**를 선택합니다.
 
-46. **Select actions** 드롭다운을 선택하고 `GetObject` 액션을 선택합니다.
+52. **Select actions** 드롭다운을 선택하고 **GetObject** 액션을 선택합니다.
 
-47. 선택된 액션이 **Action Settings and Results** 목록에 나타나고 **Permission** 열에 "Not simulated"가 표시되는 것을 확인합니다.
+53. 선택된 액션이 **Action Settings and Results** 목록에 나타나고 **Permission** 열에 "Not simulated"가 표시되는 것을 확인합니다.
 
-48. GetObject 행의 왼쪽 화살표를 선택하여 행을 확장합니다.
+54. GetObject 행의 왼쪽 화살표를 선택하여 행을 확장합니다.
 
-49. **Resource ARN** 필드에 다음 ARN을 입력합니다:
+55. **Resource ARN** 필드에 다음 ARN을 입력합니다:
 
 ```text
 arn:aws:s3:::cloudarchitect-lab-test-bucket/test-file.txt
 ```
 
-50. 오른쪽 상단의 [[Run Simulation]] 버튼을 클릭합니다.
+56. 오른쪽 상단의 [[Run Simulation]] 버튼을 클릭합니다.
 
-51. 시뮬레이션 완료 후 GetObject 행의 **Permission** 열이 **allowed**로 표시되는 것을 확인합니다.
+57. 시뮬레이션 완료 후 GetObject 행의 **Permission** 열이 **allowed**로 표시되는 것을 확인합니다.
 
 > [!OUTPUT]
 > ```
@@ -244,19 +270,19 @@ arn:aws:s3:::cloudarchitect-lab-test-bucket/test-file.txt
 > Permission: allowed
 > ```
 
-52. **allowed** 옆의 **matching statement(s)** 링크를 선택하여 어떤 정책이 이 액션을 허용했는지 확인합니다.
+58. **allowed** 옆의 **matching statement(s)** 링크를 선택하여 어떤 정책이 이 액션을 허용했는지 확인합니다.
 
 ### 4.3 거부되는 작업 테스트
 
-53. GetObject 행을 확장하고 **Resource ARN** 필드의 내용을 지운 후 다음 ARN을 입력합니다:
+59. GetObject 행을 확장하고 **Resource ARN** 필드의 내용을 지운 후 다음 ARN을 입력합니다:
 
 ```text
 arn:aws:s3:::other-bucket/test-file.txt
 ```
 
-54. [[Run Simulation]] 버튼을 클릭합니다.
+60. [[Run Simulation]] 버튼을 클릭합니다.
 
-55. 시뮬레이션 완료 후 GetObject 행의 **Permission** 열이 **implicitDeny**로 표시되는 것을 확인합니다.
+61. 시뮬레이션 완료 후 GetObject 행의 **Permission** 열이 **implicitDeny**로 표시되는 것을 확인합니다.
 
 > [!OUTPUT]
 > ```
@@ -270,15 +296,15 @@ arn:aws:s3:::other-bucket/test-file.txt
 
 ### 4.4 사용자 권한 확인
 
-56. IAM 콘솔로 이동합니다.
+62. IAM 콘솔로 이동합니다.
 
-57. 왼쪽 메뉴에서 **Users**를 선택합니다.
+63. 왼쪽 메뉴에서 **Users**를 선택합니다.
 
-58. **CloudArchitect-Lab-DeveloperUser** 사용자를 선택합니다.
+64. **CloudArchitect-Lab-DeveloperUser** 사용자를 선택합니다.
 
-59. **Permissions** 탭에서 사용자에게 적용된 모든 권한을 확인합니다.
+65. **Permissions** 탭에서 사용자에게 적용된 모든 권한을 확인합니다.
 
-60. **Groups** 탭에서 그룹 멤버십을 확인합니다.
+66. **Groups** 탭에서 그룹 멤버십을 확인합니다.
 
 > [!TIP]
 > **Permissions** 탭에서 정책 이름 옆에 "Attached from group: CloudArchitect-Lab-Developers"라고 표시됩니다. 이는 해당 권한이 그룹을 통해 상속된 것임을 나타냅니다.
@@ -331,9 +357,9 @@ arn:aws:s3:::other-bucket/test-file.txt
 2. 왼쪽 메뉴에서 **Tag Editor**를 선택합니다.
 
 3. 다음과 같이 검색 조건을 설정합니다:
-   - **Regions**: `Asia Pacific (Seoul) ap-northeast-2`
-   - **Resource types**: `All supported resource types`
-   - **Tags**: Tag key에 `Name`을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
+   - **Regions**: **Asia Pacific (Seoul) ap-northeast-2**
+   - **Resource types**: **All supported resource types**
+   - **Tags**: Tag key에 **Name**을 선택하고, Tag value에 **CloudArchitect-Lab**을 입력합니다.
 
 4. [[Search resources]]를 클릭합니다.
 

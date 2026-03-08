@@ -127,8 +127,10 @@ chmod +x lab01-check.sh
 
 23. **Summary** 섹션에서 다음 정보를 확인합니다:
 - **User ARN**: 사용자의 고유 식별자 (예: `arn:aws:iam::123456789012:user/사용자명`)
-- **Creation time**: 사용자 생성 일시
-- **Last activity**: 마지막 활동 시간
+- **Console access**: 콘솔 접근 권한 및 MFA 활성화 여부
+- **Access key**: 생성된 액세스 키 개수 및 상태
+- **Created**: 사용자 생성 일시
+- **Last console sign-in**: 마지막 콘솔 로그인 시간
 
 > [!TIP]
 > IAM 사용자로 로그인한 경우 **Users** 목록에서 확인 가능하고, IAM 역할로 로그인한 경우 왼쪽 메뉴의 **Access management** 섹션 아래의 **Roles** 메뉴에서 확인할 수 있습니다. 현재 로그인 방식에 따라 확인 위치가 다릅니다.
@@ -156,6 +158,9 @@ chmod +x lab01-check.sh
 ```bash
 ./lab01-check.sh
 ```
+
+> [!TIP]
+> CloudShell은 리전별로 독립적인 환경을 제공합니다. 태스크 0에서 파일을 업로드한 후 리전을 변경했다면, 현재 리전의 CloudShell에는 파일이 없을 수 있습니다. 이 경우 현재 리전에서 CloudShell을 다시 열고 파일을 재업로드해야 합니다.
 
 > [!OUTPUT]
 > ```
@@ -277,65 +282,6 @@ aws ec2 describe-availability-zones --query 'AvailabilityZones[].ZoneName' --out
 > `--query` 옵션은 JMESPath 문법을 사용합니다. 복잡한 JSON 응답에서 필요한 정보만 추출할 때 유용합니다. 예를 들어 `--query 'Reservations[].Instances[].InstanceId'`로 인스턴스 ID만 추출할 수 있습니다.
 
 ✅ **태스크 완료**: AWS CLI의 다양한 출력 형식과 쿼리 필터링을 사용하여 콘솔과 동일한 정보를 확인했습니다.
-
-## 리소스 정리
-
-> [!WARNING]
-> 실습 완료 후 **반드시** 리소스를 정리하여 불필요한 비용을 방지하세요.
-
-이 실습에서는 자동 정리 스크립트가 제공되지 않으므로, 아래 단계에 따라 AWS Management Console에서 수동으로 리소스를 삭제합니다.
-
-### 태스크 1: AWS IAM 리소스 삭제
-
-1. 상단 검색창에서 `IAM`을 검색하고 **IAM**을 선택합니다.
-
-2. 왼쪽 메뉴에서 **Roles**를 선택합니다.
-
-3. 실습에서 생성한 역할을 선택합니다.
-
-4. **Delete** 버튼을 클릭합니다.
-
-5. 확인 창에 역할 이름을 입력하고 [[Delete]] 버튼을 클릭합니다.
-
-6. 왼쪽 메뉴에서 **Policies**를 선택합니다.
-
-7. 실습에서 생성한 정책을 선택합니다.
-
-8. **Actions** > **Delete**를 선택합니다.
-
-9. 확인 창에 정책 이름을 입력하고 [[Delete]] 버튼을 클릭합니다.
-
-10. 왼쪽 메뉴에서 **Users**를 선택합니다.
-
-11. 실습에서 생성한 사용자를 선택합니다.
-
-12. 사용자에 연결된 정책을 먼저 제거합니다:
-   - **Permissions** 탭 선택
-   - 정책 선택 후 **Remove** 클릭
-
-13. **Delete user** 버튼을 클릭합니다.
-
-14. 확인 창에 사용자 이름을 입력하고 [[Delete]] 버튼을 클릭합니다.
-
-### 태스크 2: 최종 확인
-
-1. 상단 검색창에서 `Resource Groups & Tag Editor`를 검색하고 **Resource Groups & Tag Editor**를 선택합니다.
-
-2. 왼쪽 메뉴에서 **Tag Editor**를 선택합니다.
-
-3. 다음과 같이 검색 조건을 설정합니다:
-   - **Regions**: `Asia Pacific (Seoul) ap-northeast-2`
-   - **Resource types**: `All supported resource types`
-   - **Tags**: Tag key에 `Name`을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
-
-4. [[Search resources]]를 클릭합니다.
-
-5. 검색 결과에 리소스가 표시되지 않으면 정리가 완료된 것입니다.
-
-6. 검색된 리소스가 있다면 해당 서비스 콘솔로 이동하여 삭제합니다.
-
-✅ **리소스 정리 완료**: 모든 리소스가 삭제되었습니다.
-
 
 ## 💡 핵심 포인트 정리
 
