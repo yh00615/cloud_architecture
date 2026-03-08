@@ -58,7 +58,13 @@ learningObjectives:
 
 6. **Trust relationships** 탭을 선택하여 Trust Policy JSON을 확인합니다.
 
+> [!NOTE]
+> Trust Policy는 **"누가"** 이 역할을 사용할 수 있는지 정의합니다. Principal 요소에서 어떤 AWS 서비스나 계정이 이 역할을 assume할 수 있는지 확인할 수 있습니다. 이후 태스크에서 역할을 생성할 때 이 구조를 참고하게 됩니다.
+
 7. **Permissions** 탭을 선택하여 연결된 Permission Policy를 확인합니다.
+
+> [!NOTE]
+> Permission Policy는 역할이 **"무엇을"** 할 수 있는지 정의합니다. 역할을 assume한 후 실제로 수행할 수 있는 AWS 작업들이 여기에 명시되어 있습니다. 이후 태스크에서 커스텀 정책을 생성하고 역할에 연결하게 됩니다.
 
 ✅ **태스크 완료**: IAM 역할의 구조(Trust Policy + Permission Policy)를 확인했습니다.
 
