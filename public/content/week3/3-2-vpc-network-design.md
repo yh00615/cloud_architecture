@@ -48,43 +48,53 @@ learningObjectives:
 
 2. VPC 대시보드에서 [[Create VPC]] 버튼을 클릭합니다.
 
-3. **Resources to create**에서 `VPC and more`를 선택합니다.
+3. **Resources to create**에서 **VPC and more**를 선택합니다.
 
 > [!TIP]
 > `VPC and more`를 선택하면 VPC와 함께 서브넷, 라우팅 테이블, 인터넷 게이트웨이, NAT 게이트웨이 등 필요한 리소스를 한 번에 생성할 수 있어 편리합니다.
 
 ### 1.2 Amazon VPC 기본 설정
 
-4. **Name tag auto-generation** 필드에 `CloudArchitect-Lab`을 입력합니다.
+4. **Name tag auto-generation** 필드에서 **Auto-generate**를 체크하고 `CloudArchitect-Lab`을 입력합니다.
 
 5. **IPv4 CIDR block**에 `10.0.0.0/16`을 입력합니다.
 
-6. **IPv6 CIDR block**은 `No IPv6 CIDR block`을 선택합니다.
+> [!TIP]
+> CIDR 블록 크기는 /16과 /28 사이여야 합니다. `10.0.0.0/16`은 65,536개의 IP 주소를 제공합니다.
 
-7. **Tenancy**에서 `Default`를 선택합니다.
+6. **IPv6 CIDR block**은 **No IPv6 CIDR block**을 선택합니다.
+
+7. **Tenancy**에서 **Default**를 선택합니다.
 
 ### 1.3 가용 영역 및 서브넷 설정
 
-8. **Number of Availability Zones (AZs)**에서 `2`를 선택합니다.
+8. **Number of Availability Zones (AZs)**에서 **2**를 선택합니다.
 
-9. **Number of public subnets**에서 `2`를 선택합니다.
+9. **Number of public subnets**에서 **2**를 선택합니다.
 
-10. **Number of private subnets**에서 `2`를 선택합니다.
+10. **Number of private subnets**에서 **2**를 선택합니다.
 
 ### 1.4 NAT 게이트웨이 및 추가 옵션 설정
 
-11. **NAT gateways**에서 `In 1 AZ`를 선택합니다.
+11. **NAT gateways**에서 **In 1 AZ**를 선택합니다.
 
-12. **VPC endpoints**에서 `None`을 선택합니다.
+> [!TIP]
+> NAT Gateway는 Zonal(단일 AZ)과 Regional(다중 AZ) 방식을 선택할 수 있습니다. 이 실습에서는 비용 절감을 위해 In 1 AZ를 선택합니다. Regional NAT Gateway는 고가용성을 제공하지만 추가 비용이 발생합니다.
 
-13. **DNS options**는 기본값을 유지합니다 (DNS hostnames, DNS resolution 모두 활성화).
+12. **VPC endpoints**에서 **None**을 선택합니다.
+
+13. **DNS options**는 기본값을 유지합니다 (Enable DNS hostnames, Enable DNS resolution 모두 체크).
 
 > [!NOTE]
 > NAT Gateway는 시간당 요금과 데이터 처리 요금이 발생합니다. 실습 완료 후 반드시 리소스를 정리합니다.
 
 ### 1.5 Amazon VPC 생성
 
-14. **Preview** 창에서 구성한 VPC 리소스 간의 관계를 확인합니다.
+14. **Preview** 창에서 구성한 VPC 리소스 간의 관계를 확인합니다:
+- VPC: project-vpc
+- Subnets: 4개 (퍼블릭 2개, 프라이빗 2개)
+- Route tables: 3개
+- Network connections: Internet Gateway, NAT Gateway
 
 15. [[Create VPC]] 버튼을 클릭합니다.
 
@@ -178,7 +188,10 @@ learningObjectives:
 | 10.0.0.0/16 | local | VPC 내부 통신 |
 | 0.0.0.0/0 | nat-xxxxx | NAT 게이트웨이 |
 
-32. **Subnet associations** 탭에서 프라이빗 서브넷이 연결되어 있는지 확인합니다.
+32. **Subnet associations** 탭에서 프라이빗 서브넷 1개가 연결되어 있는지 확인합니다.
+
+> [!NOTE]
+> In 1 AZ NAT Gateway를 선택한 경우, 하나의 프라이빗 서브넷만 이 라우팅 테이블을 사용합니다. 다른 프라이빗 서브넷은 별도의 라우팅 테이블(`CloudArchitect-Lab-rtb-private2-ap-northeast-2b`)을 가지며, NAT Gateway 없이 VPC 내부 통신만 가능합니다.
 
 > [!TIP]
 > 퍼블릭 서브넷과 프라이빗 서브넷의 차이는 라우팅 테이블에 있습니다. `0.0.0.0/0`이 Internet Gateway로 향하면 퍼블릭, NAT Gateway로 향하면 프라이빗입니다.
@@ -212,11 +225,14 @@ learningObjectives:
 
 40. 다음 규칙을 추가합니다:
 
-| Type | Source | 용도 |
-|------|--------|------|
-| HTTP (80) | Anywhere-IPv4 (0.0.0.0/0) | 웹 접근 허용 |
-| HTTPS (443) | Anywhere-IPv4 (0.0.0.0/0) | 보안 웹 접근 허용 |
-| SSH (22) | My IP | 관리 접근 허용 |
+| Type | Source type | Source | Description | 용도 |
+|------|-------------|--------|-------------|------|
+| HTTP (80) | Anywhere-IPv4 | 0.0.0.0/0 | Allow HTTP | 웹 접근 허용 |
+| HTTPS (443) | Anywhere-IPv4 | 0.0.0.0/0 | Allow HTTPS | 보안 웹 접근 허용 |
+| SSH (22) | My IP | (자동 입력) | Allow SSH | 관리 접근 허용 |
+
+> [!TIP]
+> Type을 선택하면 Protocol과 Port range는 자동으로 설정됩니다. Source type을 선택하면 Source 값이 자동으로 입력되거나 선택할 수 있습니다. Description은 선택 사항이지만 규칙의 용도를 명확히 하기 위해 입력하는 것이 좋습니다.
 
 41. 각 규칙을 [[Add rule]] 버튼으로 추가합니다.
 
@@ -234,11 +250,13 @@ learningObjectives:
 
 47. **Inbound rules** 섹션에서 [[Add rule]] 버튼을 클릭합니다.
 
-48. **Type**에서 `MySQL/Aurora`를 선택합니다.
+48. **Type**에서 **MySQL/Aurora**를 선택합니다.
 
-49. **Source**에서 `Custom`을 선택하고 `CloudArchitect-Lab-Web-SG`를 입력합니다.
+49. **Source type**에서 **Custom**을 선택하고, **Source** 필드에 `CloudArchitect-Lab-Web-SG`를 입력합니다.
 
-50. [[Create security group]] 버튼을 클릭합니다.
+50. **Description** 필드에 `Allow MySQL from Web SG`를 입력합니다.
+
+51. [[Create security group]] 버튼을 클릭합니다.
 
 ✅ **태스크 완료**: Web-SG와 DB-SG 보안 그룹이 계층화된 구조로 생성되었습니다.
 
@@ -261,7 +279,7 @@ learningObjectives:
 3. `CloudArchitect-Lab-DB-SG`를 선택하고 **Actions** > **Delete security groups**를 선택합니다.
 
 > [!TIP]
-> DB 보안 그룹을 먼저 삭제해야 합니다. Web 보안 그룹이 DB 보안 그룹의 Source로 참조되고 있기 때문에, Web 보안 그룹을 먼저 삭제하면 오류가 발생합니다.
+> DB 보안 그룹을 먼저 삭제해야 합니다. DB 보안 그룹이 Web 보안 그룹을 Source로 참조하고 있기 때문에, Web 보안 그룹을 먼저 삭제하면 오류가 발생합니다.
 
 4. 확인 대화 상자에서 [[Delete]]를 클릭합니다.
 
