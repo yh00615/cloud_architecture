@@ -13,9 +13,9 @@ learningObjectives:
 > [!DOWNLOAD]
 > [week12-3-backup-strategy.zip](/files/week12/week12-3-backup-strategy.zip)
 >
-> - `setup-lab17-student.sh` - 사전 환경 구축 스크립트 (VPC, Subnet, Security Group, Amazon EC2 인스턴스, AWS IAM 백업 역할 등 생성)
-> - `cleanup-lab17-student.sh` - 리소스 정리 스크립트
-> - 태스크 0: 사전 환경 구축 (setup-lab17-student.sh 실행)
+> - `setup-12-3-student.sh` - 사전 환경 구축 스크립트 (VPC, Subnet, Security Group, Amazon EC2 인스턴스, AWS IAM 백업 역할 등 생성)
+> - `cleanup-12-3-student.sh` - 리소스 정리 스크립트
+> - 태스크 0: 사전 환경 구축 (setup-12-3-student.sh 실행)
 
 > [!NOTE]
 > 이 실습에서는 AWS Backup을 사용하여 EC2 인스턴스의 백업 전략을 구현합니다. 백업 볼트, 백업 계획을 생성하고 수동 백업 및 복원 프로세스를 체험합니다.
@@ -30,6 +30,9 @@ learningObjectives:
 > - **태그 기반 선택**: 태그 조건에 맞는 리소스를 자동으로 백업 대상에 포함합니다
 
 ## 태스크 0: 사전 환경 구축
+
+> [!NOTE]
+> 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
 
 1. 위 DOWNLOAD 섹션에서 `week12-3-backup-strategy.zip` 파일을 다운로드합니다.
 
@@ -46,8 +49,8 @@ unzip week12-3-backup-strategy.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-lab17-student.sh
-./setup-lab17-student.sh
+chmod +x setup-12-3-student.sh
+./setup-12-3-student.sh
 ```
 
 6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
@@ -288,7 +291,7 @@ chmod +x setup-lab17-student.sh
 2. 다음 명령어로 정리 스크립트를 실행합니다:
 
 ```bash
-./cleanup-lab17-student.sh
+./cleanup-12-3-student.sh
 ```
 
 3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.

@@ -33,6 +33,9 @@ learningObjectives:
 
 ## 태스크 0: 사전 환경 구축
 
+> [!NOTE]
+> 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
+
 1. 위 DOWNLOAD 섹션에서 `week9-2-lambda-function.zip` 파일을 다운로드합니다.
 
 2. AWS Management Console에 로그인한 후 상단의 **CloudShell** 아이콘을 선택하여 CloudShell을 실행합니다.

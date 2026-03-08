@@ -13,9 +13,9 @@ learningObjectives:
 > [!DOWNLOAD]
 > [week7-1-cloudwatch-dashboard.zip](/files/week7/week7-1-cloudwatch-dashboard.zip)
 >
-> - `setup-4-1-student.sh` - 사전 환경 구축 스크립트 (VPC, Subnet, Security Group, EC2 인스턴스, IAM 역할 등 생성)
-> - `cleanup-4-1-student.sh` - 리소스 정리 스크립트
-> - 태스크 0: 사전 환경 구축 (setup-4-1-student.sh 실행)
+> - `setup-7-1-student.sh` - 사전 환경 구축 스크립트 (VPC, Subnet, Security Group, EC2 인스턴스, IAM 역할 등 생성)
+> - `cleanup-7-1-student.sh` - 리소스 정리 스크립트
+> - 태스크 0: 사전 환경 구축 (setup-7-1-student.sh 실행)
 
 > [!NOTE]
 > 이 실습에서는 Amazon CloudWatch를 사용하여 EC2 인스턴스 모니터링, 경보 설정, SNS 알림 구성을 학습합니다. 실제 스트레스 테스트를 통해 경보 동작을 확인하고 대시보드를 구성합니다.
@@ -33,6 +33,9 @@ learningObjectives:
 
 ## 태스크 0: 사전 환경 구축
 
+> [!NOTE]
+> 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
+
 1. 위 DOWNLOAD 섹션에서 `week7-1-cloudwatch-dashboard.zip` 파일을 다운로드합니다.
 
 2. AWS Management Console에 로그인한 후 상단의 **CloudShell** 아이콘을 선택하여 CloudShell을 실행합니다.
@@ -48,8 +51,8 @@ unzip week7-1-cloudwatch-dashboard.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-4-1-student.sh
-./setup-4-1-student.sh
+chmod +x setup-7-1-student.sh
+./setup-7-1-student.sh
 ```
 
 6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
@@ -319,7 +322,7 @@ stress --cpu 1 --timeout 300
 2. 다음 명령어로 정리 스크립트를 실행합니다:
 
 ```bash
-./cleanup-4-1-student.sh
+./cleanup-7-1-student.sh
 ```
 
 3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.

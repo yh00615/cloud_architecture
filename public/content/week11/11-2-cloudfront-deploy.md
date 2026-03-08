@@ -13,9 +13,9 @@ learningObjectives:
 > [!DOWNLOAD]
 > [week11-2-cloudfront-deploy.zip](/files/week11/week11-2-cloudfront-deploy.zip)
 >
-> - `setup-lab16-student.sh` - 사전 환경 구축 스크립트 (Amazon S3 버킷, 샘플 웹 파일 생성)
-> - `cleanup-lab16-student.sh` - 리소스 정리 스크립트
-> - 태스크 0: 사전 환경 구축 (setup-lab16-student.sh 실행)
+> - `setup-11-2-student.sh` - 사전 환경 구축 스크립트 (Amazon S3 버킷, 샘플 웹 파일 생성)
+> - `cleanup-11-2-student.sh` - 리소스 정리 스크립트
+> - 태스크 0: 사전 환경 구축 (setup-11-2-student.sh 실행)
 
 > [!NOTE]
 > 이 실습에서는 Amazon CloudFront CDN과 Amazon S3를 연동하여 글로벌 콘텐츠 전송 네트워크를 구축합니다. OAC(Origin Access Control)를 통한 오리진 보호와 캐시 무효화를 직접 체험합니다.
@@ -30,6 +30,9 @@ learningObjectives:
 > - **캐시 무효화(Invalidation)**: 엣지 로케이션에 캐싱된 콘텐츠를 강제로 갱신합니다
 
 ## 태스크 0: 사전 환경 구축
+
+> [!NOTE]
+> 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
 
 1. 위 DOWNLOAD 섹션에서 `week11-2-cloudfront-deploy.zip` 파일을 다운로드합니다.
 
@@ -46,8 +49,8 @@ unzip week11-2-cloudfront-deploy.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-lab16-student.sh
-./setup-lab16-student.sh
+chmod +x setup-11-2-student.sh
+./setup-11-2-student.sh
 ```
 
 6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
@@ -236,7 +239,7 @@ chmod +x setup-lab16-student.sh
 2. 다음 명령어로 정리 스크립트를 실행합니다:
 
 ```bash
-./cleanup-lab16-student.sh
+./cleanup-11-2-student.sh
 ```
 
 3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.

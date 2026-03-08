@@ -32,6 +32,9 @@ learningObjectives:
 
 ## 태스크 0: 실습 파일 준비
 
+> [!NOTE]
+> 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
+
 1. 위 DOWNLOAD 섹션에서 `week1-2-aws-management-interface.zip` 파일을 다운로드합니다.
 
 2. 다운로드한 `week1-2-aws-management-interface.zip` 파일의 압축을 해제합니다.

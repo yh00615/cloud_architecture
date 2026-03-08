@@ -14,9 +14,9 @@ learningObjectives:
 > [!DOWNLOAD]
 > [week10-2-ecs-service-deploy.zip](/files/week10/week10-2-ecs-service-deploy.zip)
 >
-> - `setup-6-2-student.sh` - 사전 환경 구축 스크립트 (VPC, Public/Private Subnets, NAT Gateway, Security Groups, Amazon ECR 리포지토리, Docker 이미지 등 생성)
-> - `cleanup-6-2-student.sh` - 리소스 정리 스크립트
-> - 태스크 0: 사전 환경 구축 (setup-6-2-student.sh 실행)
+> - `setup-10-2-student.sh` - 사전 환경 구축 스크립트 (VPC, Public/Private Subnets, NAT Gateway, Security Groups, Amazon ECR 리포지토리, Docker 이미지 등 생성)
+> - `cleanup-10-2-student.sh` - 리소스 정리 스크립트
+> - 태스크 0: 사전 환경 구축 (setup-10-2-student.sh 실행)
 
 > [!NOTE]
 > 이 실습에서는 Amazon ECS를 사용하여 컨테이너 기반 애플리케이션을 배포하고 관리합니다. AWS Fargate를 이용한 서버리스 컨테이너 실행과 Application Load Balancer를 통한 고가용성 구성을 구현합니다.
@@ -36,6 +36,9 @@ learningObjectives:
 
 ## 태스크 0: 사전 환경 구축
 
+> [!NOTE]
+> 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
+
 1. 위 DOWNLOAD 섹션에서 `week10-2-ecs-service-deploy.zip` 파일을 다운로드합니다.
 
 2. AWS Management Console에 로그인한 후 상단의 **CloudShell** 아이콘을 선택하여 CloudShell을 실행합니다.
@@ -51,8 +54,8 @@ unzip week10-2-ecs-service-deploy.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-6-2-student.sh
-./setup-6-2-student.sh
+chmod +x setup-10-2-student.sh
+./setup-10-2-student.sh
 ```
 
 6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
@@ -344,7 +347,7 @@ chmod +x setup-6-2-student.sh
 2. 다음 명령어로 정리 스크립트를 실행합니다:
 
 ```bash
-./cleanup-6-2-student.sh
+./cleanup-10-2-student.sh
 ```
 
 3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.

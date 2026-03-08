@@ -14,9 +14,9 @@ learningObjectives:
 > [!DOWNLOAD]
 > [week4-3-ec2-autoscaling.zip](/files/week4/week4-3-ec2-autoscaling.zip)
 >
-> - `setup-2-3-student.sh` - 사전 환경 구축 스크립트 (VPC, Subnet 2개, Security Group, EC2 인스턴스 등 생성)
-> - `cleanup-2-3-student.sh` - 리소스 정리 스크립트
-> - 태스크 0: 사전 환경 구축 (setup-2-3-student.sh 실행)
+> - `setup-4-3-student.sh` - 사전 환경 구축 스크립트 (VPC, Subnet 2개, Security Group, EC2 인스턴스 등 생성)
+> - `cleanup-4-3-student.sh` - 리소스 정리 스크립트
+> - 태스크 0: 사전 환경 구축 (setup-4-3-student.sh 실행)
 
 > [!NOTE]
 > 이 실습에서는 Auto Scaling Group과 Application Load Balancer를 구성하여 자동 확장/축소되는 웹 서비스를 구축합니다.
@@ -35,6 +35,9 @@ learningObjectives:
 
 ## 태스크 0: 사전 환경 구축
 
+> [!NOTE]
+> 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
+
 1. 위 DOWNLOAD 섹션에서 `week4-3-ec2-autoscaling.zip` 파일을 다운로드합니다.
 
 2. AWS 콘솔 상단의 **CloudShell** 아이콘을 선택하여 CloudShell을 실행합니다.
@@ -50,8 +53,8 @@ unzip week4-3-ec2-autoscaling.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-2-3-student.sh
-./setup-2-3-student.sh
+chmod +x setup-4-3-student.sh
+./setup-4-3-student.sh
 ```
 
 6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
@@ -404,8 +407,8 @@ EOF
 94. CloudShell에서 cleanup 스크립트를 실행하여 사전 구축 리소스를 정리합니다:
 
 ```bash
-chmod +x cleanup-2-3-student.sh
-./cleanup-2-3-student.sh
+chmod +x cleanup-4-3-student.sh
+./cleanup-4-3-student.sh
 ```
 
 > [!WARNING]
@@ -425,7 +428,7 @@ chmod +x cleanup-2-3-student.sh
 2. 다음 명령어로 정리 스크립트를 실행합니다:
 
 ```bash
-./cleanup-2-3-student.sh
+./cleanup-4-3-student.sh
 ```
 
 3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.
