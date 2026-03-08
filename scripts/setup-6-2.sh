@@ -209,6 +209,7 @@ show_completion_summary() {
     echo "  ✅ VPC: CloudArchitect-Lab-VPC ($VPC_ID)"
     echo "  ✅ Internet Gateway: CloudArchitect-Lab-IGW ($IGW_ID)"
     echo "  ✅ Public Subnet: CloudArchitect-Lab-Public-Subnet ($PUBLIC_SUBNET_ID)"
+    echo "  ✅ Route Table: CloudArchitect-Lab-Public-RT ($PUBLIC_RT_ID)"
     echo "  ✅ Private Subnets: 2개 (RDS용, Multi-AZ)"
     echo "  ✅ EC2 Security Group: CloudArchitect-Lab-EC2-SG ($EC2_SG_ID)"
     echo "  ✅ EC2 Instance: CloudArchitect-Lab-RDS-Client ($EC2_INSTANCE_ID)"
@@ -520,6 +521,9 @@ main() {
     local account_id=$(echo "$aws_info" | cut -d':' -f1)
     local region=$(echo "$aws_info" | cut -d':' -f2)
     local user_arn=$(echo "$aws_info" | cut -d':' -f3)
+    
+    # REGION 변수를 전역으로 export
+    export REGION="$region"
     
     # 헤더 표시
     echo "================================"

@@ -14,7 +14,7 @@ learningObjectives:
 > [!DOWNLOAD]
 > [week1-2-aws-management-interface.zip](/files/week1/week1-2-aws-management-interface.zip)
 >
-> - `lab01-check.sh` - AWS 환경 정보 확인 스크립트 (계정 정보, 리전, 가용 영역 조회)
+> - `setup-1-2.sh` - AWS 환경 정보 확인 스크립트 (계정 정보, 리전, 가용 영역 조회)
 > - 태스크 0: CloudShell에서 스크립트 업로드
 
 > [!NOTE]
@@ -37,37 +37,41 @@ learningObjectives:
 
 1. 위 DOWNLOAD 섹션에서 `week1-2-aws-management-interface.zip` 파일을 다운로드합니다.
 
-2. 다운로드한 `week1-2-aws-management-interface.zip` 파일의 압축을 해제합니다.
+2. AWS Management Console에 로그인합니다.
 
-3. AWS Management Console에 로그인합니다.
+3. AWS Management Console 상단의 **CloudShell** 아이콘을 선택합니다.
 
-4. AWS Management Console 상단의 **CloudShell** 아이콘을 선택합니다.
-
-5. CloudShell이 처음 실행되는 경우 환경 초기화를 기다립니다.
+4. CloudShell이 처음 실행되는 경우 환경 초기화를 기다립니다.
 
 > [!NOTE]
-> CloudShell 첫 실행 시 환경 초기화에 약 1-2분이 소요됩니다. "Waiting for environment to run..." 메시지가 표시되며, 완료되면 명령어 프롬프트(`$`)가 나타납니다.
+> CloudShell 첫 실행 시 환경 초기화에 약 1-2분이 소요됩니다. "Waiting for environment to run..." 메시지가 표시되며, 완료되면 명령어 프롬프트가 나타납니다.
 
-6. CloudShell 상단의 **Actions** > `Upload file`을 선택하여 압축 해제한 `lab01-check.sh` 파일을 업로드합니다.
+5. CloudShell 상단의 **Actions** → **Upload file**을 선택하여 다운로드한 ZIP 파일을 업로드합니다.
 
 > [!NOTE]
 > CloudShell의 **Actions** 메뉴는 터미널 오른쪽 상단에 있습니다. Upload file을 선택하면 로컬 파일을 CloudShell 홈 디렉토리(`/home/cloudshell-user`)로 업로드할 수 있습니다.
 
-7. 업로드가 완료되면 파일이 존재하는지 확인합니다:
+6. 업로드가 완료되면 다음 명령어를 실행합니다:
 
 ```bash
-ls -la lab01-check.sh
+unzip week1-2-aws-management-interface.zip
+```
+
+7. 압축 해제된 파일이 존재하는지 확인합니다:
+
+```bash
+ls -la setup-1-2.sh
 ```
 
 > [!OUTPUT]
 > ```
-> -rw-r--r-- 1 cloudshell-user cloudshell-user 612 ... lab01-check.sh
+> -rw-r--r-- 1 cloudshell-user cloudshell-user 828 ... setup-1-2.sh
 > ```
 
 8. 스크립트에 실행 권한을 부여합니다:
 
 ```bash
-chmod +x lab01-check.sh
+chmod +x setup-1-2.sh
 ```
 
 ✅ **태스크 완료**: 실습 파일이 CloudShell에 업로드되고 실행 준비가 완료되었습니다.
@@ -159,7 +163,7 @@ chmod +x lab01-check.sh
 24. CloudShell 터미널에서 태스크 0에서 업로드한 스크립트를 실행합니다:
 
 ```bash
-./lab01-check.sh
+./setup-1-2.sh
 ```
 
 > [!TIP]

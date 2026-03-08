@@ -322,13 +322,15 @@ main() {
     aws_info=$(get_aws_account_info)
     account_id=$(echo "$aws_info" | cut -d':' -f1)
     region=$(echo "$aws_info" | cut -d':' -f2)
-    REGION="$region"  # REGION 변수 설정
     
     if [ -z "$region" ]; then
         show_error "AWS 리전이 설정되지 않았습니다."
         show_info "다음 명령어로 리전을 설정해주세요: aws configure set region ap-northeast-2"
         exit 1
     fi
+    
+    # REGION 변수를 전역으로 export
+    export REGION="$region"
     
     # 헤더 표시
     echo "================================"

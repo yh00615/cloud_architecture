@@ -314,30 +314,30 @@ create_route_table() {
     show_info "Route Table 설정 중..."
     
     # 기존 Route Table 확인
-    RT_ID=$(aws ec2 describe-route-tables \
+    PUBLIC_RT_ID=$(aws ec2 describe-route-tables \
         --filters \
             "Name=tag:Name,Values=CloudArchitect-Lab-Public-RT" \
             "Name=vpc-id,Values=$VPC_ID" \
         --query 'RouteTables[0].RouteTableId' \
         --output text 2>/dev/null)
     
-    if [ "$RT_ID" != "None" ] && [ -n "$RT_ID" ]; then
-        show_success "기존 Route Table 재사용: CloudArchitect-Lab-Public-RT ($RT_ID)"
+    if [ "$PUBLIC_RT_ID" != "None" ] && [ -n "$PUBLIC_RT_ID" ]; then
+        show_success "기존 Route Table 재사용: CloudArchitect-Lab-Public-RT ($PUBLIC_RT_ID)"
     else
         show_info "새 Route Table 생성 중..."
-        RT_ID=$(aws ec2 create-route-table \
+        PUBLIC_RT_ID=$(aws ec2 create-route-table \
             --vpc-id $VPC_ID \
             --tag-specifications 'ResourceType=route-table,Tags=[{Key=Name,Value=CloudArchitect-Lab-Public-RT},{Key=Project,Value=CloudArchitect},{Key=Environment,Value=Lab},{Key=Component,Value=Network},{Key=Type,Value=Public},{Key=Lab,Value=Lab06},{Key=CreatedBy,Value=setup-lab06-student.sh}]' \
             --query 'RouteTable.RouteTableId' --output text)
-        show_success "Route Table 생성 완료: CloudArchitect-Lab-Public-RT ($RT_ID)"
+        show_success "Route Table 생성 완료: CloudArchitect-Lab-Public-RT ($PUBLIC_RT_ID)"
     fi
     
     # Internet Gateway 라우트 추가
-    aws ec2 create-route --route-table-id $RT_ID --destination-cidr-block 0.0.0.0/0 --gateway-id $IGW_ID >/dev/null 2>&1 || true
+    aws ec2 create-route --route-table-id $PUBLIC_RT_ID --destination-cidr-block 0.0.0.0/0 --gateway-id $IGW_ID >/dev/null 2>&1 || true
     
     # 서브넷들과 연결
-    aws ec2 associate-route-table --subnet-id $PUBLIC_SUBNET_ID --route-table-id $RT_ID >/dev/null 2>&1 || true
-    aws ec2 associate-route-table --subnet-id $PUBLIC_SUBNET2_ID --route-table-id $RT_ID >/dev/null 2>&1 || true
+    aws ec2 associate-route-table --subnet-id $PUBLIC_SUBNET_ID --route-table-id $PUBLIC_RT_ID >/dev/null 2>&1 || true
+    aws ec2 associate-route-table --subnet-id $PUBLIC_SUBNET2_ID --route-table-id $PUBLIC_RT_ID >/dev/null 2>&1 || true
     
     show_success "Route Table 설정 완료"
 }
@@ -661,8 +661,10 @@ main() {
     local aws_info=$(get_aws_account_info)
     local account_id=$(echo "$aws_info" | cut -d':' -f1)
     local region=$(echo "$aws_info" | cut -d':' -f2)
-    REGION="$region"  # REGION 변수 설정
     local user_arn=$(echo "$aws_info" | cut -d':' -f3)
+    
+    # REGION 변수를 전역으로 export
+    export REGION="$region"
     
     # 헤더 표시
     echo "================================"
