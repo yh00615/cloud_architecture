@@ -16,9 +16,25 @@ learningObjectives:
 > [!DOWNLOAD]
 > [week6-2-rds-service.zip](/files/week6/week6-2-rds-service.zip)
 >
-> - `setup-6-2.sh` - 사전 환경 구축 스크립트 (VPC, Public/Private Subnets, Route Table, Security Group, EC2 인스턴스 등 생성)
-> - `cleanup-6-2.sh` - 리소스 정리 스크립트
+> **포함 파일:**
+> 
+> **setup-6-2.sh** - 사전 환경 구축 스크립트
+> - **목적**: RDS 실습을 위한 Multi-AZ 네트워크와 Bastion Host 자동 구축
+> - **생성 리소스**:
+>   - VPC 네트워크 (VPC, Internet Gateway, Public Subnet, 2개 Private Subnet, Route Table)
+>   - Security Group (SSH 22 포트 허용)
+>   - EC2 인스턴스 (RDS 접속을 위한 Bastion Host, MySQL 클라이언트 사전 설치)
+> - **실행 시간**: 약 3-5분
+> - **활용**: 태스크 2-3에서 Private Subnet에 RDS를 생성하고, 태스크 4-5에서 Bastion Host를 통해 RDS에 접속합니다
+>
+> **cleanup-6-2.sh** - 리소스 정리 스크립트
+> - **목적**: 실습에서 생성한 모든 리소스를 안전한 순서로 자동 삭제
+> - **삭제 리소스**: RDS 인스턴스, DB Subnet Group, EC2 인스턴스, Security Group, VPC 및 네트워크 리소스
+> - **실행 시간**: 약 5-7분 (RDS 삭제 시간 포함)
+>
+> **사용 태스크:**
 > - 태스크 0: 사전 환경 구축 (setup-6-2.sh 실행)
+> - 리소스 정리: 실습 완료 후 cleanup-6-2.sh 실행
 
 > [!ARCHITECTURE] 실습 아키텍처 다이어그램 - RDS 서비스 아키텍처
 >
@@ -40,6 +56,30 @@ learningObjectives:
 > [!NOTE]
 > 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
 
+### 0.1 사전 환경 구축의 목적
+
+이 실습에서는 **Amazon RDS**를 사용하여 관리형 관계형 데이터베이스를 생성하고 EC2에서 접속하는 방법을 학습합니다. 이를 위해 다음과 같은 환경이 필요합니다:
+
+**구축되는 인프라:**
+- **VPC 네트워크 (Multi-AZ)**: Public/Private 서브넷을 구성하여 보안을 강화합니다
+- **Public Subnet**: Bastion Host EC2가 배치되어 인터넷에서 접속 가능합니다
+- **Private Subnet 2개**: RDS 인스턴스가 배치되는 격리된 서브넷입니다 (Multi-AZ 필수)
+- **Internet Gateway**: Bastion Host의 인터넷 연결을 제공합니다
+- **Security Group**: Bastion Host에서 RDS로의 MySQL 트래픽(3306)만 허용합니다
+- **EC2 인스턴스 (Bastion Host)**: RDS에 접속하기 위한 클라이언트 역할을 합니다
+
+**실습에서의 활용:**
+- **태스크 1**: 생성된 VPC와 Bastion Host를 확인합니다
+- **태스크 2**: DB 서브넷 그룹을 생성하여 RDS가 배치될 서브넷을 지정합니다
+- **태스크 3**: RDS MySQL 인스턴스를 생성하고 구성합니다
+- **태스크 4**: Bastion Host에서 RDS로 접속하여 데이터베이스를 관리합니다
+- **태스크 5**: 테이블을 생성하고 데이터를 조회하여 RDS 기능을 테스트합니다
+
+> [!TIP]
+> 사전 환경 구축 스크립트는 Multi-AZ 네트워크와 Bastion Host를 자동으로 생성하므로, 여러분은 RDS 인스턴스 생성과 데이터베이스 관리에만 집중할 수 있습니다.
+
+### 0.2 환경 구축 실행
+
 1. 위 DOWNLOAD 섹션에서 `week6-2-rds-service.zip` 파일을 다운로드합니다.
 
 2. AWS Management Console에 로그인한 후 상단의 **CloudShell** 아이콘을 선택하여 CloudShell을 실행합니다.
@@ -59,23 +99,27 @@ chmod +x setup-6-2.sh
 ./setup-6-2.sh
 ```
 
-6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
+6. 스크립트 실행 중 생성 계획이 표시되면 내용을 확인하고 `y`를 입력하여 진행합니다.
 
 > [!NOTE]
 > 사전 환경 구축에 약 3-5분이 소요됩니다. 스크립트가 완료될 때까지 기다립니다.
 
+### 0.3 생성된 리소스 확인
+
 7. 스크립트가 완료되면 출력 메시지에서 다음 리소스가 생성되었는지 확인합니다:
 
-| 리소스 | 이름 |
-|--------|------|
-| VPC | CloudArchitect-Lab-VPC |
-| Internet Gateway | CloudArchitect-Lab-IGW |
-| Public Subnet | CloudArchitect-Lab-Public-Subnet |
-| Private Subnet 1 | CloudArchitect-Lab-Private-Subnet-1 |
-| Private Subnet 2 | CloudArchitect-Lab-Private-Subnet-2 |
-| Route Table | CloudArchitect-Lab-Public-RT |
-| Security Group | CloudArchitect-Lab-EC2-SG |
-| EC2 인스턴스 | CloudArchitect-Lab-RDS-Client |
+| 리소스 유형 | 리소스 이름 | 실습에서의 역할 |
+|------------|------------|----------------|
+| VPC | CloudArchitect-Lab-VPC | RDS와 Bastion Host를 위한 격리된 네트워크 환경 |
+| Internet Gateway | CloudArchitect-Lab-IGW | Bastion Host의 인터넷 연결 제공 |
+| Public Subnet | CloudArchitect-Lab-Public-Subnet | Bastion Host가 배치되는 서브넷 |
+| Private Subnet 1 | CloudArchitect-Lab-Private-Subnet-1 | RDS가 배치되는 첫 번째 Private 서브넷 |
+| Private Subnet 2 | CloudArchitect-Lab-Private-Subnet-2 | RDS가 배치되는 두 번째 Private 서브넷 (Multi-AZ) |
+| Route Table | CloudArchitect-Lab-Public-RT | 인터넷 트래픽 라우팅 |
+| Security Group | CloudArchitect-Lab-EC2-SG | Bastion Host용 (SSH 허용) |
+| EC2 인스턴스 | CloudArchitect-Lab-RDS-Client | RDS 접속을 위한 Bastion Host |
+
+8. 출력 메시지에서 EC2 인스턴스의 **Public IP 주소**를 확인하고 메모합니다 (태스크 4에서 사용).
 
 ✅ **태스크 완료**: 사전 환경 구축이 완료되었습니다.
 

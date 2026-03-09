@@ -17,9 +17,25 @@ learningObjectives:
 > [!DOWNLOAD]
 > [week4-3-ec2-autoscaling.zip](/files/week4/week4-3-ec2-autoscaling.zip)
 >
-> - `setup-4-3.sh` - 사전 환경 구축 스크립트 (VPC, Subnet 2개, Security Group, EC2 인스턴스 등 생성)
-> - `cleanup-4-3.sh` - 리소스 정리 스크립트
+> **포함 파일:**
+> 
+> **setup-4-3.sh** - 사전 환경 구축 스크립트
+> - **목적**: Auto Scaling 실습을 위한 Multi-AZ 네트워크와 템플릿 웹 서버 자동 구축
+> - **생성 리소스**:
+>   - VPC 네트워크 (VPC, Internet Gateway, 2개 AZ의 Public Subnet, Route Table)
+>   - Security Group (HTTP 80, SSH 22 포트 허용)
+>   - EC2 인스턴스 (AMI 생성을 위한 템플릿 웹 서버)
+> - **실행 시간**: 약 3-5분
+> - **활용**: 태스크 1에서 이 인스턴스로 AMI를 생성하고, 태스크 2-5에서 Auto Scaling과 Load Balancer를 구성합니다
+>
+> **cleanup-4-3.sh** - 리소스 정리 스크립트
+> - **목적**: 실습에서 생성한 모든 리소스를 안전한 순서로 자동 삭제
+> - **삭제 리소스**: Auto Scaling Group, Launch Template, ALB, Target Group, EC2 인스턴스, Security Group, VPC 및 네트워크 리소스
+> - **실행 시간**: 약 3-5분
+>
+> **사용 태스크:**
 > - 태스크 0: 사전 환경 구축 (setup-4-3.sh 실행)
+> - 리소스 정리: 실습 완료 후 cleanup-4-3.sh 실행
 
 > [!ARCHITECTURE] 실습 아키텍처 다이어그램 - Auto Scaling 아키텍처
 >
@@ -37,6 +53,28 @@ learningObjectives:
 
 > [!NOTE]
 > 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
+
+### 0.1 사전 환경 구축의 목적
+
+이 실습에서는 **Auto Scaling**과 **Elastic Load Balancer**를 사용하여 트래픽에 따라 자동으로 확장/축소되는 웹 서비스를 구축하는 방법을 학습합니다. 이를 위해 다음과 같은 환경이 필요합니다:
+
+**구축되는 인프라:**
+- **VPC 네트워크 (Multi-AZ)**: 2개 가용 영역에 Public 서브넷을 구성하여 고가용성을 확보합니다
+- **Internet Gateway**: VPC와 인터넷 간 통신을 가능하게 합니다
+- **Security Group**: HTTP(80), SSH(22) 트래픽을 허용합니다
+- **EC2 인스턴스 (템플릿용)**: Auto Scaling에서 사용할 AMI를 생성하기 위한 기본 웹 서버입니다
+
+**실습에서의 활용:**
+- **태스크 1**: 생성된 웹 서버 인스턴스를 확인하고 AMI를 생성합니다
+- **태스크 2**: Application Load Balancer를 생성하여 트래픽을 분산합니다
+- **태스크 3**: Launch Template을 생성하여 Auto Scaling 설정을 정의합니다
+- **태스크 4**: Auto Scaling Group을 생성하고 스케일링 정책을 설정합니다
+- **태스크 5**: 부하 테스트를 통해 자동 확장/축소를 확인합니다
+
+> [!TIP]
+> 사전 환경 구축 스크립트는 Multi-AZ 네트워크와 템플릿용 웹 서버를 자동으로 생성하므로, 여러분은 Auto Scaling과 Load Balancer 구성에만 집중할 수 있습니다.
+
+### 0.2 환경 구축 실행
 
 1. 위 DOWNLOAD 섹션에서 `week4-3-ec2-autoscaling.zip` 파일을 다운로드합니다.
 
@@ -57,22 +95,26 @@ chmod +x setup-4-3.sh
 ./setup-4-3.sh
 ```
 
-6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
-
-7. 스크립트가 완료되면 출력 메시지에서 다음 리소스가 생성되었는지 확인합니다:
-
-| 리소스 | 이름 |
-|--------|------|
-| VPC | CloudArchitect-Lab-VPC |
-| Internet Gateway | CloudArchitect-Lab-IGW |
-| Public Subnet 1 | CloudArchitect-Lab-Public-Subnet-1 |
-| Public Subnet 2 | CloudArchitect-Lab-Public-Subnet-2 |
-| Route Table | CloudArchitect-Lab-Public-RT |
-| Security Group | CloudArchitect-Lab-WebServer-SG |
-| EC2 인스턴스 | CloudArchitect-Lab-WebServer |
+6. 스크립트 실행 중 생성 계획이 표시되면 내용을 확인하고 `y`를 입력하여 진행합니다.
 
 > [!WARNING] 스크립트 실행 시간:
 > 사전 환경 구축에 약 3-5분이 소요됩니다. 스크립트가 완료될 때까지 기다려주세요.
+
+### 0.3 생성된 리소스 확인
+
+7. 스크립트가 완료되면 출력 메시지에서 다음 리소스가 생성되었는지 확인합니다:
+
+| 리소스 유형 | 리소스 이름 | 실습에서의 역할 |
+|------------|------------|----------------|
+| VPC | CloudArchitect-Lab-VPC | Auto Scaling 인스턴스를 위한 격리된 네트워크 환경 |
+| Internet Gateway | CloudArchitect-Lab-IGW | 인터넷 연결을 위한 게이트웨이 |
+| Public Subnet 1 | CloudArchitect-Lab-Public-Subnet-1 | 첫 번째 가용 영역의 서브넷 (Multi-AZ) |
+| Public Subnet 2 | CloudArchitect-Lab-Public-Subnet-2 | 두 번째 가용 영역의 서브넷 (Multi-AZ) |
+| Route Table | CloudArchitect-Lab-Public-RT | 인터넷 트래픽 라우팅 |
+| Security Group | CloudArchitect-Lab-WebServer-SG | HTTP(80), SSH(22) 트래픽 허용 |
+| EC2 인스턴스 | CloudArchitect-Lab-WebServer | AMI 생성을 위한 템플릿 웹 서버 |
+
+8. 출력 메시지에서 EC2 인스턴스의 **Public IP 주소**를 확인하고 메모합니다.
 
 ✅ **태스크 완료**: 사전 환경 구축이 완료되었습니다.
 

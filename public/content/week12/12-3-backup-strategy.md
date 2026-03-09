@@ -16,9 +16,27 @@ learningObjectives:
 > [!DOWNLOAD]
 > [week12-3-backup-strategy.zip](/files/week12/week12-3-backup-strategy.zip)
 >
-> - `setup-12-3.sh` - 사전 환경 구축 스크립트 (VPC, Subnet, Security Group, Amazon EC2 인스턴스, AWS IAM 백업 역할 등 생성)
-> - `cleanup-12-3.sh` - 리소스 정리 스크립트
+> **포함 파일:**
+> 
+> **setup-12-3.sh** - 사전 환경 구축 스크립트
+> - **목적**: AWS Backup 실습을 위한 네트워크와 백업 대상 EC2 인스턴스 자동 구축
+> - **생성 리소스**:
+>   - VPC 네트워크 (VPC, Internet Gateway, Public Subnet, Route Table)
+>   - Security Group (HTTP 80, SSH 22 포트 허용)
+>   - EC2 인스턴스 (백업 대상, 웹 서버 및 샘플 데이터 포함)
+>   - IAM 백업 역할 (AWS Backup 서비스 권한)
+>   - 백업용 태그 (Project=CloudArchitect, Week=Week12)
+> - **실행 시간**: 약 3-5분
+> - **활용**: 태스크 2-6에서 백업 볼트를 생성하고, 백업 계획을 설정하며, 태그 기반으로 EC2를 백업하고 복원합니다
+>
+> **cleanup-12-3.sh** - 리소스 정리 스크립트
+> - **목적**: 실습에서 생성한 모든 리소스를 안전한 순서로 자동 삭제
+> - **삭제 리소스**: 백업 복구 포인트, 백업 계획, 백업 볼트, EC2 인스턴스, IAM 역할, VPC 및 네트워크 리소스
+> - **실행 시간**: 약 3-5분
+>
+> **사용 태스크:**
 > - 태스크 0: 사전 환경 구축 (setup-12-3.sh 실행)
+> - 리소스 정리: 실습 완료 후 cleanup-12-3.sh 실행
 
 > [!CONCEPT] AWS Backup이란?
 >
@@ -33,6 +51,30 @@ learningObjectives:
 
 > [!NOTE]
 > 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
+
+### 0.1 사전 환경 구축의 목적
+
+이 실습에서는 **AWS Backup**을 사용하여 EC2 인스턴스를 자동으로 백업하고 복원하는 방법을 학습합니다. 이를 위해 다음과 같은 환경이 필요합니다:
+
+**구축되는 인프라:**
+- **VPC 네트워크**: 격리된 네트워크 환경에서 EC2 인스턴스를 실행합니다
+- **EC2 인스턴스 (백업 대상)**: 웹 서버와 샘플 데이터가 포함된 테스트 인스턴스입니다
+- **백업용 태그**: Project, Week, Purpose 태그로 백업 대상을 자동 식별합니다
+- **IAM 백업 역할**: AWS Backup 서비스가 리소스를 백업/복원할 수 있는 권한을 제공합니다
+- **샘플 데이터**: 백업 및 복원을 테스트할 수 있는 웹 페이지와 파일이 생성됩니다
+
+**실습에서의 활용:**
+- **태스크 1**: 생성된 EC2 인스턴스와 백업용 태그를 확인합니다
+- **태스크 2**: AWS Backup 볼트를 생성하여 백업을 저장할 공간을 마련합니다
+- **태스크 3**: 백업 계획을 생성하고 일정, 보관 기간, 태그 기반 선택을 설정합니다
+- **태스크 4**: On-demand 백업을 실행하여 즉시 백업을 생성합니다
+- **태스크 5**: 백업 작업을 모니터링하고 완료 상태를 확인합니다
+- **태스크 6**: 백업에서 EC2 인스턴스를 복원하여 재해 복구를 테스트합니다
+
+> [!TIP]
+> 사전 환경 구축 스크립트는 백업 대상 인스턴스와 필요한 권한을 자동으로 준비하므로, 여러분은 AWS Backup의 핵심 백업/복원 기능 학습에만 집중할 수 있습니다.
+
+### 0.2 환경 구축 실행
 
 1. 위 DOWNLOAD 섹션에서 `week12-3-backup-strategy.zip` 파일을 다운로드합니다.
 
@@ -53,20 +95,27 @@ chmod +x setup-12-3.sh
 ./setup-12-3.sh
 ```
 
-6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
+6. 스크립트 실행 중 생성 계획이 표시되면 내용을 확인하고 `y`를 입력하여 진행합니다.
 
 > [!NOTE]
 > 사전 환경 구축에 약 3-5분이 소요됩니다. 스크립트가 완료될 때까지 기다립니다.
 
+### 0.3 생성된 리소스 확인
+
 7. 스크립트가 완료되면 출력 메시지에서 다음 리소스가 생성되었는지 확인합니다:
 
-| 리소스 | 이름 |
-|--------|------|
-| VPC | CloudArchitect-Lab-VPC |
-| Public Subnet | CloudArchitect-Lab-Public-Subnet |
-| Security Group | CloudArchitect-Lab-EC2-SG |
-| EC2 인스턴스 | CloudArchitect-Lab-TestInstance |
-| IAM 백업 역할 | CloudArchitect-Lab-BackupRole |
+| 리소스 유형 | 리소스 이름 | 실습에서의 역할 |
+|------------|------------|----------------|
+| VPC | CloudArchitect-Lab-VPC | EC2 인스턴스를 위한 격리된 네트워크 환경 |
+| Public Subnet | CloudArchitect-Lab-Public-Subnet | EC2 인스턴스가 배치되는 서브넷 |
+| Security Group | CloudArchitect-Lab-EC2-SG | HTTP(80), SSH(22) 트래픽 허용 |
+| EC2 인스턴스 | CloudArchitect-Lab-TestInstance | 백업 대상 인스턴스 (웹 서버 + 샘플 데이터) |
+| IAM 백업 역할 | CloudArchitect-Lab-BackupRole | AWS Backup 서비스 권한 제공 |
+| 백업용 태그 | Project=CloudArchitect, Week=Week12 | 태그 기반 백업 대상 식별 |
+
+8. 출력 메시지에서 EC2 인스턴스의 **Public IP 주소**를 확인하고 메모합니다.
+
+9. 웹 브라우저에서 `http://[Public IP]`로 접속하여 백업 테스트용 웹 페이지가 표시되는지 확인합니다.
 
 ✅ **태스크 완료**: 사전 환경 구축이 완료되었습니다.
 
