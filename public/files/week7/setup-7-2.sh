@@ -6,7 +6,7 @@ export LC_ALL=${LC_ALL:-en_US.UTF-8}
 export LC_CTYPE=${LC_CTYPE:-en_US.UTF-8}
 
 # ===========================================
-# Lab11: CloudWatch Logs 실습 - 사전 환경 구축
+# Week7-2: CloudWatch Logs 실습 - 사전 환경 구축
 # 목적: CloudWatch Logs 실습을 위한 EC2 + Nginx + CloudWatch Agent 환경 구축
 # 예상 시간: 약 15분
 # 예상 비용: EC2 인스턴스 및 CloudWatch Logs로 인해 과금될 수 있음
@@ -154,12 +154,12 @@ show_creation_plan() {
 # 사용자 확인 함수
 confirm_creation() {
     echo ""
-    read -p "위 계획대로 Lab11 사전 환경을 구성하시겠습니까? (y/N): " confirm
+    read -p "위 계획대로 Week7-2 사전 환경을 구성하시겠습니까? (y/N): " confirm
     if [[ ! $confirm =~ ^[Yy]$ ]]; then
-        show_info "Lab11 설정이 취소되었습니다."
+        show_info "Week7-2 설정이 취소되었습니다."
         exit 0
     fi
-    show_info "Lab11 사전 환경 구성을 시작합니다..."
+    show_info "Week7-2 사전 환경 구성을 시작합니다..."
     echo ""
 }
 
@@ -182,7 +182,7 @@ setup_network_resources() {
         show_info "새 VPC 생성 중..."
         VPC_ID=$(aws ec2 create-vpc \
             --cidr-block 10.0.0.0/16 \
-            --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=CloudArchitect-Lab-VPC},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab11}]' \
+            --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=CloudArchitect-Lab-VPC},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week7-2}]' \
             --query 'Vpc.VpcId' --output text)
         
         aws ec2 modify-vpc-attribute --vpc-id "$VPC_ID" --enable-dns-hostnames
@@ -205,7 +205,7 @@ setup_network_resources() {
     else
         show_info "새 Internet Gateway 생성 중..."
         IGW_ID=$(aws ec2 create-internet-gateway \
-            --tag-specifications 'ResourceType=internet-gateway,Tags=[{Key=Name,Value=CloudArchitect-Lab-IGW},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab11}]' \
+            --tag-specifications 'ResourceType=internet-gateway,Tags=[{Key=Name,Value=CloudArchitect-Lab-IGW},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week7-2}]' \
             --query 'InternetGateway.InternetGatewayId' --output text)
         
         aws ec2 attach-internet-gateway --vpc-id "$VPC_ID" --internet-gateway-id "$IGW_ID"
@@ -234,7 +234,7 @@ create_subnet_and_security_group() {
             --vpc-id "$VPC_ID" \
             --cidr-block 10.0.1.0/24 \
             --availability-zone ${REGION}a \
-            --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=$SUBNET_NAME},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab11}]" \
+            --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=$SUBNET_NAME},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week7-2}]" \
             --query 'Subnet.SubnetId' --output text)
         
         aws ec2 modify-subnet-attribute --subnet-id "$PUBLIC_SUBNET_ID" --map-public-ip-on-launch
@@ -255,7 +255,7 @@ create_subnet_and_security_group() {
         show_info "새 Route Table 생성 중..."
         RT_ID=$(aws ec2 create-route-table \
             --vpc-id "$VPC_ID" \
-            --tag-specifications 'ResourceType=route-table,Tags=[{Key=Name,Value=CloudArchitect-Lab-Public-RT},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab11}]' \
+            --tag-specifications 'ResourceType=route-table,Tags=[{Key=Name,Value=CloudArchitect-Lab-Public-RT},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week7-2}]' \
             --query 'RouteTable.RouteTableId' --output text)
         
         aws ec2 create-route --route-table-id "$RT_ID" --destination-cidr-block 0.0.0.0/0 --gateway-id "$IGW_ID" >/dev/null 2>&1
@@ -277,9 +277,9 @@ create_subnet_and_security_group() {
         show_info "새 Security Group 생성 중..."
         SG_ID=$(aws ec2 create-security-group \
             --group-name "$SG_NAME" \
-            --description "CloudArchitect Lab11 Web Security Group" \
+            --description "CloudArchitect Week7-2 Web Security Group" \
             --vpc-id "$VPC_ID" \
-            --tag-specifications "ResourceType=security-group,Tags=[{Key=Name,Value=$SG_NAME},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab11}]" \
+            --tag-specifications "ResourceType=security-group,Tags=[{Key=Name,Value=$SG_NAME},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week7-2}]" \
             --query 'GroupId' --output text)
         
         # HTTP 허용
@@ -331,7 +331,7 @@ EOF
         aws iam create-role \
             --role-name "$ROLE_NAME" \
             --assume-role-policy-document file://trust-policy.json \
-            --tags Key=Project,Value=CloudArchitect Key=Lab,Value=Lab11 \
+            --tags Key=Project,Value=CloudArchitect Key=Lab,Value=Week7-2 \
             >/dev/null 2>&1
         
         # CloudWatchAgentServerPolicy 연결
@@ -410,7 +410,7 @@ cat > /usr/share/nginx/html/index.html << 'HTML'
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CloudArchitect Lab11 - CloudWatch Logs</title>
+    <title>CloudArchitect Week7-2 - CloudWatch Logs</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; background-color: #f5f5f5; }
         .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -566,7 +566,7 @@ EOF
             --security-group-ids "$SG_ID" \
             --iam-instance-profile Name="$INSTANCE_PROFILE_NAME" \
             --user-data file://user-data.sh \
-            --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$INSTANCE_NAME},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab11}]" \
+            --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$INSTANCE_NAME},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week7-2}]" \
             --query 'Instances[0].InstanceId' \
             --output text)
         
@@ -663,7 +663,7 @@ show_completion_summary() {
     WEB_SG_ID="$SG_ID"
     
     echo ""
-    show_success "🎉 Lab11 CloudWatch Logs 실습 환경 구축이 완료되었습니다!"
+    show_success "🎉 Week7-2 CloudWatch Logs 실습 환경 구축이 완료되었습니다!"
     echo ""
     
     echo "📋 생성된 주요 리소스:"
@@ -714,7 +714,7 @@ show_completion_summary() {
     echo "💰 비용 절약: 실습 완료 후 cleanup 스크립트로 리소스를 정리하세요"
     echo ""
     
-    show_success "Lab11 스크립트 실행 완료"
+    show_success "Week7-2 스크립트 실행 완료"
 }
 
 # 메인 실행 함수
@@ -730,7 +730,7 @@ main() {
     
     # 헤더 표시
     echo "================================"
-    echo "Lab11: CloudWatch Logs 실습 - 사전 환경 구축"
+    echo "Week7-2: CloudWatch Logs 실습 - 사전 환경 구축"
     echo "================================"
     echo ""
     show_info "AWS 환경 확인 중..."
@@ -765,7 +765,7 @@ main() {
     show_completion_summary
     
     # 임시 파일 정리
-    rm -f /tmp/lab11-resources.env
+    rm -f /tmp/week7-2-resources.env
 }
 
 # 스크립트 실행

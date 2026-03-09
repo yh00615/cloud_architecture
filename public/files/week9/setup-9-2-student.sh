@@ -6,7 +6,7 @@ export LC_ALL=${LC_ALL:-en_US.UTF-8}
 export LC_CTYPE=${LC_CTYPE:-en_US.UTF-8}
 
 # ================================
-# Lab12: AWS Lambda 함수 개발 - 서버리스 컴퓨팅 구현
+# Week9: AWS Lambda 함수 개발 - 서버리스 컴퓨팅 구현
 # ================================
 # 목적: Lambda 실습을 위한 DynamoDB 테이블 및 IAM 역할 생성
 # 예상 시간: 약 10분
@@ -104,12 +104,12 @@ show_creation_plan() {
 # 사용자 확인 함수
 confirm_creation() {
     echo ""
-    read -p "위 계획대로 Lab12 리소스를 생성하시겠습니까? (y/N): " confirm
+    read -p "위 계획대로 Week9 리소스를 생성하시겠습니까? (y/N): " confirm
     if [[ ! $confirm =~ ^[Yy]$ ]]; then
-        show_info "Lab12 설정이 취소되었습니다."
+        show_info "Week9 설정이 취소되었습니다."
         exit 0
     fi
-    show_info "Lab12 리소스 생성을 시작합니다..."
+    show_info "Week9 리소스 생성을 시작합니다..."
     echo ""
 }
 
@@ -150,10 +150,10 @@ create_dynamodb_table() {
                 --resource-arn "arn:aws:dynamodb:$region:$account_id:table/$table_name" \
                 --tags \
                     Key=Project,Value=CloudArchitect \
-                    Key=Demo,Value=Lab12 \
+                    Key=Demo,Value=Week9 \
                     Key=Component,Value=Database \
                     Key=Environment,Value=Lab \
-                    Key=CreatedBy,Value=setup-lab12-student.sh \
+                    Key=CreatedBy,Value=setup-week9-student.sh \
                 2>/dev/null || true
             
             # 샘플 데이터 추가
@@ -225,7 +225,7 @@ EOF
     if aws iam create-role \
         --role-name "$role_name" \
         --assume-role-policy-document file://trust-policy.json \
-        --description "CloudArchitect Lab12 - Lambda execution role for DynamoDB access" \
+        --description "CloudArchitect Week9 - Lambda execution role for DynamoDB access" \
         >/dev/null 2>&1; then
         
         show_info "IAM 역할 생성 완료, 정책 연결 중..."
@@ -268,10 +268,10 @@ EOF
             --role-name "$role_name" \
             --tags \
                 Key=Project,Value=CloudArchitect \
-                Key=Demo,Value=Lab12 \
+                Key=Demo,Value=Week9 \
                 Key=Component,Value=Security \
                 Key=Environment,Value=Lab \
-                Key=CreatedBy,Value=setup-lab12-student.sh \
+                Key=CreatedBy,Value=setup-week9-student.sh \
             2>/dev/null || true
         
         # 임시 파일 정리
@@ -287,7 +287,7 @@ EOF
 # 완료 요약 표시 함수
 show_completion_summary() {
     echo ""
-    show_success "🎉 Lab12 서버리스 인프라 구축이 완료되었습니다!"
+    show_success "🎉 Week9 서버리스 인프라 구축이 완료되었습니다!"
     echo ""
     
     echo "📋 생성된 주요 리소스:"
@@ -309,14 +309,14 @@ show_completion_summary() {
     echo ""
     
     echo "🚀 다음 단계:"
-    echo "  • 이제 Lab12 Lambda 함수 개발 실습을 진행할 수 있습니다"
+    echo "  • 이제 Week9 Lambda 함수 개발 실습을 진행할 수 있습니다"
     echo "  • Lambda 함수 생성 시 CloudArchitect-Lab-LambdaExecutionRole을 선택하세요"
     echo ""
     
     echo "💰 비용 절약: cleanup 스크립트로 리소스를 정리하세요"
     echo ""
     
-    show_success "✅ Lab12 스크립트 실행 완료"
+    show_success "✅ Week9 스크립트 실행 완료"
 }
 
 # 메인 실행 함수
@@ -334,7 +334,7 @@ main() {
     
     # 헤더 표시
     echo "================================"
-    echo "Lab12: AWS Lambda 함수 개발 - 서버리스 컴퓨팅 구현"
+    echo "Week9: AWS Lambda 함수 개발 - 서버리스 컴퓨팅 구현"
     echo "================================"
     echo "목적: Lambda 실습을 위한 DynamoDB 테이블 및 IAM 역할 생성"
     echo "예상 시간: 약 10분"
@@ -368,7 +368,7 @@ main() {
     echo ""
     
     # 환경 변수 저장
-    cat > lab12-prerequisites.env << EOF
+    cat > week9-prerequisites.env << EOF
 TABLE_NAME=CloudArchitect-Lab-Users
 ROLE_NAME=CloudArchitect-Lab-LambdaExecutionRole
 REGION=$region

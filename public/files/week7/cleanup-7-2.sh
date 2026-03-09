@@ -6,8 +6,8 @@ export LC_ALL=${LC_ALL:-en_US.UTF-8}
 export LC_CTYPE=${LC_CTYPE:-en_US.UTF-8}
 
 # ===========================================
-# Lab11: CloudWatch Logs 실습 - 환경 정리
-# 목적: Lab11에서 생성된 모든 AWS 리소스를 안전하게 정리
+# Week7-2: CloudWatch Logs 실습 - 환경 정리
+# 목적: Week7-2에서 생성된 모든 AWS 리소스를 안전하게 정리
 # ===========================================
 
 # set -e 제거: 오류가 발생해도 스크립트 계속 실행
@@ -119,7 +119,7 @@ main() {
     [ "$existing_error_log" = "None" ] && existing_error_log=""
     
     echo ""
-    echo "🔍 발견된 Lab11 리소스:"
+    echo "🔍 발견된 Week7-2 리소스:"
     
     # EC2 인스턴스 상태 표시
     if [ -n "$existing_instance" ]; then
@@ -266,12 +266,12 @@ main() {
     echo "🔔 계속 진행하기 전에 위 삭제 계획을 검토하세요"
     echo ""
     
-    show_warning "주의: Lab11에서 생성된 모든 AWS 리소스가 삭제됩니다."
+    show_warning "주의: Week7-2에서 생성된 모든 AWS 리소스가 삭제됩니다."
     echo ""
     echo "계속하시겠습니까? (y/N):"
     read -r confirm
     if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-        show_info "Lab11 정리가 취소되었습니다."
+        show_info "Week7-2 정리가 취소되었습니다."
         exit 0
     fi
     
@@ -481,12 +481,12 @@ main() {
     if [ "$deleted_count" -gt 0 ]; then
         echo "💰 총 $deleted_count 개 유형의 리소스가 정리되었습니다!"
     else
-        echo "ℹ️ 정리할 Lab11 리소스가 없었습니다."
+        echo "ℹ️ 정리할 Week7-2 리소스가 없었습니다."
     fi
     
     echo ""
     echo "💰 비용 절약"
-    echo "• 모든 Lab11 관련 리소스가 정리되어 추가 비용이 발생하지 않습니다"
+    echo "• 모든 Week7-2 관련 리소스가 정리되어 추가 비용이 발생하지 않습니다"
     echo "• EC2 인스턴스 및 CloudWatch Logs 저장 비용 절약"
     echo ""
     
@@ -506,7 +506,7 @@ main() {
     echo "전체 실행 시간: 약 5-8분 (EC2 인스턴스 종료가 가장 오래 걸림)"
     echo ""
     
-    show_success "✅ Lab11 정리 스크립트 실행 완료"
+    show_success "✅ Week7-2 정리 스크립트 실행 완료"
 }
 
 # 스크립트 실행

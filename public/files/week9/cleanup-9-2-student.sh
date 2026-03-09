@@ -5,8 +5,8 @@ export LANG=${LANG:-en_US.UTF-8}
 export LC_ALL=${LC_ALL:-en_US.UTF-8}
 export LC_CTYPE=${LC_CTYPE:-en_US.UTF-8}
 # ===========================================
-# Lab12: AWS Lambda 함수 개발 - 서버리스 컴퓨팅 구현 정리
-# 목적: Lab12에서 생성된 모든 AWS 리소스를 안전하게 정리
+# Week9: AWS Lambda 함수 개발 - 서버리스 컴퓨팅 구현 정리
+# 목적: Week9에서 생성된 모든 AWS 리소스를 안전하게 정리
 # ===========================================
 
 
@@ -49,13 +49,13 @@ show_step() {
 }
 
 echo "================================"
-echo "Lab12 정리 스크립트"
+echo "Week9 정리 스크립트"
 echo "================================"
-echo "목적: Lab12에서 생성된 모든 리소스 정리"
+echo "목적: Week9에서 생성된 모든 리소스 정리"
 echo "================================"
 echo ""
 
-show_warning "⚠️ 이 스크립트는 Lab12에서 생성된 모든 리소스를 삭제합니다."
+show_warning "⚠️ 이 스크립트는 Week9에서 생성된 모든 리소스를 삭제합니다."
 echo ""
 
 read -p "정말로 모든 리소스를 삭제하시겠습니까? (y/N): " -r
@@ -65,12 +65,12 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 echo ""
-show_step "Lab12 리소스 정리 시작"
+show_step "Week9 리소스 정리 시작"
 echo ""
 
 # 환경 정보 파일에서 리소스 정보 로드
-if [ -f "lab12-prerequisites.env" ]; then
-    source lab12-prerequisites.env
+if [ -f "week9-prerequisites.env" ]; then
+    source week9-prerequisites.env
     show_info "📋 환경 정보 파일에서 리소스 정보 로드됨"
 else
     show_warning "⚠️ 환경 정보 파일을 찾을 수 없습니다."
@@ -148,7 +148,7 @@ cleanup_local_files() {
         "response.json"
         "response-get.json"
         "cloudscape-demo.html"
-        "lab12-prerequisites.env"
+        "week9-prerequisites.env"
         "lambda-test.sh"
     )
     
@@ -180,7 +180,7 @@ cleanup_local_files
 
 echo ""
 echo "==========================================="
-show_success "Lab12 정리 완료!"
+show_success "Week9 정리 완료!"
 echo "==========================================="
 echo -e "${CYAN}📋 정리된 리소스${NC}"
 echo "• Lambda 함수: CloudArchitect-Lab-UsersAPI"

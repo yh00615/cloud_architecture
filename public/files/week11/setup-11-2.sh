@@ -150,7 +150,7 @@ upload_sample_files() {
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>CloudArchitect Lab16 - CloudFront</title>
+    <title>CloudArchitect Week11 - CloudFront</title>
     <style>
         body { font-family: Arial; text-align: center; background: #74b9ff; color: white; padding: 50px; }
         .container { max-width: 800px; margin: 0 auto; }
@@ -158,7 +158,7 @@ upload_sample_files() {
 </head>
 <body>
     <div class="container">
-        <h1>🌐 CloudArchitect Lab16</h1>
+        <h1>🌐 CloudArchitect Week11</h1>
         <h2>CloudFront CDN 배포</h2>
         <p>✅ S3 정적 웹사이트 + CloudFront CDN</p>
         <p>전 세계 어디서나 빠른 콘텐츠 전송!</p>
@@ -173,7 +173,7 @@ EOF
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Error - CloudArchitect Lab16</title>
+    <title>Error - CloudArchitect Week11</title>
     <style>
         body { font-family: Arial; text-align: center; background: #e17055; color: white; padding: 50px; }
         .container { max-width: 800px; margin: 0 auto; }
@@ -182,7 +182,7 @@ EOF
 <body>
     <div class="container">
         <h1>❌ 페이지를 찾을 수 없습니다</h1>
-        <p>CloudArchitect Lab16 - CloudFront 실습</p>
+        <p>CloudArchitect Week11 - CloudFront 실습</p>
     </div>
 </body>
 </html>

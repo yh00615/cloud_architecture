@@ -6,7 +6,7 @@ export LC_ALL=${LC_ALL:-en_US.UTF-8}
 export LC_CTYPE=${LC_CTYPE:-en_US.UTF-8}
 
 # ================================
-# Lab10: CloudWatch 지표 모니터링 및 경보 설정 - 학생용 사전 환경 구축
+# Week7-1: CloudWatch 지표 모니터링 및 경보 설정 - 학생용 사전 환경 구축
 # ================================
 # 목적: CloudWatch 실습을 위한 EC2 인스턴스 및 기본 인프라 구성
 # 예상 시간: 약 10분
@@ -125,12 +125,12 @@ show_creation_plan() {
 # 사용자 확인 함수
 confirm_creation() {
     echo ""
-    read -p "위 계획대로 Lab10 사전 환경을 구성하시겠습니까? (y/N): " confirm
+    read -p "위 계획대로 Week7-1 사전 환경을 구성하시겠습니까? (y/N): " confirm
     if [[ ! $confirm =~ ^[Yy]$ ]]; then
-        show_info "Lab10 설정이 취소되었습니다."
+        show_info "Week7-1 설정이 취소되었습니다."
         exit 0
     fi
-    show_info "Lab10 사전 환경 구성을 시작합니다..."
+    show_info "Week7-1 사전 환경 구성을 시작합니다..."
     echo ""
 }
 
@@ -155,7 +155,7 @@ create_vpc() {
     show_info "새 VPC 생성 중..."
     VPC_ID=$(aws ec2 create-vpc \
         --cidr-block 10.0.0.0/16 \
-        --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=CloudArchitect-Lab-VPC},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab10},{Key=Component,Value=Network},{Key=CreatedBy,Value=setup-lab10-student.sh}]' \
+        --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=CloudArchitect-Lab-VPC},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week7-1},{Key=Component,Value=Network},{Key=CreatedBy,Value=setup-week7-1-student.sh}]' \
         --query 'Vpc.VpcId' --output text)
     
     # DNS 설정 활성화
@@ -185,7 +185,7 @@ create_internet_gateway() {
     
     show_info "새 Internet Gateway 생성 중..."
     IGW_ID=$(aws ec2 create-internet-gateway \
-        --tag-specifications 'ResourceType=internet-gateway,Tags=[{Key=Name,Value=CloudArchitect-Lab-IGW},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab10},{Key=Component,Value=Network},{Key=CreatedBy,Value=setup-lab10-student.sh}]' \
+        --tag-specifications 'ResourceType=internet-gateway,Tags=[{Key=Name,Value=CloudArchitect-Lab-IGW},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week7-1},{Key=Component,Value=Network},{Key=CreatedBy,Value=setup-week7-1-student.sh}]' \
         --query 'InternetGateway.InternetGatewayId' --output text)
     
     # VPC에 연결
@@ -217,7 +217,7 @@ create_public_subnet() {
             --vpc-id $VPC_ID \
             --cidr-block 10.0.1.0/24 \
             --availability-zone ${REGION}a \
-            --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=CloudArchitect-Lab-Public-Subnet},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab10},{Key=Component,Value=Network},{Key=Type,Value=Public},{Key=AZ,Value=2a},{Key=CreatedBy,Value=setup-lab10-student.sh}]' \
+            --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=CloudArchitect-Lab-Public-Subnet},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week7-1},{Key=Component,Value=Network},{Key=Type,Value=Public},{Key=AZ,Value=2a},{Key=CreatedBy,Value=setup-week7-1-student.sh}]' \
             --query 'Subnet.SubnetId' --output text)
         
         # Public IP 자동 할당 설정
@@ -240,7 +240,7 @@ create_public_subnet() {
     if [ "$PUBLIC_RT_ID" = "None" ] || [ -z "$PUBLIC_RT_ID" ]; then
         PUBLIC_RT_ID=$(aws ec2 create-route-table \
             --vpc-id $VPC_ID \
-            --tag-specifications 'ResourceType=route-table,Tags=[{Key=Name,Value=CloudArchitect-Lab-Public-RT},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab10},{Key=Component,Value=Network},{Key=Type,Value=Public},{Key=CreatedBy,Value=setup-lab10-student.sh}]' \
+            --tag-specifications 'ResourceType=route-table,Tags=[{Key=Name,Value=CloudArchitect-Lab-Public-RT},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week7-1},{Key=Component,Value=Network},{Key=Type,Value=Public},{Key=CreatedBy,Value=setup-week7-1-student.sh}]' \
             --query 'RouteTable.RouteTableId' --output text)
         show_success "Route Table 생성 완료: CloudArchitect-Lab-Public-RT ($PUBLIC_RT_ID)"
     else
@@ -291,7 +291,7 @@ EOF
         aws iam create-role \
             --role-name "$IAM_ROLE_NAME" \
             --assume-role-policy-document file://trust-policy.json \
-            --tags Key=Project,Value=CloudArchitect Key=Lab,Value=Lab10 Key=CreatedBy,Value=setup-lab10-student.sh \
+            --tags Key=Project,Value=CloudArchitect Key=Lab,Value=Week7-1 Key=CreatedBy,Value=setup-week7-1-student.sh \
             >/dev/null 2>&1
         
         # CloudWatchAgentServerPolicy 연결
@@ -319,7 +319,7 @@ EOF
         # Instance Profile 생성
         aws iam create-instance-profile \
             --instance-profile-name "$INSTANCE_PROFILE_NAME" \
-            --tags Key=Project,Value=CloudArchitect Key=Lab,Value=Lab10 Key=CreatedBy,Value=setup-lab10-student.sh \
+            --tags Key=Project,Value=CloudArchitect Key=Lab,Value=Week7-1 Key=CreatedBy,Value=setup-week7-1-student.sh \
             >/dev/null 2>&1
         
         # IAM 역할을 Instance Profile에 추가
@@ -352,9 +352,9 @@ create_security_group() {
         show_info "새 Web Security Group 생성 중..."
         WEB_SG_ID=$(aws ec2 create-security-group \
             --group-name CloudArchitect-Lab-Web-SG \
-            --description "CloudArchitect Lab10 - Web Server Security Group" \
+            --description "CloudArchitect Week7-1 - Web Server Security Group" \
             --vpc-id $VPC_ID \
-            --tag-specifications 'ResourceType=security-group,Tags=[{Key=Name,Value=CloudArchitect-Lab-Web-SG},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab10},{Key=Component,Value=Security},{Key=Type,Value=Web},{Key=CreatedBy,Value=setup-lab10-student.sh}]' \
+            --tag-specifications 'ResourceType=security-group,Tags=[{Key=Name,Value=CloudArchitect-Lab-Web-SG},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week7-1},{Key=Component,Value=Security},{Key=Type,Value=Web},{Key=CreatedBy,Value=setup-week7-1-student.sh}]' \
             --query 'GroupId' --output text)
         
         # 인바운드 규칙 추가
@@ -426,7 +426,7 @@ cat > /var/www/html/index.html << HTML
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CloudArchitect Lab10 - CloudWatch 실습</title>
+    <title>CloudArchitect Week7-1 - CloudWatch 실습</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; background-color: #f0f8ff; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
@@ -440,7 +440,7 @@ cat > /var/www/html/index.html << HTML
 </head>
 <body>
     <div class="container">
-        <h1>📊 CloudArchitect Lab10 - CloudWatch 실습</h1>
+        <h1>📊 CloudArchitect Week7-1 - CloudWatch 실습</h1>
         <div class="info">
             <h3>EC2 인스턴스 정보:</h3>
             <p><strong>인스턴스 ID:</strong> <span class="meta-value">$INSTANCE_ID_META</span></p>
@@ -503,7 +503,7 @@ EOF
         --iam-instance-profile Name=$INSTANCE_PROFILE_NAME \
         --user-data "$USER_DATA" \
         --metadata-options "HttpTokens=optional,HttpPutResponseHopLimit=2,HttpEndpoint=enabled" \
-        --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=CloudArchitect-Lab-MonitoringServer},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab10},{Key=Component,Value=Compute},{Key=Type,Value=MonitoringServer},{Key=CreatedBy,Value=setup-lab10-student.sh}]' \
+        --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=CloudArchitect-Lab-MonitoringServer},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week7-1},{Key=Component,Value=Compute},{Key=Type,Value=MonitoringServer},{Key=CreatedBy,Value=setup-week7-1-student.sh}]' \
         --query 'Instances[0].InstanceId' \
         --output text)
     
@@ -531,7 +531,7 @@ show_completion_summary() {
         --output text 2>/dev/null)
     
     echo ""
-    show_success "🎉 Lab10 CloudWatch 실습 사전 환경 구축이 완료되었습니다!"
+    show_success "🎉 Week7-1 CloudWatch 실습 사전 환경 구축이 완료되었습니다!"
     echo ""
     
     echo "📋 생성된 주요 리소스:"
@@ -569,14 +569,14 @@ show_completion_summary() {
     echo "💰 비용 절약: 실습 완료 후 cleanup 스크립트로 리소스를 정리하세요"
     echo ""
     
-    show_success "Lab10 스크립트 실행 완료"
+    show_success "Week7-1 스크립트 실행 완료"
 }
 
 # 메인 실행 함수
 main() {
     # 헤더 표시
     echo "================================"
-    echo "Lab10: CloudWatch 지표 모니터링 및 경보 설정 - 학생용 사전 환경 구축"
+    echo "Week7-1: CloudWatch 지표 모니터링 및 경보 설정 - 학생용 사전 환경 구축"
     echo "================================"
     echo "목적: CloudWatch 실습을 위한 EC2 인스턴스 및 기본 인프라 구성"
     echo "예상 시간: 약 10분"

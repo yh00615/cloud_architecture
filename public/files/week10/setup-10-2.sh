@@ -5,7 +5,7 @@ export LANG=${LANG:-en_US.UTF-8}
 export LC_ALL=${LC_ALL:-en_US.UTF-8}
 export LC_CTYPE=${LC_CTYPE:-en_US.UTF-8}
 # ===========================================
-# Lab15: Amazon ECS 서비스 배포 - 컨테이너 오케스트레이션 관리
+# Week10: Amazon ECS 서비스 배포 - 컨테이너 오케스트레이션 관리
 # 목적: ECS 실습을 위한 완전한 인프라 구축 (VPC, ECR, Docker 이미지)
 # 예상 시간: 약 10분
 # 예상 비용: ECR 스토리지 및 NAT Gateway로 인해 과금될 수 있음
@@ -170,12 +170,12 @@ show_creation_plan() {
 # 사용자 확인 함수
 confirm_creation() {
     echo ""
-    read -p "위 계획대로 Lab15 리소스를 생성하시겠습니까? (y/N): " confirm
+    read -p "위 계획대로 Week10 리소스를 생성하시겠습니까? (y/N): " confirm
     if [[ ! $confirm =~ ^[Yy]$ ]]; then
-        show_info "Lab15 설정이 취소되었습니다."
+        show_info "Week10 설정이 취소되었습니다."
         exit 0
     fi
-    show_info "Lab15 리소스 생성을 시작합니다..."
+    show_info "Week10 리소스 생성을 시작합니다..."
     echo ""
 }
 
@@ -199,7 +199,7 @@ create_vpc_infrastructure() {
         show_info "새 VPC 생성 중..."
         VPC_ID=$(aws ec2 create-vpc \
             --cidr-block 10.0.0.0/16 \
-            --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=CloudArchitect-Lab-VPC},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab15},{Key=Component,Value=Network},{Key=CreatedBy,Value=setup-lab15-student.sh}]' \
+            --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=CloudArchitect-Lab-VPC},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week10},{Key=Component,Value=Network},{Key=CreatedBy,Value=setup-week10-student.sh}]' \
             --query 'Vpc.VpcId' --output text)
         
         if [ -n "$VPC_ID" ]; then
@@ -267,7 +267,7 @@ create_internet_gateway() {
     # 새 Internet Gateway 생성
     show_info "새 Internet Gateway 생성 중..."
     IGW_ID=$(aws ec2 create-internet-gateway \
-        --tag-specifications 'ResourceType=internet-gateway,Tags=[{Key=Name,Value=CloudArchitect-Lab-IGW},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab15},{Key=Component,Value=Network},{Key=CreatedBy,Value=setup-lab15-student.sh}]' \
+        --tag-specifications 'ResourceType=internet-gateway,Tags=[{Key=Name,Value=CloudArchitect-Lab-IGW},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week10},{Key=Component,Value=Network},{Key=CreatedBy,Value=setup-week10-student.sh}]' \
         --query 'InternetGateway.InternetGatewayId' --output text)
     
     # VPC에 연결
@@ -304,7 +304,7 @@ create_subnets() {
             --vpc-id $VPC_ID \
             --cidr-block 10.0.0.0/24 \
             --availability-zone ${REGION}a \
-            --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=CloudArchitect-Lab-Public-Subnet-1},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab15},{Key=Component,Value=Network},{Key=Type,Value=Public},{Key=AZ,Value=2a},{Key=CreatedBy,Value=setup-lab15-student.sh}]' \
+            --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=CloudArchitect-Lab-Public-Subnet-1},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week10},{Key=Component,Value=Network},{Key=Type,Value=Public},{Key=AZ,Value=2a},{Key=CreatedBy,Value=setup-week10-student.sh}]' \
             --query 'Subnet.SubnetId' --output text)
         
         # 자동 IP 할당 활성화
@@ -331,7 +331,7 @@ create_subnets() {
             --vpc-id $VPC_ID \
             --cidr-block 10.0.1.0/24 \
             --availability-zone ${REGION}b \
-            --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=CloudArchitect-Lab-Public-Subnet-2},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab15},{Key=Component,Value=Network},{Key=Type,Value=Public},{Key=AZ,Value=2b},{Key=CreatedBy,Value=setup-lab15-student.sh}]' \
+            --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=CloudArchitect-Lab-Public-Subnet-2},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week10},{Key=Component,Value=Network},{Key=Type,Value=Public},{Key=AZ,Value=2b},{Key=CreatedBy,Value=setup-week10-student.sh}]' \
             --query 'Subnet.SubnetId' --output text)
         
         # 자동 IP 할당 활성화
@@ -358,7 +358,7 @@ create_subnets() {
             --vpc-id $VPC_ID \
             --cidr-block 10.0.128.0/24 \
             --availability-zone ${REGION}a \
-            --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=CloudArchitect-Lab-Private-Subnet-1},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab15},{Key=Component,Value=Network},{Key=Type,Value=Private},{Key=AZ,Value=2a},{Key=CreatedBy,Value=setup-lab15-student.sh}]' \
+            --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=CloudArchitect-Lab-Private-Subnet-1},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week10},{Key=Component,Value=Network},{Key=Type,Value=Private},{Key=AZ,Value=2a},{Key=CreatedBy,Value=setup-week10-student.sh}]' \
             --query 'Subnet.SubnetId' --output text)
         show_success "✨ Private Subnet 1 생성 완료: CloudArchitect-Lab-Private-Subnet-1 ($PRIVATE_SUBNET_1_ID)"
     fi
@@ -382,7 +382,7 @@ create_subnets() {
             --vpc-id $VPC_ID \
             --cidr-block 10.0.129.0/24 \
             --availability-zone ${REGION}b \
-            --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=CloudArchitect-Lab-Private-Subnet-2},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab15},{Key=Component,Value=Network},{Key=Type,Value=Private},{Key=AZ,Value=2b},{Key=CreatedBy,Value=setup-lab15-student.sh}]' \
+            --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=CloudArchitect-Lab-Private-Subnet-2},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week10},{Key=Component,Value=Network},{Key=Type,Value=Private},{Key=AZ,Value=2b},{Key=CreatedBy,Value=setup-week10-student.sh}]' \
             --query 'Subnet.SubnetId' --output text)
         show_success "✨ Private Subnet 2 생성 완료: CloudArchitect-Lab-Private-Subnet-2 ($PRIVATE_SUBNET_2_ID)"
     fi
@@ -437,7 +437,7 @@ create_nat_gateway() {
     # Elastic IP 할당
     EIP_ALLOC_ID=$(aws ec2 allocate-address \
         --domain vpc \
-        --tag-specifications 'ResourceType=elastic-ip,Tags=[{Key=Name,Value=CloudArchitect-Lab-NAT-EIP},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab15},{Key=Component,Value=Network},{Key=CreatedBy,Value=setup-lab15-student.sh}]' \
+        --tag-specifications 'ResourceType=elastic-ip,Tags=[{Key=Name,Value=CloudArchitect-Lab-NAT-EIP},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week10},{Key=Component,Value=Network},{Key=CreatedBy,Value=setup-week10-student.sh}]' \
         --query 'AllocationId' --output text)
     
     # NAT Gateway 생성 (첫 번째 Public 서브넷에 배치)
@@ -454,9 +454,9 @@ create_nat_gateway() {
     aws ec2 create-tags --resources $NAT_GW_ID --tags \
         Key=Name,Value=CloudArchitect-Lab-NAT-GW \
         Key=Project,Value=CloudArchitect \
-        Key=Lab,Value=Lab15 \
+        Key=Lab,Value=Week10 \
         Key=Component,Value=Network \
-        Key=CreatedBy,Value=setup-lab15-student.sh
+        Key=CreatedBy,Value=setup-week10-student.sh
     
     show_success "✨ NAT Gateway 생성 완료: CloudArchitect-Lab-NAT-GW ($NAT_GW_ID)"
 }
@@ -485,7 +485,7 @@ create_route_tables() {
         show_info "새 Public Route Table 생성 중..."
         PUBLIC_RT_ID=$(aws ec2 create-route-table \
             --vpc-id $VPC_ID \
-            --tag-specifications 'ResourceType=route-table,Tags=[{Key=Name,Value=CloudArchitect-Lab-Public-RT},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab15},{Key=Component,Value=Network},{Key=Type,Value=Public},{Key=CreatedBy,Value=setup-lab15-student.sh}]' \
+            --tag-specifications 'ResourceType=route-table,Tags=[{Key=Name,Value=CloudArchitect-Lab-Public-RT},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week10},{Key=Component,Value=Network},{Key=Type,Value=Public},{Key=CreatedBy,Value=setup-week10-student.sh}]' \
             --query 'RouteTable.RouteTableId' --output text)
         show_success "Public Route Table 생성 완료: CloudArchitect-Lab-Public-RT ($PUBLIC_RT_ID)"
     fi
@@ -504,7 +504,7 @@ create_route_tables() {
         show_info "새 Private Route Table 생성 중..."
         PRIVATE_RT_ID=$(aws ec2 create-route-table \
             --vpc-id $VPC_ID \
-            --tag-specifications 'ResourceType=route-table,Tags=[{Key=Name,Value=CloudArchitect-Lab-Private-RT},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab15},{Key=Component,Value=Network},{Key=Type,Value=Private},{Key=CreatedBy,Value=setup-lab15-student.sh}]' \
+            --tag-specifications 'ResourceType=route-table,Tags=[{Key=Name,Value=CloudArchitect-Lab-Private-RT},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week10},{Key=Component,Value=Network},{Key=Type,Value=Private},{Key=CreatedBy,Value=setup-week10-student.sh}]' \
             --query 'RouteTable.RouteTableId' --output text)
         show_success "Private Route Table 생성 완료: CloudArchitect-Lab-Private-RT ($PRIVATE_RT_ID)"
     fi
@@ -540,9 +540,9 @@ create_security_groups() {
     else
         ALB_SG_ID=$(aws ec2 create-security-group \
             --group-name CloudArchitect-Lab-ALB-SG \
-            --description "CloudArchitect Lab15 - Application Load Balancer Security Group" \
+            --description "CloudArchitect Week10 - Application Load Balancer Security Group" \
             --vpc-id $VPC_ID \
-            --tag-specifications 'ResourceType=security-group,Tags=[{Key=Name,Value=CloudArchitect-Lab-ALB-SG},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab15},{Key=Component,Value=Security},{Key=Type,Value=LoadBalancer},{Key=CreatedBy,Value=setup-lab15-student.sh}]' \
+            --tag-specifications 'ResourceType=security-group,Tags=[{Key=Name,Value=CloudArchitect-Lab-ALB-SG},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week10},{Key=Component,Value=Security},{Key=Type,Value=LoadBalancer},{Key=CreatedBy,Value=setup-week10-student.sh}]' \
             --query 'GroupId' --output text)
         
         # ALB SG 규칙 추가 (HTTP, HTTPS)
@@ -559,9 +559,9 @@ create_security_groups() {
     else
         ECS_SG_ID=$(aws ec2 create-security-group \
             --group-name CloudArchitect-Lab-ECS-SG \
-            --description "CloudArchitect Lab15 - ECS Service Security Group" \
+            --description "CloudArchitect Week10 - ECS Service Security Group" \
             --vpc-id $VPC_ID \
-            --tag-specifications 'ResourceType=security-group,Tags=[{Key=Name,Value=CloudArchitect-Lab-ECS-SG},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Lab15},{Key=Component,Value=Security},{Key=Type,Value=ECS},{Key=CreatedBy,Value=setup-lab15-student.sh}]' \
+            --tag-specifications 'ResourceType=security-group,Tags=[{Key=Name,Value=CloudArchitect-Lab-ECS-SG},{Key=Project,Value=CloudArchitect},{Key=Lab,Value=Week10},{Key=Component,Value=Security},{Key=Type,Value=ECS},{Key=CreatedBy,Value=setup-week10-student.sh}]' \
             --query 'GroupId' --output text)
         
         # ECS SG 규칙 추가 (컨테이너 포트 3000, ALB에서만 접근 허용)
@@ -609,10 +609,10 @@ create_ecr_repository() {
             --resource-arn "$repo_arn" \
             --tags \
                 Key=Project,Value=CloudArchitect \
-                Key=Lab,Value=Lab15 \
+                Key=Lab,Value=Week10 \
                 Key=Component,Value=Container \
                 Key=Environment,Value=Lab \
-                Key=CreatedBy,Value=setup-lab15-student.sh \
+                Key=CreatedBy,Value=setup-week10-student.sh \
             2>/dev/null || true
         
         show_success "ECR 리포지토리 태그 설정 완료"
@@ -669,7 +669,7 @@ app.get('/', (req, res) => {
     res.send(`
         <html>
             <head>
-                <title>CloudArchitect Lab15 - ECS Container</title>
+                <title>CloudArchitect Week10 - ECS Container</title>
                 <style>
                     body { font-family: Arial, sans-serif; margin: 40px; background: #f0f8ff; }
                     .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -680,7 +680,7 @@ app.get('/', (req, res) => {
             </head>
             <body>
                 <div class="container">
-                    <h1>🐳 CloudArchitect Lab15 - ECS Container Service</h1>
+                    <h1>🐳 CloudArchitect Week10 - ECS Container Service</h1>
                     <div class="info">
                         <h3>컨테이너 정보:</h3>
                         <ul>
@@ -706,7 +706,7 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(port, '0.0.0.0', () => {
-    console.log(`CloudArchitect Lab15 app listening at http://0.0.0.0:${port}`);
+    console.log(`CloudArchitect Week10 app listening at http://0.0.0.0:${port}`);
 });
 EOF
     
@@ -750,7 +750,7 @@ EOF
 # 완료 요약 표시 함수
 show_completion_summary() {
     echo ""
-    show_success "🎉 Lab15 ECS 컨테이너 인프라 구축이 완료되었습니다!"
+    show_success "🎉 Week10 ECS 컨테이너 인프라 구축이 완료되었습니다!"
     echo ""
     
     echo "📋 생성된 네트워크 인프라:"
@@ -803,7 +803,7 @@ show_completion_summary() {
     echo "💰 비용 절약: cleanup 스크립트로 리소스를 정리하세요"
     echo ""
     
-    show_success "Lab15 스크립트 실행 완료"
+    show_success "Week10 스크립트 실행 완료"
 }
 
 # 메인 실행 함수
@@ -827,7 +827,7 @@ main() {
     
     # 헤더 표시
     echo "================================"
-    echo "Lab15: Amazon ECS 서비스 배포 - 컨테이너 오케스트레이션 관리"
+    echo "Week10: Amazon ECS 서비스 배포 - 컨테이너 오케스트레이션 관리"
     echo "================================"
     echo "목적: ECS 실습을 위한 완전한 인프라 구축 (VPC, ECR, Docker 이미지)"
     echo "예상 시간: 약 10분"

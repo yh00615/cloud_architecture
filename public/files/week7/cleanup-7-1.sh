@@ -6,9 +6,9 @@ export LC_ALL=${LC_ALL:-en_US.UTF-8}
 export LC_CTYPE=${LC_CTYPE:-en_US.UTF-8}
 
 # ================================
-# Lab10: CloudWatch 지표 모니터링 및 경보 설정 - 학생용 리소스 정리
+# Week7-1: CloudWatch 지표 모니터링 및 경보 설정 - 학생용 리소스 정리
 # ================================
-# 목적: Lab10에서 생성된 모든 AWS 리소스를 안전하게 정리
+# 목적: Week7-1에서 생성된 모든 AWS 리소스를 안전하게 정리
 # ================================
 
 # 로깅 설정 제거됨
@@ -268,7 +268,7 @@ cleanup_vpc_resources() {
 # 완료 요약 표시 함수
 show_completion_summary() {
     echo ""
-    show_success "🎉 Lab10 CloudWatch 실습 리소스 정리가 완료되었습니다!"
+    show_success "🎉 Week7-1 CloudWatch 실습 리소스 정리가 완료되었습니다!"
     echo ""
     
     echo "📋 삭제 완료된 리소스:"
@@ -279,7 +279,7 @@ show_completion_summary() {
     echo ""
     
     echo "💰 비용 절약"
-    echo "• 모든 Lab10 관련 리소스가 정리되어 추가 비용이 발생하지 않습니다"
+    echo "• 모든 Week7-1 관련 리소스가 정리되어 추가 비용이 발생하지 않습니다"
     echo "• EC2 인스턴스 과금 중단"
     echo ""
     
@@ -322,9 +322,9 @@ main() {
     fi
     
     echo "================================"
-    echo "Lab10: CloudWatch 지표 모니터링 및 경보 설정 - 학생용 리소스 정리"
+    echo "Week7-1: CloudWatch 지표 모니터링 및 경보 설정 - 학생용 리소스 정리"
     echo "================================"
-    echo "목적: Lab10에서 생성된 모든 AWS 리소스를 안전하게 정리"
+    echo "목적: Week7-1에서 생성된 모든 AWS 리소스를 안전하게 정리"
     echo "예상 시간: 약 8분"
     echo "예상 비용: 모든 과금 리소스가 삭제됩니다"
     echo "================================"
@@ -348,7 +348,7 @@ main() {
     existing_profile=$(aws iam get-instance-profile --instance-profile-name "CloudArchitect-Lab-CloudWatchProfile" --query 'InstanceProfile.InstanceProfileName' --output text 2>/dev/null || echo "None")
     
     echo ""
-    show_info "🔍 발견된 Lab10 리소스:"
+    show_info "🔍 발견된 Week7-1 리소스:"
     
     if [ "$existing_instance" != "None" ] && [ -n "$existing_instance" ]; then
         echo "✅ EC2 Instance: CloudArchitect-Lab-MonitoringServer ($existing_instance)"
@@ -377,7 +377,7 @@ main() {
     
     read -p "위 리소스들을 삭제하시겠습니까? (y/N): " confirm
     if [[ ! $confirm =~ ^[Yy]$ ]]; then
-        show_info "Lab10 리소스 정리가 취소되었습니다."
+        show_info "Week7-1 리소스 정리가 취소되었습니다."
         exit 0
     fi
     

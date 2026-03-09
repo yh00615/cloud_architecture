@@ -5,8 +5,8 @@ export LANG=${LANG:-en_US.UTF-8}
 export LC_ALL=${LC_ALL:-en_US.UTF-8}
 export LC_CTYPE=${LC_CTYPE:-en_US.UTF-8}
 # ===========================================
-# Lab15: Amazon ECS 서비스 배포 - 컨테이너 오케스트레이션 관리 정리
-# 목적: Lab15에서 생성된 ECR 리포지토리를 안전하게 정리
+# Week10: Amazon ECS 서비스 배포 - 컨테이너 오케스트레이션 관리 정리
+# 목적: Week10에서 생성된 ECR 리포지토리를 안전하게 정리
 # ===========================================
 
 
@@ -60,7 +60,7 @@ cleanup_vpc_infrastructure() {
     
     # VPC 확인
     local vpc_id=$(aws ec2 describe-vpcs \
-        --filters "Name=tag:Name,Values=$vpc_name" "Name=tag:Lab,Values=Lab15" \
+        --filters "Name=tag:Name,Values=$vpc_name" "Name=tag:Lab,Values=Week10" \
         --query 'Vpcs[0].VpcId' --output text 2>/dev/null)
     
     if [ "$vpc_id" = "None" ] || [ -z "$vpc_id" ]; then
@@ -95,7 +95,7 @@ cleanup_security_groups() {
     show_info "Security Groups 삭제 중..."
     
     local sg_ids=$(aws ec2 describe-security-groups \
-        --filters "Name=vpc-id,Values=$vpc_id" "Name=tag:Lab,Values=Lab15" \
+        --filters "Name=vpc-id,Values=$vpc_id" "Name=tag:Lab,Values=Week10" \
         --query 'SecurityGroups[?GroupName!=`default`].GroupId' --output text 2>/dev/null)
     
     if [ -n "$sg_ids" ] && [ "$sg_ids" != "None" ]; then
@@ -112,7 +112,7 @@ cleanup_nat_gateways() {
     show_info "NAT Gateways 삭제 중..."
     
     local nat_gw_ids=$(aws ec2 describe-nat-gateways \
-        --filter "Name=vpc-id,Values=$vpc_id" "Name=tag:Lab,Values=Lab15" \
+        --filter "Name=vpc-id,Values=$vpc_id" "Name=tag:Lab,Values=Week10" \
         --query 'NatGateways[?State==`available`].NatGatewayId' --output text 2>/dev/null)
     
     if [ -n "$nat_gw_ids" ] && [ "$nat_gw_ids" != "None" ]; then
@@ -144,7 +144,7 @@ cleanup_route_tables() {
     show_info "Route Tables 삭제 중..."
     
     local rt_ids=$(aws ec2 describe-route-tables \
-        --filters "Name=vpc-id,Values=$vpc_id" "Name=tag:Lab,Values=Lab15" \
+        --filters "Name=vpc-id,Values=$vpc_id" "Name=tag:Lab,Values=Week10" \
         --query 'RouteTables[].RouteTableId' --output text 2>/dev/null)
     
     if [ -n "$rt_ids" ] && [ "$rt_ids" != "None" ]; then
@@ -161,7 +161,7 @@ cleanup_internet_gateways() {
     show_info "Internet Gateways 삭제 중..."
     
     local igw_ids=$(aws ec2 describe-internet-gateways \
-        --filters "Name=attachment.vpc-id,Values=$vpc_id" "Name=tag:Lab,Values=Lab15" \
+        --filters "Name=attachment.vpc-id,Values=$vpc_id" "Name=tag:Lab,Values=Week10" \
         --query 'InternetGateways[].InternetGatewayId' --output text 2>/dev/null)
     
     if [ -n "$igw_ids" ] && [ "$igw_ids" != "None" ]; then
@@ -181,7 +181,7 @@ cleanup_subnets() {
     show_info "Subnets 삭제 중..."
     
     local subnet_ids=$(aws ec2 describe-subnets \
-        --filters "Name=vpc-id,Values=$vpc_id" "Name=tag:Lab,Values=Lab15" \
+        --filters "Name=vpc-id,Values=$vpc_id" "Name=tag:Lab,Values=Week10" \
         --query 'Subnets[].SubnetId' --output text 2>/dev/null)
     
     if [ -n "$subnet_ids" ] && [ "$subnet_ids" != "None" ]; then
@@ -376,15 +376,15 @@ cleanup_local_files() {
     show_info "로컬 파일 정리 중..."
     
     # 환경 파일 삭제
-    if [ -f "lab15-prerequisites.env" ]; then
-        rm -f lab15-prerequisites.env
-        show_success "환경 파일 삭제 완료: lab15-prerequisites.env"
+    if [ -f "week10-prerequisites.env" ]; then
+        rm -f week10-prerequisites.env
+        show_success "환경 파일 삭제 완료: week10-prerequisites.env"
     fi
     
     # 로그 파일 삭제
-    local log_files=$(ls lab15-*.log 2>/dev/null || true)
+    local log_files=$(ls week10-*.log 2>/dev/null || true)
     if [ -n "$log_files" ]; then
-        rm -f lab15-*.log
+        rm -f week10-*.log
         show_success "로그 파일 삭제 완료"
     fi
     
@@ -411,7 +411,7 @@ verify_cleanup() {
 # 완료 요약 표시 함수
 show_cleanup_summary() {
     echo ""
-    show_success "🎉 Lab15 ECS 컨테이너 인프라 정리가 완료되었습니다!"
+    show_success "🎉 Week10 ECS 컨테이너 인프라 정리가 완료되었습니다!"
     echo ""
     
     echo "📋 정리된 주요 리소스:"
@@ -431,21 +431,21 @@ show_cleanup_summary() {
     echo ""
     
     echo "💡 참고사항:"
-    echo "  • 모든 Lab15 리소스가 자동으로 정리되었습니다"
+    echo "  • 모든 Week10 리소스가 자동으로 정리되었습니다"
     echo "  • IAM 역할 ecsTaskExecutionRole은 AWS 관리형 역할이므로 유지됩니다"
     echo "  • 다른 실습에서 생성된 리소스는 각각의 cleanup 스크립트로 정리하세요"
     echo ""
     
-    show_success "Lab15 정리 스크립트 실행 완료"
+    show_success "Week10 정리 스크립트 실행 완료"
 }
 
 # 메인 실행 함수
 main() {
     # 헤더 표시
     echo "================================"
-    echo "Lab15: Amazon ECS 서비스 배포 - 컨테이너 오케스트레이션 관리 정리"
+    echo "Week10: Amazon ECS 서비스 배포 - 컨테이너 오케스트레이션 관리 정리"
     echo "================================"
-    echo "목적: Lab15에서 생성된 모든 리소스를 안전하게 정리"
+    echo "목적: Week10에서 생성된 모든 리소스를 안전하게 정리"
     echo "================================"
     echo ""
     
@@ -460,8 +460,8 @@ main() {
     echo "사용자: $user_arn"
     echo ""
     
-    # Lab15 리소스 확인
-    show_info "Lab15 관련 리소스 확인 중..."
+    # Week10 리소스 확인
+    show_info "Week10 관련 리소스 확인 중..."
     
     # ECS 클러스터 확인
     local cluster_arn=$(aws ecs describe-clusters --clusters "CloudArchitect-Lab-Cluster" --query 'clusters[0].clusterArn' --output text 2>/dev/null)
@@ -474,7 +474,7 @@ main() {
     
     # VPC 확인
     local vpc_id=$(aws ec2 describe-vpcs \
-        --filters "Name=tag:Name,Values=CloudArchitect-Lab-VPC" "Name=tag:Lab,Values=Lab15" \
+        --filters "Name=tag:Name,Values=CloudArchitect-Lab-VPC" "Name=tag:Lab,Values=Week10" \
         --query 'Vpcs[0].VpcId' --output text 2>/dev/null)
     
     echo ""
@@ -524,18 +524,18 @@ main() {
     echo ""
     
     echo "  💡 참고사항:"
-    echo "    • 모든 Lab15 리소스를 자동으로 정리합니다"
+    echo "    • 모든 Week10 리소스를 자동으로 정리합니다"
     echo "    • 예상 소요 시간: 약 3-5분"
     echo ""
     
     # 사용자 확인
-    read -p "위 계획대로 Lab15 리소스를 정리하시겠습니까? (y/N): " confirm
+    read -p "위 계획대로 Week10 리소스를 정리하시겠습니까? (y/N): " confirm
     if [[ ! $confirm =~ ^[Yy]$ ]]; then
-        show_info "Lab15 정리가 취소되었습니다."
+        show_info "Week10 정리가 취소되었습니다."
         exit 0
     fi
     
-    show_info "Lab15 리소스 정리를 시작합니다..."
+    show_info "Week10 리소스 정리를 시작합니다..."
     echo ""
     
     # 리소스 정리 (단계별)
