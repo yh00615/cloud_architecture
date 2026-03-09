@@ -265,7 +265,7 @@ chmod +x setup-11-2.sh
 > [!WARNING]
 > 실습 완료 후 **반드시** 리소스를 정리하여 불필요한 비용을 방지하세요.
 
-### 방법 1: CloudShell에서 정리 스크립트 실행
+### 방법 1: CloudShell에서 정리 스크립트 실행 (권장)
 
 1. AWS Management Console 상단의 **CloudShell** 아이콘을 선택합니다.
 
@@ -278,10 +278,12 @@ chmod +x setup-11-2.sh
 3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.
 
 4. 스크립트가 다음 리소스를 자동으로 삭제합니다:
-   - S3 버킷 내 객체 및 버킷
+   - CloudFront 배포 (`CloudArchitect-Lab-Distribution`)
+   - OAC (Origin Access Control)
+   - S3 버킷 및 버킷 내 모든 객체
 
 > [!NOTE]
-> 실습 중 직접 생성한 CloudFront 배포는 스크립트로 삭제되지 않을 수 있습니다. 아래 수동 삭제 단계를 확인하세요.
+> CloudFront 배포 비활성화에 약 5-10분이 소요됩니다. 정리 스크립트는 자동으로 대기하며 전체 과정은 약 10-15분이 소요됩니다.
 
 ### 방법 2: 수동 삭제 (스크립트 실행이 불가능한 경우)
 

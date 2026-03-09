@@ -361,7 +361,7 @@ chmod +x setup-10-2.sh
 > [!WARNING]
 > 실습 완료 후 **반드시** 리소스를 정리하여 불필요한 비용을 방지하세요. 특히 **NAT Gateway**와 **ALB**는 시간당 요금이 발생합니다.
 
-### 방법 1: CloudShell에서 정리 스크립트 실행
+### 방법 1: CloudShell에서 정리 스크립트 실행 (권장)
 
 1. AWS Management Console 상단의 **CloudShell** 아이콘을 선택합니다.
 
@@ -376,18 +376,19 @@ chmod +x setup-10-2.sh
 4. 스크립트가 다음 리소스를 자동으로 삭제합니다:
    - ECS 서비스 (`cloudarchitect-lab-service`)
    - ECS 클러스터 (`CloudArchitect-Lab-Cluster`)
-   - Task Definition (`cloudarchitect-lab-task`)
+   - Task Definition (`cloudarchitect-lab-task` - 비활성화)
+   - Application Load Balancer (`CloudArchitect-Lab-ALB`)
+   - Target Group (`CloudArchitect-Lab-TG`)
    - ECR 리포지토리 (`cloudarchitect-lab-webapp`)
-   - ALB, Target Group, NAT Gateway
-   - Security Groups, VPC 및 관련 리소스
+   - VPC 인프라 (NAT Gateway, Internet Gateway, Subnets, Route Tables, Security Groups)
 
 > [!NOTE]
-> 정리 스크립트는 이 실습에서 생성한 리소스만 삭제합니다. 다른 리소스에는 영향을 주지 않습니다.
+> 정리 스크립트는 이 실습에서 생성한 모든 리소스를 자동으로 삭제합니다. 약 3-5분이 소요됩니다.
 
 ### 방법 2: 수동 삭제 (스크립트 실행이 불가능한 경우)
 
 > [!IMPORTANT]
-> 삭제 순서가 중요합니다. ECS 서비스 → ALB → NAT Gateway → Elastic IP → VPC 순서로 삭제합니다.
+> 삭제 순서가 중요합니다. ECS 서비스 → ECS 클러스터 → ALB → Target Group → ECR → NAT Gateway → VPC 순서로 삭제합니다.
 
 #### 태스크 1: Amazon ECS 서비스 및 클러스터 삭제
 
@@ -402,9 +403,13 @@ chmod +x setup-10-2.sh
 > [!NOTE]
 > 서비스 삭제 시 실행 중인 태스크가 자동으로 종료됩니다. 약 1-2분 기다립니다.
 
-5. 서비스 삭제 후 **Delete cluster**를 클릭합니다.
+5. 서비스 삭제가 완료되면 클러스터 페이지로 돌아가서 **Delete cluster**를 클릭합니다.
 
 6. 확인 필드에 `delete CloudArchitect-Lab-Cluster`를 입력하고 [[Delete]]를 클릭합니다.
+
+7. 왼쪽 메뉴에서 **Task definitions**를 선택합니다.
+
+8. `cloudarchitect-lab-task` 패밀리를 선택하고 모든 활성 리비전을 선택한 후 **Actions** > **Deregister**를 클릭합니다.
 
 #### 태스크 2: Application Load Balancer 및 Target Group 삭제
 
