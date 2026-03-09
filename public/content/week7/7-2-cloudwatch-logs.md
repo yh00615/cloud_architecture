@@ -11,14 +11,27 @@ learningObjectives:
 ---
 
 > [!TIP]
-> 이 실습에서는 **CloudWatch Logs**로 **EC2 인스턴스**의 로그를 수집하고 분석합니다. **CloudWatch Agent**를 설치하여 **Apache 액세스 로그**와 **시스템 로그**를 CloudWatch Logs로 전송합니다. **Logs Insights**에서 쿼리 언어로 로그를 검색하고 필터링하여 특정 패턴을 찾습니다. **메트릭 필터**를 생성하여 로그에서 에러 발생 횟수를 추출하고, 이를 대시보드에 표시합니다.
+> 이 실습에서는 **CloudWatch Logs**로 **EC2 인스턴스**의 로그를 수집하고 분석합니다. **CloudWatch Agent**를 설치하여 **Nginx 액세스 로그**와 **에러 로그**를 CloudWatch Logs로 전송합니다. **Logs Insights**에서 쿼리 언어로 로그를 검색하고 필터링하여 특정 패턴을 찾습니다. **메트릭 필터**를 생성하여 로그에서 에러 발생 횟수를 추출하고, 이를 대시보드에 표시합니다.
 
 > [!DOWNLOAD]
 > [week7-2-cloudwatch-logs.zip](/files/week7/week7-2-cloudwatch-logs.zip)
 >
-> - `setup-7-2.sh` - 사전 환경 구축 스크립트 (VPC, Subnet, Security Group, EC2 인스턴스, Nginx, CloudWatch Agent, IAM 역할 등 생성)
+> **포함 파일:**
+> - `setup-7-2.sh` - 사전 환경 구축 스크립트
+>   - VPC, Subnet, Internet Gateway, Route Table, Security Group 생성
+>   - IAM 역할 및 Instance Profile 생성 (CloudWatch Agent 권한)
+>   - EC2 인스턴스 생성 (t3.micro, Amazon Linux 2023)
+>   - User Data를 통한 자동 설치 및 구성:
+>     - Nginx 웹서버 설치 및 시작
+>     - CloudWatch Agent 설치 및 구성
+>     - 로그 수집 설정 (/var/log/nginx/access.log, /var/log/nginx/error.log)
+>     - 자동 트래픽 생성 시스템 구성 (2분마다 실행)
+>   - CloudWatch Logs 그룹 자동 생성 확인
 > - `cleanup-7-2.sh` - 리소스 정리 스크립트
-> - 태스크 0: 사전 환경 구축 (setup-7-2.sh 실행)
+>   - 모든 생성된 리소스를 안전한 순서로 삭제
+>
+> **사용 태스크:**
+> - 태스크 0: 사전 환경 구축 (setup-7-2.sh 실행, 약 5-7분 소요)
 
 > [!CONCEPT] Amazon CloudWatch Logs란?
 >
@@ -65,7 +78,9 @@ chmod +x setup-7-2.sh
 | 리소스 | 이름 |
 |--------|------|
 | VPC | CloudArchitect-Lab-VPC |
+| Internet Gateway | CloudArchitect-Lab-IGW |
 | Public Subnet | CloudArchitect-Lab-Public-Subnet |
+| Route Table | CloudArchitect-Lab-Public-RT |
 | Security Group | CloudArchitect-Lab-Web-SG |
 | EC2 인스턴스 | CloudArchitect-Lab-LogServer |
 | IAM 역할 | CloudArchitect-Lab-CloudWatchAgent-Role |
