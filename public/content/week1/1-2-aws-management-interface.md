@@ -64,6 +64,7 @@ ls -la setup-1-2.sh
 ```
 
 > [!OUTPUT]
+>
 > ```
 > -rw-r--r-- 1 cloudshell-user cloudshell-user 828 ... setup-1-2.sh
 > ```
@@ -75,7 +76,6 @@ chmod +x setup-1-2.sh
 ```
 
 ✅ **태스크 완료**: 실습 파일이 CloudShell에 업로드되고 실행 준비가 완료되었습니다.
-
 
 ## 태스크 1: AWS 콘솔에서 기본 정보 확인
 
@@ -103,6 +103,7 @@ chmod +x setup-1-2.sh
 12. 내비게이션 바 오른쪽 상단에서 현재 로그인한 **계정 이름 또는 번호**를 선택합니다.
 
 13. 드롭다운 메뉴에서 다음 정보를 확인합니다:
+
 - **Account ID**: 12자리 숫자 (예: `1234-5678-9012`)
 - **Account name**: 계정 이름
 - **Federated user** 또는 **IAM user**: 현재 로그인한 사용자 정보
@@ -122,17 +123,28 @@ chmod +x setup-1-2.sh
 > [!IMPORTANT]
 > 리전 설정은 매우 중요합니다. 리전이 다르면 생성한 리소스가 보이지 않을 수 있습니다. 실습 전 항상 **Asia Pacific (Seoul) ap-northeast-2** 리전이 선택되어 있는지 확인합니다.
 
+19. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
+
+20. EC2 콘솔 상단에서 현재 리전이 **Asia Pacific (Seoul) ap-northeast-2**로 표시되는지 확인합니다.
+
+> [!TIP]
+> EC2는 리전별 서비스이므로 리전 변경이 즉시 반영됩니다. 리전을 변경하면 해당 리전의 리소스만 표시되므로, 리전 설정을 확인하는 좋은 방법입니다. IAM과 같은 글로벌 서비스는 리전 선택기가 비활성화되어 있습니다.
+
 ### 1.4 IAM 사용자 정보 확인
 
-19. 상단 검색창에서 `IAM`을 검색하고 **IAM**을 선택합니다.
+21. 상단 검색창에서 `IAM`을 검색하고 **IAM**을 선택합니다.
 
-20. AWS IAM 콘솔이 열리면 왼쪽 메뉴에서 **Access management** 섹션 아래의 **Users**를 선택합니다.
+22. AWS IAM 콘솔이 열리면 왼쪽 메뉴에서 **Access management** 섹션 아래의 **Users**를 선택합니다.
 
-21. 현재 로그인한 사용자가 목록에 있는지 확인합니다.
+> [!NOTE]
+> IAM은 글로벌 서비스이므로 리전 선택기가 비활성화되어 있습니다. IAM 사용자, 역할, 정책은 모든 리전에서 동일하게 적용됩니다.
 
-22. 사용자명을 선택하여 상세 정보 페이지로 이동합니다.
+23. 현재 로그인한 사용자가 목록에 있는지 확인합니다.
 
-23. **Summary** 섹션에서 다음 정보를 확인합니다:
+24. 사용자명을 선택하여 상세 정보 페이지로 이동합니다.
+
+25. **Summary** 섹션에서 다음 정보를 확인합니다:
+
 - **User ARN**: 사용자의 고유 식별자 (예: `arn:aws:iam::123456789012:user/사용자명`)
 - **Console access**: 콘솔 접근 권한 및 MFA 활성화 여부
 - **Access key**: 생성된 액세스 키 개수 및 상태
@@ -143,7 +155,6 @@ chmod +x setup-1-2.sh
 > IAM 사용자로 로그인한 경우 **Users** 목록에서 확인 가능하고, IAM 역할로 로그인한 경우 왼쪽 메뉴의 **Access management** 섹션 아래의 **Roles** 메뉴에서 확인할 수 있습니다. 현재 로그인 방식에 따라 확인 위치가 다릅니다.
 
 ✅ **태스크 완료**: AWS 콘솔에서 계정 정보, 리전 설정, IAM 사용자 정보를 확인했습니다.
-
 
 ## 태스크 2: AWS CloudShell에서 CLI 명령어 실행
 
@@ -160,7 +171,7 @@ chmod +x setup-1-2.sh
 
 ### 2.1 실습 스크립트 실행
 
-24. CloudShell 터미널에서 태스크 0에서 업로드한 스크립트를 실행합니다:
+26. CloudShell 터미널에서 태스크 0에서 업로드한 스크립트를 실행합니다:
 
 ```bash
 ./setup-1-2.sh
@@ -170,6 +181,7 @@ chmod +x setup-1-2.sh
 > CloudShell은 리전별로 독립적인 환경을 제공합니다. 태스크 0에서 파일을 업로드한 후 리전을 변경했다면, 현재 리전의 CloudShell에는 파일이 없을 수 있습니다. 이 경우 현재 리전에서 CloudShell을 다시 열고 파일을 재업로드해야 합니다.
 
 > [!OUTPUT]
+>
 > ```
 > ============================================
 >  CloudArchitect Lab01 - AWS 환경 정보 확인
@@ -195,7 +207,8 @@ chmod +x setup-1-2.sh
 > ============================================
 > ```
 
-25. 출력 결과에서 다음 정보를 확인합니다:
+27. 출력 결과에서 다음 정보를 확인합니다:
+
 - **Account**: 12자리 AWS 계정 ID (태스크 1에서 콘솔로 확인한 값과 동일)
 - **Arn**: 현재 로그인한 사용자/역할의 ARN
 - **Region**: ap-northeast-2 (서울)
@@ -205,28 +218,30 @@ chmod +x setup-1-2.sh
 
 ### 2.2 출력 형식 비교
 
-26. JSON 형식으로 계정 정보를 확인합니다:
+28. JSON 형식으로 계정 정보를 확인합니다:
 
 ```bash
 aws sts get-caller-identity --output json
 ```
 
 > [!OUTPUT]
+>
 > ```json
 > {
->     "UserId": "AIDAXXXXXXXXXXXXXXXXX",
->     "Account": "123456789012",
->     "Arn": "arn:aws:iam::123456789012:user/사용자명"
+>   "UserId": "AIDAXXXXXXXXXXXXXXXXX",
+>   "Account": "123456789012",
+>   "Arn": "arn:aws:iam::123456789012:user/사용자명"
 > }
 > ```
 
-27. 테이블 형식으로 동일한 정보를 확인합니다:
+29. 테이블 형식으로 동일한 정보를 확인합니다:
 
 ```bash
 aws sts get-caller-identity --output table
 ```
 
 > [!OUTPUT]
+>
 > ```
 > ---------------------------------------------------------
 > |                   GetCallerIdentity                    |
@@ -237,13 +252,14 @@ aws sts get-caller-identity --output table
 > +-----------+---------------------+----------------------+
 > ```
 
-28. 텍스트 형식으로 동일한 정보를 확인합니다:
+30. 텍스트 형식으로 동일한 정보를 확인합니다:
 
 ```bash
 aws sts get-caller-identity --output text
 ```
 
 > [!OUTPUT]
+>
 > ```
 > 123456789012    arn:aws:iam::123456789012:user/사용자명    AIDAXXXXXXXXXXXXXXXXX
 > ```
@@ -256,24 +272,26 @@ aws sts get-caller-identity --output text
 > [!NOTE]
 > `--query` 옵션을 사용하면 AWS CLI 응답에서 필요한 정보만 추출할 수 있습니다. 복잡한 JSON 응답 전체를 읽지 않아도 되므로 자동화 스크립트 작성 시 매우 유용합니다.
 
-29. `--query` 옵션으로 계정 ID만 추출합니다:
+31. `--query` 옵션으로 계정 ID만 추출합니다:
 
 ```bash
 aws sts get-caller-identity --query 'Account' --output text
 ```
 
 > [!OUTPUT]
+>
 > ```
 > 123456789012
 > ```
 
-30. 현재 리전의 가용 영역을 확인합니다:
+32. 현재 리전의 가용 영역을 확인합니다:
 
 ```bash
 aws ec2 describe-availability-zones --query 'AvailabilityZones[].ZoneName' --output table
 ```
 
 > [!OUTPUT]
+>
 > ```
 > ----------------------------
 > |DescribeAvailabilityZones |
@@ -315,4 +333,3 @@ JMESPath 쿼리
 🌐
 리전 개념
 AWS 서비스는 전 세계 여러 리전에 분산되어 있으며, 리소스는 특정 리전에 생성되므로 올바른 리전 선택이 중요합니다.
-
