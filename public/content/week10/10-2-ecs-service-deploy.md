@@ -17,9 +17,26 @@ learningObjectives:
 > [!DOWNLOAD]
 > [week10-2-ecs-service-deploy.zip](/files/week10/week10-2-ecs-service-deploy.zip)
 >
-> - `setup-10-2.sh` - 사전 환경 구축 스크립트 (Amazon ECR 리포지토리, Docker 이미지 푸시)
-> - `cleanup-10-2.sh` - 리소스 정리 스크립트
+> **포함 파일:**
+> 
+> **setup-10-2.sh** - 사전 환경 구축 스크립트
+> - **목적**: ECS 실습을 위한 Multi-AZ 네트워크, ECR 리포지토리, Docker 이미지 자동 구축
+> - **생성 리소스**:
+>   - VPC 네트워크 (VPC, Internet Gateway, NAT Gateway, 2개 AZ의 Public/Private Subnet, Route Table)
+>   - Security Group (ALB용, ECS용)
+>   - ECR 리포지토리 (cloudarchitect-lab-webapp)
+>   - Docker 이미지 (Node.js 웹 애플리케이션, 자동 빌드 및 ECR 푸시)
+> - **실행 시간**: 약 5-10분 (NAT Gateway 생성 및 Docker 이미지 빌드 포함)
+> - **활용**: 태스크 2-6에서 ECS 클러스터를 생성하고, ECR 이미지로 컨테이너를 배포하며, ALB로 트래픽을 분산합니다
+>
+> **cleanup-10-2.sh** - 리소스 정리 스크립트
+> - **목적**: 실습에서 생성한 모든 리소스를 안전한 순서로 자동 삭제
+> - **삭제 리소스**: ECS 서비스, 클러스터, Task Definition, ALB, Target Group, ECR 이미지, NAT Gateway, VPC 및 네트워크 리소스
+> - **실행 시간**: 약 5-7분
+>
+> **사용 태스크:**
 > - 태스크 0: 사전 환경 구축 (setup-10-2.sh 실행)
+> - 리소스 정리: 실습 완료 후 cleanup-10-2.sh 실행
 
 > [!NOTE]
 > 이 실습에서는 Amazon ECS를 사용하여 컨테이너 기반 애플리케이션을 배포하고 관리합니다. AWS Fargate를 이용한 서버리스 컨테이너 실행과 Application Load Balancer를 통한 고가용성 구성을 구현합니다.
@@ -42,6 +59,30 @@ learningObjectives:
 > [!NOTE]
 > 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
 
+### 0.1 사전 환경 구축의 목적
+
+이 실습에서는 **Amazon ECS**를 사용하여 컨테이너 기반 웹 애플리케이션을 배포하고 관리하는 방법을 학습합니다. 이를 위해 다음과 같은 환경이 필요합니다:
+
+**구축되는 인프라:**
+- **VPC 네트워크 (Multi-AZ)**: Public/Private 서브넷을 2개 가용 영역에 구성하여 고가용성을 확보합니다
+- **NAT Gateway**: Private 서브넷의 컨테이너가 인터넷에 접근할 수 있도록 합니다 (ECR 이미지 다운로드용)
+- **Security Groups**: ALB와 ECS 컨테이너 간 트래픽을 제어합니다
+- **ECR 리포지토리**: Docker 이미지를 저장하는 프라이빗 레지스트리입니다
+- **Docker 이미지**: Node.js 웹 애플리케이션이 빌드되어 ECR에 푸시됩니다
+
+**실습에서의 활용:**
+- **태스크 1**: 생성된 VPC, 서브넷, ECR 리포지토리를 확인합니다
+- **태스크 2**: ECS 클러스터를 생성하고 Fargate 인프라를 구성합니다
+- **태스크 3**: ECR의 이미지를 사용하여 태스크 정의를 생성합니다
+- **태스크 4**: Application Load Balancer를 생성하여 트래픽을 분산합니다
+- **태스크 5**: ECS 서비스를 생성하고 컨테이너를 배포합니다
+- **태스크 6**: 서비스 스케일링과 롤링 업데이트를 테스트합니다
+
+> [!TIP]
+> 사전 환경 구축 스크립트는 네트워크 인프라와 컨테이너 이미지를 자동으로 준비하므로, 여러분은 ECS의 핵심 컨테이너 오케스트레이션 기능 학습에만 집중할 수 있습니다.
+
+### 0.2 환경 구축 실행
+
 1. 위 DOWNLOAD 섹션에서 `week10-2-ecs-service-deploy.zip` 파일을 다운로드합니다.
 
 2. AWS Management Console에 로그인한 후 상단의 **CloudShell** 아이콘을 선택하여 CloudShell을 실행합니다.
@@ -61,22 +102,27 @@ chmod +x setup-10-2.sh
 ./setup-10-2.sh
 ```
 
-6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
+6. 스크립트 실행 중 생성 계획이 표시되면 내용을 확인하고 `y`를 입력하여 진행합니다.
 
 > [!NOTE]
 > 사전 환경 구축에 약 5-10분이 소요됩니다. NAT Gateway 생성 및 Docker 이미지 빌드/푸시까지 기다립니다.
 
+### 0.3 생성된 리소스 확인
+
 7. 스크립트가 완료되면 출력 메시지에서 다음 리소스가 생성되었는지 확인합니다:
 
-| 리소스 | 이름 |
-|--------|------|
-| VPC | CloudArchitect-Lab-VPC |
-| Public Subnet 1/2 | CloudArchitect-Lab-Public-Subnet-1/2 |
-| Private Subnet 1/2 | CloudArchitect-Lab-Private-Subnet-1/2 |
-| NAT Gateway | CloudArchitect-Lab-NAT-GW |
-| ALB Security Group | CloudArchitect-Lab-ALB-SG |
-| ECS Security Group | CloudArchitect-Lab-ECS-SG |
-| ECR 리포지토리 | cloudarchitect-lab-webapp |
+| 리소스 유형 | 리소스 이름 | 실습에서의 역할 |
+|------------|------------|----------------|
+| VPC | CloudArchitect-Lab-VPC | ECS 컨테이너를 위한 격리된 네트워크 환경 |
+| Public Subnet 1/2 | CloudArchitect-Lab-Public-Subnet-1/2 | ALB가 배치되는 서브넷 (Multi-AZ) |
+| Private Subnet 1/2 | CloudArchitect-Lab-Private-Subnet-1/2 | ECS 컨테이너가 실행되는 서브넷 (Multi-AZ) |
+| NAT Gateway | CloudArchitect-Lab-NAT-GW | Private 서브넷의 인터넷 접근 제공 |
+| ALB Security Group | CloudArchitect-Lab-ALB-SG | HTTP/HTTPS 트래픽 허용 |
+| ECS Security Group | CloudArchitect-Lab-ECS-SG | ALB로부터의 트래픽만 허용 (포트 3000) |
+| ECR 리포지토리 | cloudarchitect-lab-webapp | Docker 이미지 저장소 |
+| Docker 이미지 | Node.js 웹 애플리케이션 (latest 태그) | ECS 태스크에서 실행할 컨테이너 이미지 |
+
+8. 출력 메시지에서 **ECR 리포지토리 URI**를 확인하고 메모합니다 (태스크 3에서 사용).
 
 ✅ **태스크 완료**: 사전 환경 구축이 완료되었습니다.
 
@@ -361,7 +407,7 @@ chmod +x setup-10-2.sh
 > [!WARNING]
 > 실습 완료 후 **반드시** 리소스를 정리하여 불필요한 비용을 방지하세요. 특히 **NAT Gateway**와 **ALB**는 시간당 요금이 발생합니다.
 
-### 방법 1: CloudShell에서 정리 스크립트 실행
+### 방법 1: CloudShell에서 정리 스크립트 실행 (권장)
 
 1. AWS Management Console 상단의 **CloudShell** 아이콘을 선택합니다.
 
@@ -376,18 +422,19 @@ chmod +x setup-10-2.sh
 4. 스크립트가 다음 리소스를 자동으로 삭제합니다:
    - ECS 서비스 (`cloudarchitect-lab-service`)
    - ECS 클러스터 (`CloudArchitect-Lab-Cluster`)
-   - Task Definition (`cloudarchitect-lab-task`)
+   - Task Definition (`cloudarchitect-lab-task` - 비활성화)
+   - Application Load Balancer (`CloudArchitect-Lab-ALB`)
+   - Target Group (`CloudArchitect-Lab-TG`)
    - ECR 리포지토리 (`cloudarchitect-lab-webapp`)
-   - ALB, Target Group, NAT Gateway
-   - Security Groups, VPC 및 관련 리소스
+   - VPC 인프라 (NAT Gateway, Internet Gateway, Subnets, Route Tables, Security Groups)
 
 > [!NOTE]
-> 정리 스크립트는 이 실습에서 생성한 리소스만 삭제합니다. 다른 리소스에는 영향을 주지 않습니다.
+> 정리 스크립트는 이 실습에서 생성한 모든 리소스를 자동으로 삭제합니다. 약 3-5분이 소요됩니다.
 
 ### 방법 2: 수동 삭제 (스크립트 실행이 불가능한 경우)
 
 > [!IMPORTANT]
-> 삭제 순서가 중요합니다. ECS 서비스 → ALB → NAT Gateway → Elastic IP → VPC 순서로 삭제합니다.
+> 삭제 순서가 중요합니다. ECS 서비스 → ECS 클러스터 → ALB → Target Group → ECR → NAT Gateway → VPC 순서로 삭제합니다.
 
 #### 태스크 1: Amazon ECS 서비스 및 클러스터 삭제
 
@@ -402,9 +449,13 @@ chmod +x setup-10-2.sh
 > [!NOTE]
 > 서비스 삭제 시 실행 중인 태스크가 자동으로 종료됩니다. 약 1-2분 기다립니다.
 
-5. 서비스 삭제 후 **Delete cluster**를 클릭합니다.
+5. 서비스 삭제가 완료되면 클러스터 페이지로 돌아가서 **Delete cluster**를 클릭합니다.
 
 6. 확인 필드에 `delete CloudArchitect-Lab-Cluster`를 입력하고 [[Delete]]를 클릭합니다.
+
+7. 왼쪽 메뉴에서 **Task definitions**를 선택합니다.
+
+8. `cloudarchitect-lab-task` 패밀리를 선택하고 모든 활성 리비전을 선택한 후 **Actions** > **Deregister**를 클릭합니다.
 
 #### 태스크 2: Application Load Balancer 및 Target Group 삭제
 

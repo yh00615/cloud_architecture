@@ -11,14 +11,40 @@ learningObjectives:
 ---
 
 > [!TIP]
-> 이 실습에서는 **CloudWatch Logs**로 **EC2 인스턴스**의 로그를 수집하고 분석합니다. **CloudWatch Agent**를 설치하여 **Apache 액세스 로그**와 **시스템 로그**를 CloudWatch Logs로 전송합니다. **Logs Insights**에서 쿼리 언어로 로그를 검색하고 필터링하여 특정 패턴을 찾습니다. **메트릭 필터**를 생성하여 로그에서 에러 발생 횟수를 추출하고, 이를 대시보드에 표시합니다.
+> 이 실습에서는 **CloudWatch Logs**로 **EC2 인스턴스**의 로그를 수집하고 분석합니다. **CloudWatch Agent**를 설치하여 **Nginx 액세스 로그**와 **에러 로그**를 CloudWatch Logs로 전송합니다. **Logs Insights**에서 쿼리 언어로 로그를 검색하고 필터링하여 특정 패턴을 찾습니다. **메트릭 필터**를 생성하여 로그에서 에러 발생 횟수를 추출하고, 이를 대시보드에 표시합니다.
 
 > [!DOWNLOAD]
 > [week7-2-cloudwatch-logs.zip](/files/week7/week7-2-cloudwatch-logs.zip)
 >
-> - `setup-7-2.sh` - 사전 환경 구축 스크립트 (VPC, Subnet, Security Group, EC2 인스턴스, Nginx, CloudWatch Agent, IAM 역할 등 생성)
-> - `cleanup-7-2.sh` - 리소스 정리 스크립트
+> **포함 파일:**
+> 
+> **setup-7-2.sh** - 사전 환경 구축 스크립트
+> - **목적**: CloudWatch Logs 실습을 위한 완전한 인프라 자동 구축
+> - **생성 리소스**:
+>   - VPC 네트워크 (VPC, Subnet, Internet Gateway, Route Table, Security Group)
+>   - IAM 역할 및 Instance Profile (CloudWatch Agent 권한 포함)
+>   - EC2 인스턴스 (t3.micro, Amazon Linux 2023)
+> - **자동 구성 내용** (User Data):
+>   - Nginx 웹서버 설치 및 시작
+>   - CloudWatch Agent 설치 및 구성
+>   - 로그 수집 설정 (/var/log/nginx/access.log, /var/log/nginx/error.log)
+>   - 자동 트래픽 생성 시스템 (2분마다 정상/에러 로그 생성)
+>   - CloudWatch Logs 그룹 자동 생성 (/aws/ec2/nginx/access, /aws/ec2/nginx/error)
+> - **실행 시간**: 약 5-7분
+> - **활용**: 태스크 1-6에서 생성된 로그를 분석하고 모니터링합니다
+>
+> **cleanup-7-2.sh** - 리소스 정리 스크립트
+> - **목적**: 실습에서 생성한 모든 리소스를 안전한 순서로 자동 삭제
+> - **삭제 리소스**: CloudWatch Logs 그룹, EC2 인스턴스, IAM 역할, VPC 및 네트워크 리소스
+> - **실행 시간**: 약 3-5분
+>
+> **사용 태스크:**
 > - 태스크 0: 사전 환경 구축 (setup-7-2.sh 실행)
+> - 리소스 정리: 실습 완료 후 cleanup-7-2.sh 실행
+>   - 모든 생성된 리소스를 안전한 순서로 삭제
+>
+> **사용 태스크:**
+> - 태스크 0: 사전 환경 구축 (setup-7-2.sh 실행, 약 5-7분 소요)
 
 > [!CONCEPT] Amazon CloudWatch Logs란?
 >
@@ -35,6 +61,28 @@ learningObjectives:
 
 > [!NOTE]
 > 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
+
+### 0.1 사전 환경 구축의 목적
+
+이 실습에서는 **CloudWatch Logs**를 통해 실제 웹 서버의 로그를 수집하고 분석하는 방법을 학습합니다. 이를 위해 다음과 같은 환경이 필요합니다:
+
+**구축되는 인프라:**
+- **VPC 네트워크**: 격리된 네트워크 환경에서 EC2 인스턴스를 실행합니다
+- **EC2 인스턴스 (로그 서버)**: Nginx 웹 서버가 설치되어 실제 로그를 생성합니다
+- **CloudWatch Agent**: EC2 인스턴스의 로그 파일을 CloudWatch Logs로 자동 전송합니다
+- **IAM 역할**: CloudWatch Agent가 로그를 전송할 수 있는 권한을 제공합니다
+- **자동 트래픽 생성**: 2분마다 다양한 HTTP 요청(정상 200, 에러 404)을 생성하여 분석할 로그 데이터를 제공합니다
+
+**실습에서의 활용:**
+- **태스크 1-3**: 생성된 로그 그룹과 로그 스트림을 확인하고 실시간 로그를 관찰합니다
+- **태스크 4**: 404 에러 로그를 감지하는 메트릭 필터를 생성합니다
+- **태스크 5**: Logs Insights로 로그를 쿼리하고 분석합니다
+- **태스크 6**: Live Tail로 실시간 로그를 모니터링합니다
+
+> [!TIP]
+> 사전 환경 구축 스크립트는 실습에 필요한 모든 인프라를 자동으로 생성하므로, 여러분은 CloudWatch Logs의 핵심 기능 학습에만 집중할 수 있습니다.
+
+### 0.2 환경 구축 실행
 
 1. 위 DOWNLOAD 섹션에서 `week7-2-cloudwatch-logs.zip` 파일을 다운로드합니다.
 
@@ -55,21 +103,28 @@ chmod +x setup-7-2.sh
 ./setup-7-2.sh
 ```
 
-6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
+6. 스크립트 실행 중 생성 계획이 표시되면 내용을 확인하고 `y`를 입력하여 진행합니다.
 
 > [!NOTE]
 > 사전 환경 구축에 약 5-7분이 소요됩니다. EC2 인스턴스 생성 후 Nginx 및 CloudWatch Agent 설치까지 기다립니다.
 
+### 0.3 생성된 리소스 확인
+
 7. 스크립트가 완료되면 출력 메시지에서 다음 리소스가 생성되었는지 확인합니다:
 
-| 리소스 | 이름 |
-|--------|------|
-| VPC | CloudArchitect-Lab-VPC |
-| Public Subnet | CloudArchitect-Lab-Public-Subnet |
-| Security Group | CloudArchitect-Lab-Web-SG |
-| EC2 인스턴스 | CloudArchitect-Lab-LogServer |
-| IAM 역할 | CloudArchitect-Lab-CloudWatchAgent-Role |
-| CloudWatch Logs 그룹 | /aws/ec2/nginx/access, /aws/ec2/nginx/error |
+| 리소스 유형 | 리소스 이름 | 실습에서의 역할 |
+|------------|------------|----------------|
+| VPC | CloudArchitect-Lab-VPC | EC2 인스턴스를 위한 격리된 네트워크 환경 |
+| Internet Gateway | CloudArchitect-Lab-IGW | 인터넷 연결을 위한 게이트웨이 |
+| Public Subnet | CloudArchitect-Lab-Public-Subnet | EC2 인스턴스가 배치되는 서브넷 |
+| Route Table | CloudArchitect-Lab-Public-RT | 인터넷 트래픽 라우팅 |
+| Security Group | CloudArchitect-Lab-Web-SG | HTTP(80), SSH(22) 트래픽 허용 |
+| EC2 인스턴스 | CloudArchitect-Lab-LogServer | Nginx 웹 서버 + CloudWatch Agent 실행 |
+| IAM 역할 | CloudArchitect-Lab-CloudWatchAgent-Role | CloudWatch Logs 전송 권한 제공 |
+| CloudWatch Logs 그룹 | /aws/ec2/nginx/access | Nginx 액세스 로그 저장 |
+| CloudWatch Logs 그룹 | /aws/ec2/nginx/error | Nginx 에러 로그 저장 |
+
+8. 출력 메시지에서 EC2 인스턴스의 **Public IP 주소**를 확인하고 메모합니다.
 
 ✅ **태스크 완료**: 사전 환경 구축이 완료되었습니다.
 

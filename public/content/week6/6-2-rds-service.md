@@ -16,9 +16,28 @@ learningObjectives:
 > [!DOWNLOAD]
 > [week6-2-rds-service.zip](/files/week6/week6-2-rds-service.zip)
 >
-> - `setup-6-2.sh` - 사전 환경 구축 스크립트 (VPC, Public/Private Subnets, Route Table, Security Group, EC2 인스턴스 등 생성)
-> - `cleanup-6-2.sh` - 리소스 정리 스크립트
+> **포함 파일:**
+>
+> **setup-6-2.sh** - 사전 환경 구축 스크립트
+>
+> - **목적**: RDS 실습을 위한 Multi-AZ 네트워크와 Bastion Host 자동 구축
+> - **생성 리소스**:
+>   - VPC 네트워크 (VPC, Internet Gateway, Public Subnet, 2개 Private Subnet, Route Table)
+>   - Security Group (SSH 22 포트 허용)
+>   - EC2 인스턴스 (RDS 접속을 위한 Bastion Host, MySQL 클라이언트 사전 설치)
+> - **실행 시간**: 약 3-5분
+> - **활용**: 태스크 2-3에서 Private Subnet에 RDS를 생성하고, 태스크 4-5에서 Bastion Host를 통해 RDS에 접속합니다
+>
+> **cleanup-6-2.sh** - 리소스 정리 스크립트
+>
+> - **목적**: 실습에서 생성한 모든 리소스를 안전한 순서로 자동 삭제
+> - **삭제 리소스**: RDS 인스턴스, DB Subnet Group, EC2 인스턴스, Security Group, VPC 및 네트워크 리소스
+> - **실행 시간**: 약 5-7분 (RDS 삭제 시간 포함)
+>
+> **사용 태스크:**
+>
 > - 태스크 0: 사전 환경 구축 (setup-6-2.sh 실행)
+> - 리소스 정리: 실습 완료 후 cleanup-6-2.sh 실행
 
 > [!ARCHITECTURE] 실습 아키텍처 다이어그램 - RDS 서비스 아키텍처
 >
@@ -40,6 +59,32 @@ learningObjectives:
 > [!NOTE]
 > 실습을 시작하기 전에 AWS 콘솔 우측 상단에서 현재 리전을 확인하세요. 올바른 리전에서 작업하고 있는지 반드시 확인해야 합니다.
 
+### 0.1 사전 환경 구축의 목적
+
+이 실습에서는 **Amazon RDS**를 사용하여 관리형 관계형 데이터베이스를 생성하고 EC2에서 접속하는 방법을 학습합니다. 이를 위해 다음과 같은 환경이 필요합니다:
+
+**구축되는 인프라:**
+
+- **VPC 네트워크 (Multi-AZ)**: Public/Private 서브넷을 구성하여 보안을 강화합니다
+- **Public Subnet**: Bastion Host EC2가 배치되어 인터넷에서 접속 가능합니다
+- **Private Subnet 2개**: RDS 인스턴스가 배치되는 격리된 서브넷입니다 (Multi-AZ 필수)
+- **Internet Gateway**: Bastion Host의 인터넷 연결을 제공합니다
+- **Security Group**: Bastion Host에서 RDS로의 MySQL 트래픽(3306)만 허용합니다
+- **EC2 인스턴스 (Bastion Host)**: RDS에 접속하기 위한 클라이언트 역할을 합니다
+
+**실습에서의 활용:**
+
+- **태스크 1**: 생성된 VPC와 Bastion Host를 확인합니다
+- **태스크 2**: DB 서브넷 그룹을 생성하여 RDS가 배치될 서브넷을 지정합니다
+- **태스크 3**: RDS MySQL 인스턴스를 생성하고 구성합니다
+- **태스크 4**: Bastion Host에서 RDS로 접속하여 데이터베이스를 관리합니다
+- **태스크 5**: 테이블을 생성하고 데이터를 조회하여 RDS 기능을 테스트합니다
+
+> [!TIP]
+> 사전 환경 구축 스크립트는 Multi-AZ 네트워크와 Bastion Host를 자동으로 생성하므로, 여러분은 RDS 인스턴스 생성과 데이터베이스 관리에만 집중할 수 있습니다.
+
+### 0.2 환경 구축 실행
+
 1. 위 DOWNLOAD 섹션에서 `week6-2-rds-service.zip` 파일을 다운로드합니다.
 
 2. AWS Management Console에 로그인한 후 상단의 **CloudShell** 아이콘을 선택하여 CloudShell을 실행합니다.
@@ -59,33 +104,38 @@ chmod +x setup-6-2.sh
 ./setup-6-2.sh
 ```
 
-6. 스크립트 실행 중 생성 계획이 표시되면 `y`를 입력하여 진행합니다.
+6. 스크립트 실행 중 생성 계획이 표시되면 내용을 확인하고 `y`를 입력하여 진행합니다.
 
 > [!NOTE]
 > 사전 환경 구축에 약 3-5분이 소요됩니다. 스크립트가 완료될 때까지 기다립니다.
 
+### 0.3 생성된 리소스 확인
+
 7. 스크립트가 완료되면 출력 메시지에서 다음 리소스가 생성되었는지 확인합니다:
 
-| 리소스 | 이름 |
-|--------|------|
-| VPC | CloudArchitect-Lab-VPC |
-| Internet Gateway | CloudArchitect-Lab-IGW |
-| Public Subnet | CloudArchitect-Lab-Public-Subnet |
-| Private Subnet 1 | CloudArchitect-Lab-Private-Subnet-1 |
-| Private Subnet 2 | CloudArchitect-Lab-Private-Subnet-2 |
-| Route Table | CloudArchitect-Lab-Public-RT |
-| Security Group | CloudArchitect-Lab-EC2-SG |
-| EC2 인스턴스 | CloudArchitect-Lab-RDS-Client |
+| 리소스 유형      | 리소스 이름                         | 실습에서의 역할                                  |
+| ---------------- | ----------------------------------- | ------------------------------------------------ |
+| VPC              | CloudArchitect-Lab-VPC              | RDS와 Bastion Host를 위한 격리된 네트워크 환경   |
+| Internet Gateway | CloudArchitect-Lab-IGW              | Bastion Host의 인터넷 연결 제공                  |
+| Public Subnet    | CloudArchitect-Lab-Public-Subnet    | Bastion Host가 배치되는 서브넷                   |
+| Private Subnet 1 | CloudArchitect-Lab-Private-Subnet-1 | RDS가 배치되는 첫 번째 Private 서브넷            |
+| Private Subnet 2 | CloudArchitect-Lab-Private-Subnet-2 | RDS가 배치되는 두 번째 Private 서브넷 (Multi-AZ) |
+| Route Table      | CloudArchitect-Lab-Public-RT        | 인터넷 트래픽 라우팅                             |
+| Security Group   | CloudArchitect-Lab-EC2-SG           | Bastion Host용 (SSH 허용)                        |
+| EC2 인스턴스     | CloudArchitect-Lab-RDS-Client       | RDS 접속을 위한 Bastion Host                     |
+
+8. 출력 메시지에서 EC2 인스턴스의 **Public IP 주소**를 확인하고 메모합니다 (태스크 4에서 사용).
 
 ✅ **태스크 완료**: 사전 환경 구축이 완료되었습니다.
 
 > [!TIP]
 > **CloudShell 파일 정리**: 실습이 완전히 종료된 후, 업로드한 ZIP 파일과 스크립트를 삭제하여 CloudShell 스토리지를 정리할 수 있습니다:
+>
 > ```bash
 > rm -f week6-2-rds-service.zip setup-6-2.sh cleanup-6-2.sh
 > ```
+>
 > CloudShell 스토리지는 리전별로 1GB까지 무료 제공되며, 파일 정리는 선택사항입니다.
-
 
 ## 태스크 1: 사전 구축 환경 확인
 
@@ -126,7 +176,6 @@ chmod +x setup-6-2.sh
 
 ✅ **태스크 완료**: VPC, Private 서브넷 2개, Bastion Host EC2 인스턴스가 정상적으로 구축되어 있습니다.
 
-
 ## 태스크 2: Amazon RDS DB 서브넷 그룹 생성
 
 > [!CONCEPT] DB 서브넷 그룹이란?
@@ -150,13 +199,12 @@ chmod +x setup-6-2.sh
 22. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
 23. **Add subnets** 섹션에서 다음 2개의 가용 영역과 서브넷을 선택합니다:
-    - **Availability Zones**: **ap-northeast-2a**와 **ap-northeast-2c**를 선택합니다
-    - **Subnets**: **CloudArchitect-Lab-Private-Subnet-1** (ap-northeast-2a)과 **CloudArchitect-Lab-Private-Subnet-2** (ap-northeast-2c)를 선택합니다
+    - **Availability Zones**: **ap-northeast-2a**와 **ap-northeast-2b**를 선택합니다
+    - **Subnets**: **CloudArchitect-Lab-Private-Subnet-1** (ap-northeast-2a)과 **CloudArchitect-Lab-Private-Subnet-2** (ap-northeast-2b)를 선택합니다
 
 24. [[Create]] 버튼을 클릭합니다.
 
 ✅ **태스크 완료**: Multi-AZ 배치를 위한 DB 서브넷 그룹이 생성되었습니다.
-
 
 ## 태스크 3: Amazon RDS 보안 그룹 생성
 
@@ -184,11 +232,11 @@ chmod +x setup-6-2.sh
 
 32. 다음과 같이 설정합니다:
 
-| 항목 | 값 |
-|------|-----|
-| Type | MySQL/Aurora |
-| Port range | 3306 |
-| Source | **CloudArchitect-Lab-EC2-SG** (EC2 보안 그룹 검색하여 선택) |
+| 항목       | 값                                                          |
+| ---------- | ----------------------------------------------------------- |
+| Type       | MySQL/Aurora                                                |
+| Port range | 3306                                                        |
+| Source     | **CloudArchitect-Lab-EC2-SG** (EC2 보안 그룹 검색하여 선택) |
 
 > [!TIP]
 > Source에 IP 대신 EC2 보안 그룹을 지정하면, 해당 보안 그룹이 연결된 인스턴스에서만 접근이 허용됩니다. IP가 변경되어도 규칙을 수정할 필요가 없어 관리가 편리합니다.
@@ -196,7 +244,6 @@ chmod +x setup-6-2.sh
 33. [[Create security group]] 버튼을 클릭합니다.
 
 ✅ **태스크 완료**: VPC 내부의 EC2에서만 MySQL 포트(3306)로 접근할 수 있는 보안 그룹이 생성되었습니다.
-
 
 ## 태스크 4: Amazon RDS MySQL 인스턴스 생성
 
@@ -260,31 +307,42 @@ chmod +x setup-6-2.sh
 
 51. **default** 보안 그룹 옆의 [[X]] 버튼을 클릭하여 제거합니다.
 
-### 4.5 추가 설정 및 생성
+### 4.5 태그 설정
 
-52. 페이지 최하단으로 스크롤하여 **Additional configuration** 섹션을 찾습니다. 접힌 상태라면 섹션 제목을 클릭하여 확장합니다.
+52. 페이지를 아래로 스크롤하여 **Tags - optional** 섹션을 찾습니다.
 
-53. **Database options**에서:
-    - **Initial database name**: `cloudarchitect`를 입력합니다
+53. [[Add new tag]] 버튼을 클릭하고 첫 번째 태그를 입력합니다:
 
-> [!NOTE]
-> Initial database name을 지정하지 않으면 RDS 인스턴스에 기본 데이터베이스가 생성되지 않습니다. 연결 후 수동으로 데이터베이스를 생성해야 합니다.
-
-54. **Additional configuration** 섹션 내에서 아래로 스크롤하여 **Tags** 항목을 찾습니다.
-
-55. [[Add new tag]] 버튼을 클릭하고 첫 번째 태그를 입력합니다:
 - **Key**: `Name`
 - **Value**: `CloudArchitect-Lab-MySQL`
 
-56. [[Add new tag]] 버튼을 다시 클릭하고 두 번째 태그를 추가합니다:
+54. [[Add new tag]] 버튼을 다시 클릭하고 두 번째 태그를 추가합니다:
+
 - **Key**: `StudentId`
 - **Value**: `[본인 학번]` (예: 20241234)
 
 > [!TIP]
 > StudentId 태그를 추가하면 공유 AWS 계정에서 본인의 RDS 인스턴스를 쉽게 구분하고, Tag Editor로 본인 학번으로 검색하여 모든 실습 리소스를 한 번에 확인할 수 있습니다.
 
-57. **Deletion protection** 섹션에서:
-    - ☐ **Enable deletion protection**: 체크를 해제합니다
+### 4.6 모니터링 설정
+
+55. **Monitoring** 섹션에서:
+    - ☐ **Enable Enhanced monitoring**: 체크를 해제합니다
+
+> [!NOTE]
+> Enhanced monitoring은 추가 비용이 발생하므로 실습에서는 비활성화합니다. 기본 CloudWatch 모니터링은 자동으로 활성화됩니다.
+
+### 4.7 추가 설정
+
+56. 페이지 최하단으로 스크롤하여 **Additional configuration** 섹션을 찾습니다. 접힌 상태라면 섹션 제목을 클릭하여 확장합니다.
+
+57. **Database options**에서:
+    - **Initial database name**: `cloudarchitect`를 입력합니다
+
+> [!NOTE]
+> Initial database name을 지정하지 않으면 RDS 인스턴스에 기본 데이터베이스가 생성되지 않습니다. 연결 후 수동으로 데이터베이스를 생성해야 합니다.
+
+58. **Additional configuration** 섹션 맨 아래에 있는 **Enable deletion protection** 체크박스의 체크를 해제합니다.
 
 > [!WARNING]
 > 실습 환경이므로 Deletion protection을 비활성화합니다. 프로덕션 환경에서는 반드시 활성화해야 합니다.
@@ -292,11 +350,13 @@ chmod +x setup-6-2.sh
 > [!IMPORTANT]
 > cleanup 시 문제를 방지하기 위해 다음 설정을 반드시 확인합니다:
 >
-> - **DB parameter group**: `default.mysql8.0` (기본값) 유지
-> - **Option group**: `default:mysql-8-0` (기본값) 유지
+> - **DB parameter group**: `default.mysql8.4` (기본값) 유지
+> - **Option group**: `default:mysql-8-4` (기본값) 유지
 > - **Log exports**: 모든 체크박스 해제 (CloudWatch Log Groups 자동 생성 방지)
 
-58. 모든 설정을 확인한 후 [[Create database]] 버튼을 클릭합니다.
+### 4.8 RDS 인스턴스 생성
+
+59. 모든 설정을 확인한 후 [[Create database]] 버튼을 클릭합니다.
 
 > [!NOTE] RDS 인스턴스 생성 대기 중
 >
@@ -309,7 +369,6 @@ chmod +x setup-6-2.sh
 > 생성 진행 상황은 RDS 콘솔에서 확인할 수 있으며, Status가 "Creating" → "Available"로 변경되면 완료입니다.
 
 ✅ **태스크 완료**: RDS MySQL 인스턴스 생성이 시작되었습니다.
-
 
 ## 태스크 5: 데이터베이스 연결 및 테스트
 
@@ -325,24 +384,28 @@ chmod +x setup-6-2.sh
 
 61. 인스턴스 이름을 선택하여 세부 정보를 확인합니다.
 
-62. **Connectivity & security** 탭에서 **Endpoint**를 복사하여 메모장에 저장합니다.
+62. **Connectivity & security** 탭을 선택합니다.
+
+63. **Connect using** 섹션에서 **Endpoints** 라디오 버튼을 선택합니다.
+
+64. 표시된 **Endpoint** 값을 복사하여 메모장에 저장합니다.
 
 > [!NOTE]
 > 엔드포인트 형식: `cloudarchitect-lab-mysql.xxxxx.ap-northeast-2.rds.amazonaws.com`. 이 값은 EC2에서 RDS에 접속할 때 사용합니다.
 
 ### 5.2 Amazon EC2 인스턴스를 통한 RDS 접속
 
-63. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
+65. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-64. 왼쪽 메뉴에서 **Instances**를 선택합니다.
+66. 왼쪽 메뉴에서 **Instances**를 선택합니다.
 
-65. `CloudArchitect-Lab-RDS-Client` 인스턴스를 선택합니다.
+67. `CloudArchitect-Lab-RDS-Client` 인스턴스를 선택합니다.
 
-66. [[Connect]] 버튼을 클릭합니다.
+68. [[Connect]] 버튼을 클릭합니다.
 
-67. **EC2 Instance Connect** 탭에서 [[Connect]] 버튼을 클릭합니다.
+69. **EC2 Instance Connect** 탭에서 [[Connect]] 버튼을 클릭합니다.
 
-68. MySQL 클라이언트 설치 상태를 확인합니다:
+70. MySQL 클라이언트 설치 상태를 확인합니다:
 
 ```bash
 mysql --version
@@ -350,6 +413,7 @@ mysql --version
 
 > [!TROUBLESHOOTING]
 > `mysql` 명령어가 없다는 오류가 발생하면 다음 명령어로 수동 설치합니다:
+>
 > ```bash
 > sudo dnf install -y mariadb105
 > ```
@@ -367,6 +431,7 @@ mysql -h [RDS-엔드포인트] -u admin -p
 70. 패스워드 입력 후 MySQL 연결이 성공하면 다음과 같은 프롬프트가 표시됩니다:
 
 > [!OUTPUT]
+>
 > ```
 > Welcome to the MySQL monitor. Commands end with ; or \g.
 > Your MySQL connection id is 8
@@ -402,7 +467,7 @@ DESCRIBE users;
 73. 샘플 데이터를 삽입하고 조회합니다:
 
 ```sql
-INSERT INTO users (name, email, age, major) VALUES 
+INSERT INTO users (name, email, age, major) VALUES
 ('김철수', 'kim@example.com', 25, '컴퓨터공학과'),
 ('이영희', 'lee@example.com', 23, '정보시스템학과'),
 ('박민준', 'park@example.com', 27, '소프트웨어공학과'),
@@ -414,6 +479,7 @@ SELECT COUNT(*) as total_users FROM users;
 ```
 
 > [!OUTPUT]
+>
 > ```
 > +----+-----------+--------------------+------+----------------------------+---------------------+
 > | id | name      | email              | age  | major                      | created_at          |
@@ -446,23 +512,53 @@ exit
 > [!WARNING]
 > 실습 완료 후 **반드시** 리소스를 정리하여 불필요한 비용을 방지하세요. 특히 **RDS 인스턴스**는 시간당 요금이 발생합니다.
 
+> [!IMPORTANT]
+> 정리 스크립트를 실행하기 전에 **RDS 인스턴스를 먼저 수동으로 삭제**해야 합니다. RDS 삭제에는 시간이 걸리므로 먼저 삭제를 시작한 후 스크립트를 실행하는 것이 효율적입니다.
+
+### 사전 작업: RDS 인스턴스 삭제
+
+1. 상단 검색창에서 `RDS`를 검색하고 **RDS**를 선택합니다.
+
+2. 왼쪽 메뉴에서 **Databases**를 선택합니다.
+
+3. `cloudarchitect-lab-mysql` 인스턴스를 선택합니다.
+
+4. **Actions** > **Delete**를 선택합니다.
+
+5. ☐ **Create final snapshot** 체크박스가 체크 해제되어 있는지 확인합니다.
+
+6. ☐ **Retain automated backups** 체크박스가 체크 해제되어 있는지 확인합니다.
+
+7. ☑ **I acknowledge that upon instance deletion, automated backups, including system snapshots and point-in-time recovery, will no longer be available.** 체크박스를 체크합니다.
+
+8. 확인 창에서 `delete me`를 입력합니다.
+
+9. [[Delete]] 버튼을 클릭합니다.
+
+10. 상단에 "Successfully deleted DB instance cloudarchitect-lab-mysql" 메시지가 표시됩니다.
+
+11. 페이지를 새로고침하여 `cloudarchitect-lab-mysql`가 목록에서 완전히 사라졌는지 확인합니다.
+
+> [!NOTE]
+> RDS 인스턴스 삭제는 5-10분 정도 소요됩니다. 삭제가 진행되는 동안 아래 방법 1 또는 방법 2로 나머지 리소스를 정리할 수 있습니다.
+
 ### 방법 1: CloudShell에서 정리 스크립트 실행
 
-1. AWS Management Console 상단의 **CloudShell** 아이콘을 선택합니다.
+12. AWS Management Console 상단의 **CloudShell** 아이콘을 선택합니다.
 
-2. 다음 명령어로 정리 스크립트를 실행합니다:
+13. 다음 명령어로 정리 스크립트를 실행합니다:
 
 ```bash
 ./cleanup-6-2.sh
 ```
 
-3. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.
+14. 삭제 확인 메시지가 표시되면 `y`를 입력하여 진행합니다.
 
-4. 스크립트가 다음 리소스를 자동으로 삭제합니다:
-   - RDS 인스턴스 (`cloudarchitect-lab-mysql`)
-   - DB Subnet Group (`cloudarchitect-lab-db-subnet-group`)
-   - EC2 인스턴스 (`CloudArchitect-Lab-RDS-Client`)
-   - Security Groups, VPC 및 관련 리소스
+15. 스크립트가 다음 리소스를 자동으로 삭제합니다:
+
+- DB Subnet Group (`cloudarchitect-lab-db-subnet-group`)
+- EC2 인스턴스 (`CloudArchitect-Lab-RDS-Client`)
+- Security Groups, VPC 및 관련 리소스
 
 > [!NOTE]
 > RDS 인스턴스 삭제에는 약 5-10분이 소요됩니다. 스크립트가 완료될 때까지 기다려주세요.
@@ -538,9 +634,10 @@ exit
 25. 왼쪽 메뉴에서 **Tag Editor**를 선택합니다.
 
 26. 다음과 같이 검색 조건을 설정합니다:
-   - **Regions**: `Asia Pacific (Seoul) ap-northeast-2`
-   - **Resource types**: `All supported resource types`
-   - **Tags**: Tag key에 `StudentId`를 선택하고, Tag value에 본인 학번을 입력합니다.
+
+- **Regions**: `Asia Pacific (Seoul) ap-northeast-2`
+- **Resource types**: `All supported resource types`
+- **Tags**: Tag key에 `StudentId`를 선택하고, Tag value에 본인 학번을 입력합니다.
 
 > [!TIP]
 > StudentId 태그로 검색하면 본인이 생성한 리소스만 정확히 확인할 수 있습니다. Name 태그로 검색하려면 Tag key를 `Name`, Tag value를 `CloudArchitect-Lab`로 입력합니다.
@@ -550,7 +647,6 @@ exit
 28. 검색 결과에 리소스가 표시되지 않으면 정리가 완료된 것입니다.
 
 ✅ **리소스 정리 완료**: 모든 리소스가 삭제되었습니다.
-
 
 ## 💡 핵심 포인트 정리
 
