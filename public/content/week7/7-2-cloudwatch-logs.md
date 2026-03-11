@@ -144,18 +144,28 @@ chmod +x setup-7-2.sh
 
 11. 하단 **Details** 탭에서 **Public IPv4 address**를 복사합니다.
 
-### 1.2 웹 서버 접속 테스트
+### 1.2 웹 서버 접속 및 로그 생성
 
 12. 새 브라우저 탭을 열고 `http://[복사한 Public IP]`로 접속합니다.
 
 13. CloudWatch Logs 실습 환경 페이지가 정상적으로 표시되는지 확인합니다.
 
+14. **여러 번 새로고침**(F5 키)하여 Access 로그를 생성합니다.
+
+15. 존재하지 않는 페이지에도 접속하여 404 에러 로그를 생성합니다:
+- `http://[복사한 Public IP]/test404`
+- `http://[복사한 Public IP]/notfound`
+- `http://[복사한 Public IP]/api/test`
+
 > [!NOTE]
-> 웹 서버에 접속하면 Nginx Access 로그가 자동으로 생성됩니다. 또한 사전 구축 스크립트에 의해 자동 트래픽 생성 시스템이 2분마다 다양한 URL 패턴(정상 200, 에러 404)의 로그를 생성합니다.
+> 웹 서버에 접속하면 Nginx가 `/var/log/nginx/access.log`에 로그를 기록하고, CloudWatch Agent가 이를 CloudWatch Logs로 전송합니다. 또한 사전 구축 스크립트에 의해 자동 트래픽 생성 시스템이 2분마다 다양한 URL 패턴(정상 200, 에러 404)의 로그를 생성합니다.
 
-14. 스크립트 실행 후 약 3-4분 기다려 충분한 로그 데이터가 생성되도록 합니다.
+16. **약 2-3분 기다려** CloudWatch Agent가 로그를 전송하도록 합니다.
 
-✅ **태스크 완료**: EC2 로그 서버와 웹 서버가 정상 작동하고 있습니다.
+> [!TIP]
+> CloudWatch Agent는 15초마다 로그 파일을 확인하고 변경사항을 CloudWatch Logs로 전송합니다. 처음 로그 그룹이 생성되는 데는 1-2분 정도 소요됩니다.
+
+✅ **태스크 완료**: 웹 서버가 정상 작동하고 로그가 생성되었습니다.
 
 
 ## 태스크 2: Amazon CloudWatch Logs 그룹 확인
@@ -166,23 +176,23 @@ chmod +x setup-7-2.sh
 
 ### 2.1 Access 로그 그룹 확인
 
-15. 상단 검색창에서 `CloudWatch`를 검색하고 **CloudWatch**를 선택합니다.
+17. 상단 검색창에서 `CloudWatch`를 검색하고 **CloudWatch**를 선택합니다.
 
-16. 왼쪽 메뉴에서 **Logs**를 선택하여 확장한 후 **Log Management**를 선택합니다.
+18. 왼쪽 메뉴에서 **Logs**를 선택하여 확장한 후 **Log Management**를 선택합니다.
 
-17. `/aws/ec2/nginx/access` 로그 그룹을 선택합니다.
+19. `/aws/ec2/nginx/access` 로그 그룹을 선택합니다.
 
-18. 로그 그룹의 **Retention setting**, **Stored bytes**, **Creation time**을 확인합니다.
+20. 로그 그룹의 **Retention setting**, **Stored bytes**, **Creation time**을 확인합니다.
 
-19. **Log streams** 탭에서 생성된 로그 스트림을 확인합니다.
+21. **Log streams** 탭에서 생성된 로그 스트림을 확인합니다.
 
 ### 2.2 Error 로그 그룹 확인
 
-20. 왼쪽 메뉴에서 **Log Management**를 다시 선택합니다.
+22. 왼쪽 메뉴에서 **Log Management**를 다시 선택합니다.
 
-21. `/aws/ec2/nginx/error` 로그 그룹을 선택합니다.
+23. `/aws/ec2/nginx/error` 로그 그룹을 선택합니다.
 
-22. Error 로그 그룹의 세부 정보와 로그 스트림을 확인합니다.
+24. Error 로그 그룹의 세부 정보와 로그 스트림을 확인합니다.
 
 > [!TIP]
 > Access 로그와 Error 로그를 별도의 그룹으로 분리하면 각각 다른 보존 기간을 설정하거나, Error 로그에만 경보를 설정하는 등 유연한 관리가 가능합니다.
@@ -194,13 +204,13 @@ chmod +x setup-7-2.sh
 
 ### 3.1 Access 로그 스트림 확인
 
-23. `/aws/ec2/nginx/access` 로그 그룹에서 **Log streams** 탭의 로그 스트림을 선택합니다.
+25. `/aws/ec2/nginx/access` 로그 그룹에서 **Log streams** 탭의 로그 스트림을 선택합니다.
 
-24. 생성된 로그 이벤트들을 확인합니다.
+26. 생성된 로그 이벤트들을 확인합니다.
 
-25. 각 로그 이벤트의 **Timestamp**와 **Message**를 확인합니다.
+27. 각 로그 이벤트의 **Timestamp**와 **Message**를 확인합니다.
 
-26. 정상 접속(200 응답)과 404 에러 로그를 구분하여 확인합니다.
+28. 정상 접속(200 응답)과 404 에러 로그를 구분하여 확인합니다.
 
 > [!NOTE]
 > Access 로그 형식 예시:
