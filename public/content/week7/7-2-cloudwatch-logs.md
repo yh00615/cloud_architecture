@@ -136,23 +136,23 @@ chmod +x setup-7-2.sh
 
 ### 1.1 Amazon EC2 로그 서버 확인
 
-8. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
+9. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-9. 왼쪽 메뉴에서 **Instances**를 선택합니다.
+10. 왼쪽 메뉴에서 **Instances**를 선택합니다.
 
-10. `CloudArchitect-Lab-LogServer` 인스턴스의 상태가 "Running"인지 확인합니다.
+11. `CloudArchitect-Lab-LogServer` 인스턴스의 상태가 "Running"인지 확인합니다.
 
-11. 하단 **Details** 탭에서 **Public IPv4 address**를 복사합니다.
+12. 하단 **Details** 탭에서 **Public IPv4 address**를 복사합니다.
 
 ### 1.2 웹 서버 접속 및 로그 생성
 
-12. 새 브라우저 탭을 열고 `http://[복사한 Public IP]`로 접속합니다.
+13. 새 브라우저 탭을 열고 `http://[복사한 Public IP]`로 접속합니다.
 
-13. CloudWatch Logs 실습 환경 페이지가 정상적으로 표시되는지 확인합니다.
+14. CloudWatch Logs 실습 환경 페이지가 정상적으로 표시되는지 확인합니다.
 
-14. **여러 번 새로고침**(F5 키)하여 Access 로그를 생성합니다.
+15. **여러 번 새로고침**(F5 키)하여 Access 로그를 생성합니다.
 
-15. 존재하지 않는 페이지에도 접속하여 404 에러 로그를 생성합니다:
+16. 존재하지 않는 페이지에도 접속하여 404 에러 로그를 생성합니다:
 - `http://[복사한 Public IP]/test404`
 - `http://[복사한 Public IP]/notfound`
 - `http://[복사한 Public IP]/api/test`
@@ -160,7 +160,7 @@ chmod +x setup-7-2.sh
 > [!NOTE]
 > 웹 서버에 접속하면 Nginx가 `/var/log/nginx/access.log`에 로그를 기록하고, CloudWatch Agent가 이를 CloudWatch Logs로 전송합니다. 또한 사전 구축 스크립트에 의해 자동 트래픽 생성 시스템이 2분마다 다양한 URL 패턴(정상 200, 에러 404)의 로그를 생성합니다.
 
-16. **약 2-3분 기다려** CloudWatch Agent가 로그를 전송하도록 합니다.
+17. **약 2-3분 기다려** CloudWatch Agent가 로그를 전송하도록 합니다.
 
 > [!TIP]
 > CloudWatch Agent는 15초마다 로그 파일을 확인하고 변경사항을 CloudWatch Logs로 전송합니다. 처음 로그 그룹이 생성되는 데는 1-2분 정도 소요됩니다.
@@ -176,23 +176,23 @@ chmod +x setup-7-2.sh
 
 ### 2.1 Access 로그 그룹 확인
 
-17. 상단 검색창에서 `CloudWatch`를 검색하고 **CloudWatch**를 선택합니다.
+18. 상단 검색창에서 `CloudWatch`를 검색하고 **CloudWatch**를 선택합니다.
 
-18. 왼쪽 메뉴에서 **Logs**를 선택하여 확장한 후 **Log Management**를 선택합니다.
+19. 왼쪽 메뉴에서 **Logs**를 선택하여 확장한 후 **Log Management**를 선택합니다.
 
-19. `/aws/ec2/nginx/access` 로그 그룹을 선택합니다.
+20. `/aws/ec2/nginx/access` 로그 그룹을 선택합니다.
 
-20. 로그 그룹의 **Retention**, **Stored bytes**, **Creation time**을 확인합니다.
+21. **Log group details** 섹션을 확장하여 **Retention**, **Stored bytes**, **Creation time**을 확인합니다.
 
-21. **Log streams** 탭에서 생성된 로그 스트림을 확인합니다.
+22. **Log streams** 탭에서 생성된 로그 스트림을 확인합니다.
 
 ### 2.2 Error 로그 그룹 확인
 
-22. 왼쪽 메뉴에서 **Log Management**를 다시 선택합니다.
+23. 왼쪽 메뉴에서 **Log Management**를 다시 선택합니다.
 
-23. `/aws/ec2/nginx/error` 로그 그룹을 선택합니다.
+24. `/aws/ec2/nginx/error` 로그 그룹을 선택합니다.
 
-24. Error 로그 그룹의 세부 정보와 로그 스트림을 확인합니다.
+25. Error 로그 그룹의 세부 정보와 로그 스트림을 확인합니다.
 
 > [!TIP]
 > Access 로그와 Error 로그를 별도의 그룹으로 분리하면 각각 다른 보존 기간을 설정하거나, Error 로그에만 경보를 설정하는 등 유연한 관리가 가능합니다.
@@ -204,13 +204,13 @@ chmod +x setup-7-2.sh
 
 ### 3.1 Access 로그 스트림 확인
 
-25. `/aws/ec2/nginx/access` 로그 그룹에서 **Log streams** 탭의 로그 스트림을 선택합니다.
+26. `/aws/ec2/nginx/access` 로그 그룹에서 **Log streams** 탭의 로그 스트림을 선택합니다.
 
-26. 생성된 로그 이벤트들을 확인합니다.
+27. 생성된 로그 이벤트들을 확인합니다.
 
-27. 각 로그 이벤트의 **Timestamp**와 **Message**를 확인합니다.
+28. 각 로그 이벤트의 **Timestamp**와 **Message**를 확인합니다.
 
-28. 정상 접속(200 응답)과 404 에러 로그를 구분하여 확인합니다.
+29. 정상 접속(200 응답)과 404 에러 로그를 구분하여 확인합니다.
 
 > [!NOTE]
 > Access 로그 형식 예시:
@@ -220,13 +220,13 @@ chmod +x setup-7-2.sh
 
 ### 3.2 Error 로그 스트림 확인
 
-27. 왼쪽 메뉴에서 **Log Management**를 선택합니다.
+30. 왼쪽 메뉴에서 **Log Management**를 선택합니다.
 
-28. `/aws/ec2/nginx/error` 로그 그룹의 로그 스트림을 선택합니다.
+31. `/aws/ec2/nginx/error` 로그 그룹의 로그 스트림을 선택합니다.
 
-29. 404 에러와 관련된 상세한 에러 로그를 확인합니다.
+32. 404 에러와 관련된 상세한 에러 로그를 확인합니다.
 
-30. Access 로그와 Error 로그의 차이점을 비교합니다.
+33. Access 로그와 Error 로그의 차이점을 비교합니다.
 
 > [!NOTE]
 > Error 로그는 Access 로그보다 상세한 오류 정보를 포함합니다. 예: `2025/01/10 10:30:20 [error] 1234#0: *1 open() "/usr/share/nginx/html/test404" failed (2: No such file or directory)`
@@ -242,36 +242,36 @@ chmod +x setup-7-2.sh
 
 ### 4.1 404 에러 메트릭 필터 생성
 
-31. `/aws/ec2/nginx/access` 로그 그룹 페이지에서 **Metric filters** 탭을 선택합니다.
+34. `/aws/ec2/nginx/access` 로그 그룹 페이지에서 **Metric filters** 탭을 선택합니다.
 
-32. [[Create metric filter]] 버튼을 클릭합니다.
+35. [[Create metric filter]] 버튼을 클릭합니다.
 
-33. **Filter pattern**에 다음을 입력합니다:
+36. **Filter pattern**에 다음을 입력합니다:
 
 ```
 [ip, identity, user, timestamp, request, status_code="404", size]
 ```
 
-34. **Select log data to test** 섹션에서 **Custom log data**를 선택하고, 본인의 Instance ID로 변경한 후 [[Test pattern]] 버튼을 클릭하여 패턴이 404 에러 로그와 매칭되는지 확인합니다.
+37. **Select log data to test** 섹션에서 **Custom log data**를 선택하고, 본인의 Instance ID로 변경한 후 [[Test pattern]] 버튼을 클릭하여 패턴이 404 에러 로그와 매칭되는지 확인합니다.
 
 > [!IMPORTANT]
 > Test pattern 실행 시 기본 제공되는 샘플 데이터가 아닌, 본인의 Instance ID에 해당하는 로그 데이터를 선택해야 결과가 표시됩니다.
 
-35. [[Next]] 버튼을 클릭합니다.
+38. [[Next]] 버튼을 클릭합니다.
 
 ### 4.2 메트릭 설정
 
-36. **Filter name**에 `404-Error-Filter`를 입력합니다.
+39. **Filter name**에 `404-Error-Filter`를 입력합니다.
 
-37. **Metric namespace**에 `CloudArchitect/Lab11`을 입력합니다.
+40. **Metric namespace**에 `CloudArchitect/Lab11`을 입력합니다.
 
-38. **Metric name**에 `404ErrorCount`를 입력합니다.
+41. **Metric name**에 `404ErrorCount`를 입력합니다.
 
-39. **Metric value**에 `1`을 입력합니다.
+42. **Metric value**에 `1`을 입력합니다.
 
-40. [[Next]] 버튼을 클릭합니다.
+43. [[Next]] 버튼을 클릭합니다.
 
-41. 설정을 검토한 후 [[Create metric filter]] 버튼을 클릭합니다.
+44. 설정을 검토한 후 [[Create metric filter]] 버튼을 클릭합니다.
 
 > [!TIP]
 > 생성된 메트릭 필터는 이후 발생하는 로그에만 적용됩니다. 과거 로그에는 소급 적용되지 않습니다. 메트릭이 생성되면 CloudWatch Metrics에서 `CloudArchitect/Lab11` 네임스페이스에서 확인할 수 있습니다.
@@ -287,13 +287,16 @@ chmod +x setup-7-2.sh
 
 ### 5.1 기본 로그 분석 쿼리
 
-42. 왼쪽 메뉴에서 **Logs**를 선택하여 확장한 후 **Logs Insights**를 선택합니다.
+45. 왼쪽 메뉴에서 **Logs**를 선택하여 확장한 후 **Logs Insights**를 선택합니다.
 
-43. **Select log group(s)** 드롭다운에서 `/aws/ec2/nginx/access`를 검색하여 선택합니다.
+46. **Select up to 50 log groups** 필드에서 `/aws/ec2/nginx/access`를 검색하여 선택합니다.
 
-44. 시간 범위를 **Last 1 hour**로 설정합니다.
+> [!TIP]
+> 콘솔 버전에 따라 **Select log group(s)** 드롭다운으로 표시될 수 있습니다.
 
-45. 쿼리 편집기에 다음 쿼리를 입력합니다:
+47. 시간 범위를 **Last 1 hour**로 설정합니다.
+
+48. 쿼리 편집기에 다음 쿼리를 입력합니다:
 
 ```
 fields @timestamp, @message
@@ -302,13 +305,13 @@ fields @timestamp, @message
 | limit 20
 ```
 
-46. [[Run query]] 버튼을 클릭합니다.
+49. [[Run query]] 버튼을 클릭합니다.
 
-47. 결과에서 404 에러 로그들을 확인합니다.
+50. 결과에서 404 에러 로그들을 확인합니다.
 
 ### 5.2 상태 코드별 통계 쿼리
 
-48. 쿼리 편집기에 다음 쿼리를 입력합니다:
+51. 쿼리 편집기에 다음 쿼리를 입력합니다:
 
 ```
 fields @timestamp, @message
@@ -317,26 +320,25 @@ fields @timestamp, @message
 | sort count desc
 ```
 
-49. [[Run query]] 버튼을 클릭합니다.
+52. [[Run query]] 버튼을 클릭합니다.
 
-50. 결과에서 200, 404 등 상태 코드별 발생 횟수를 확인합니다.
+53. 결과에서 200, 404 등 상태 코드별 발생 횟수를 확인합니다.
 
 ### 5.3 시간별 로그 발생 패턴 분석
 
-51. 다음 쿼리를 입력하여 시간별 로그 발생 패턴을 분석합니다:
+54. 다음 쿼리를 입력하여 시간별 로그 발생 패턴을 분석합니다:
 
 ```
 fields @timestamp
 | stats count() by bin(5m)
-| sort @timestamp desc
 ```
 
-52. [[Run query]] 버튼을 클릭합니다.
+55. [[Run query]] 버튼을 클릭합니다.
 
-53. 결과에서 5분 단위로 로그 발생 추이를 확인합니다.
+56. 결과에서 5분 단위로 로그 발생 추이를 확인합니다.
 
 > [!TIP]
-> Logs Insights 쿼리 결과는 **Visualization** 탭에서 그래프로 시각화할 수 있습니다. `stats` 명령어와 `bin()` 함수를 함께 사용하면 시계열 그래프를 생성할 수 있습니다.
+> 결과 테이블은 시간순으로 정렬되지 않을 수 있습니다. **Visualization** 탭을 선택하면 시간순 그래프로 로그 발생 추이를 확인할 수 있습니다.
 
 ✅ **태스크 완료**: Logs Insights를 통해 로그 검색, 파싱, 집계 분석을 수행했습니다.
 
@@ -345,23 +347,29 @@ fields @timestamp
 
 ### 6.1 Live Tail 시작
 
-54. `/aws/ec2/nginx/access` 로그 그룹 페이지로 이동합니다.
+57. `/aws/ec2/nginx/access` 로그 그룹 페이지로 이동합니다.
 
-55. [[Start tailing]] 버튼을 클릭합니다.
+58. [[Start tailing]] 버튼을 클릭합니다.
 
-56. Live tail 상태가 "Running"으로 변경될 때까지 기다립니다.
+59. 실시간 로그 이벤트가 화면에 표시되는지 확인합니다.
 
 ### 6.2 실시간 로그 관찰
 
-57. 다른 브라우저 탭에서 웹 서버 IP로 접속하여 실시간으로 로그가 나타나는지 확인합니다.
+60. 다른 브라우저 탭에서 웹 서버 IP로 접속하여 실시간으로 로그가 나타나는지 확인합니다.
 
-58. 존재하지 않는 페이지(예: `http://[IP]/test-page`)에 접속하여 404 에러 로그를 생성합니다.
+> [!TIP]
+> 로그가 바로 나타나지 않을 수 있습니다. 잠시 기다린 후 우측 하단의 [[Scroll to latest events]] 버튼을 클릭하면 최신 로그를 확인할 수 있습니다.
 
-59. Live tail 화면에서 **Filter events** 입력창에 `404`를 입력하여 404 에러 로그만 필터링합니다.
+61. 존재하지 않는 페이지(예: `http://[IP]/test-page`)에 접속하여 404 에러 로그를 생성합니다.
 
-60. 필터를 `200`으로 변경하여 정상 접속 로그만 표시합니다.
+62. 우측 상단의 [[Filter]] 버튼을 클릭하여 Filter 패널을 엽니다. **Add filter patterns (Case sensitive) - optional** 필드에 `404`를 입력하고 [[Apply filters]] 버튼을 클릭하여 404 에러 로그만 필터링합니다.
 
-61. [[Cancel]] 버튼을 클릭하여 세션을 종료합니다.
+> [!TIP]
+> 필터 적용 후 "Waiting for log events that match the filters" 메시지가 표시될 수 있습니다. 필터 조건에 맞는 새로운 로그가 발생할 때까지 잠시 기다립니다.
+
+63. 필터를 `200`으로 변경하여 정상 접속 로그만 표시합니다.
+
+64. 필터를 해제하고 우측 상단의 [[Cancel]] 버튼을 클릭하여 Live Tail을 중지합니다.
 
 > [!NOTE]
 > Live tail은 실시간 문제 감지, 배포 후 로그 확인, 트래픽 패턴 분석 등에 유용합니다. 필터링 기능으로 특정 조건의 로그만 선택적으로 모니터링할 수 있습니다.

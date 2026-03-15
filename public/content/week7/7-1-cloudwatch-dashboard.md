@@ -128,20 +128,20 @@ chmod +x setup-7-1.sh
 
 ### 1.1 Amazon EC2 인스턴스 확인
 
-8. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
+9. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-9. 왼쪽 메뉴에서 **Instances**를 선택합니다.
+10. 왼쪽 메뉴에서 **Instances**를 선택합니다.
 
-10. `CloudArchitect-Lab-MonitoringServer` 인스턴스의 상태가 "Running"인지 확인합니다.
+11. `CloudArchitect-Lab-MonitoringServer` 인스턴스의 상태가 "Running"인지 확인합니다.
 
-11. 인스턴스를 선택하고 **Instance ID**를 복사하여 메모장에 저장합니다.
+12. 인스턴스를 선택하고 **Instance ID**를 복사하여 메모장에 저장합니다.
 
 > [!NOTE]
 > Instance ID는 CloudWatch에서 해당 인스턴스의 지표를 검색할 때 사용합니다. `i-0abc1234def56789` 형태입니다.
 
-12. 하단 **Details** 탭에서 **Public IPv4 address**를 복사합니다.
+13. 하단 **Details** 탭에서 **Public IPv4 address**를 복사합니다.
 
-13. 새 브라우저 탭을 열고 `http://[복사한 Public IP]`로 접속하여 웹 서버가 정상 작동하는지 확인합니다.
+14. 새 브라우저 탭을 열고 `http://[복사한 Public IP]`로 접속하여 웹 서버가 정상 작동하는지 확인합니다.
 
 ✅ **태스크 완료**: EC2 인스턴스와 웹 서버가 정상 작동하고 있습니다.
 
@@ -159,17 +159,17 @@ chmod +x setup-7-1.sh
 
 ### 2.1 Amazon EC2 지표 확인
 
-14. 상단 검색창에서 `CloudWatch`를 검색하고 **CloudWatch**를 선택합니다.
+15. 상단 검색창에서 `CloudWatch`를 검색하고 **CloudWatch**를 선택합니다.
 
-15. 왼쪽 메뉴에서 **Metrics**를 선택하여 확장한 후 **All metrics**를 선택합니다.
+16. 왼쪽 메뉴에서 **Metrics**를 선택하여 확장한 후 **All metrics**를 선택합니다.
 
-16. **Browse** 탭에서 `EC2`를 선택합니다.
+17. **Browse** 탭에서 `EC2`를 선택합니다.
 
-17. **Per-Instance Metrics**를 선택합니다.
+18. **Per-Instance Metrics**를 선택합니다.
 
-18. 검색 필터에 태스크 1에서 복사한 **Instance ID**를 입력합니다.
+19. 검색 필터에 태스크 1에서 복사한 **Instance ID**를 입력합니다.
 
-19. 해당 인스턴스의 주요 지표를 확인합니다:
+20. 해당 인스턴스의 주요 지표를 확인합니다:
 - **CPUUtilization**: CPU 사용률 (%)
 - **NetworkIn / NetworkOut**: 네트워크 수신/송신 바이트
 - **DiskReadOps / DiskWriteOps**: 디스크 읽기/쓰기 작업 수
@@ -192,33 +192,33 @@ chmod +x setup-7-1.sh
 
 ### 3.1 Amazon SNS 토픽 생성
 
-20. 상단 검색창에서 `SNS`를 검색하고 **Simple Notification Service**를 선택합니다.
+21. 상단 검색창에서 `SNS`를 검색하고 **Simple Notification Service**를 선택합니다.
 
-21. 왼쪽 메뉴에서 **Topics**를 선택합니다.
+22. 왼쪽 메뉴에서 **Topics**를 선택합니다.
 
-22. [[Create topic]] 버튼을 클릭합니다.
+23. [[Create topic]] 버튼을 클릭합니다.
 
-23. **Type**에서 **Standard**를 선택합니다.
+24. **Type**에서 **Standard**를 선택합니다.
 
-24. **Name**에 `CloudArchitect-Lab-Alerts`를 입력합니다.
+25. **Name**에 `CloudArchitect-Lab-Alerts`를 입력합니다.
 
-25. **Tags** 섹션에서 [[Add new tag]] 버튼을 클릭하여 다음 태그를 추가합니다:
+26. **Tags** 섹션에서 [[Add new tag]] 버튼을 클릭하여 다음 태그를 추가합니다:
    - Key: `Name`, Value: `CloudArchitect-Lab-Alerts`
    - Key: `StudentId`, Value: `[본인 학번]` (예: 20241234)
 
-26. [[Create topic]] 버튼을 클릭합니다.
+27. [[Create topic]] 버튼을 클릭합니다.
 
 ### 3.2 이메일 구독 설정
 
-27. 생성된 토픽 상세 페이지에서 [[Create subscription]] 버튼을 클릭합니다.
+28. 생성된 토픽 상세 페이지에서 [[Create subscription]] 버튼을 클릭합니다.
 
-28. **Protocol**에서 **Email**을 선택합니다.
+29. **Protocol**에서 **Email**을 선택합니다.
 
-29. **Endpoint**에 개인 이메일 주소를 입력합니다.
+30. **Endpoint**에 개인 이메일 주소를 입력합니다.
 
-30. [[Create subscription]] 버튼을 클릭합니다.
+31. [[Create subscription]] 버튼을 클릭합니다.
 
-31. 이메일 수신함을 확인하고 **Confirm subscription** 링크를 선택합니다.
+32. 이메일 수신함을 확인하고 **Confirm subscription** 링크를 선택합니다.
 
 > [!IMPORTANT]
 > 이메일 확인을 완료해야 경보 알림을 수신할 수 있습니다. 구독 상태가 "Confirmed"로 변경되었는지 SNS 콘솔에서 확인합니다. 이메일이 보이지 않으면 스팸 폴더를 확인합니다.
@@ -240,53 +240,53 @@ chmod +x setup-7-1.sh
 
 ### 4.1 Amazon CloudWatch 경보 설정
 
-32. CloudWatch 콘솔에서 왼쪽 메뉴의 **Alarms**를 선택합니다.
+33. CloudWatch 콘솔에서 왼쪽 메뉴의 **Alarms**를 선택합니다.
 
-33. [[Create alarm]] 버튼을 클릭합니다.
+34. [[Create alarm]] 버튼을 클릭합니다.
 
-34. [[Select metric]] 버튼을 클릭합니다.
+35. [[Select metric]] 버튼을 클릭합니다.
 
-35. **Browse** 탭에서 `EC2` > **Per-Instance Metrics**를 선택합니다.
+36. **Browse** 탭에서 `EC2` > **Per-Instance Metrics**를 선택합니다.
 
-36. 검색 필터에 태스크 1에서 복사한 **Instance ID**를 입력하고 `CPUUtilization`을 선택합니다.
+37. 검색 필터에 태스크 1에서 복사한 **Instance ID**를 입력하고 `CPUUtilization`을 선택합니다.
 
-37. [[Select metric]] 버튼을 클릭합니다.
+38. [[Select metric]] 버튼을 클릭합니다.
 
 ### 4.2 경보 조건 설정
 
-38. **Statistic**에서 **Average**를 선택합니다.
+39. **Statistic**에서 **Average**를 선택합니다.
 
-39. **Period**에서 **1 minute**를 선택합니다.
+40. **Period**에서 **1 minute**를 선택합니다.
 
-40. **Threshold type**에서 **Static**을 선택합니다.
+41. **Threshold type**에서 **Static**을 선택합니다.
 
-41. **Whenever CPUUtilization is**에서 **Greater**를 선택합니다.
+42. **Whenever CPUUtilization is**에서 **Greater**를 선택합니다.
 
-42. **than** 필드에 `40`을 입력합니다.
+43. **than** 필드에 `40`을 입력합니다.
 
-43. [[Next]] 버튼을 클릭합니다.
+44. [[Next]] 버튼을 클릭합니다.
 
 ### 4.3 알림 설정
 
-44. **Alarm state trigger**에서 **In alarm**을 선택합니다.
+45. **Alarm state trigger**에서 **In alarm**을 선택합니다.
 
-45. **Send a notification to...** 에서 **Select an existing SNS topic**을 선택하고 **CloudArchitect-Lab-Alerts**를 선택합니다.
+46. **Send a notification to...** 에서 **Select an existing SNS topic**을 선택하고 **CloudArchitect-Lab-Alerts**를 선택합니다.
 
-46. [[Next]] 버튼을 클릭합니다.
+47. [[Next]] 버튼을 클릭합니다.
 
-47. **Alarm name**에 `CloudArchitect-Lab-HighCPU`를 입력합니다.
+48. **Alarm name**에 `CloudArchitect-Lab-HighCPU`를 입력합니다.
 
-48. **Alarm description**에 `CPU usage exceeds 40%`를 입력합니다.
+49. **Alarm description**에 `CPU usage exceeds 40%`를 입력합니다.
 
-49. **Tags** 섹션에서 [[Add new tag]] 버튼을 클릭하여 다음 태그를 추가합니다:
+50. **Tags** 섹션에서 [[Add new tag]] 버튼을 클릭하여 다음 태그를 추가합니다:
    - Key: `Name`, Value: `CloudArchitect-Lab-HighCPU`
    - Key: `StudentId`, Value: `[본인 학번]` (예: 20241234)
 
-50. [[Next]] 버튼을 클릭합니다.
+51. [[Next]] 버튼을 클릭합니다.
 
-51. 설정을 검토한 후 [[Create alarm]] 버튼을 클릭합니다.
+52. 설정을 검토한 후 [[Create alarm]] 버튼을 클릭합니다.
 
-52. 경보 상태가 "OK"인지 확인합니다.
+53. 경보 상태가 "OK"인지 확인합니다.
 
 ✅ **태스크 완료**: CPU 사용률 40% 초과 시 이메일 알림을 보내는 경보가 생성되었습니다.
 
@@ -295,37 +295,27 @@ chmod +x setup-7-1.sh
 
 ### 5.1 대시보드 생성
 
-53. 왼쪽 메뉴에서 **Dashboards**를 선택합니다.
+54. 왼쪽 메뉴에서 **Dashboards**를 선택합니다.
 
-54. [[Create dashboard]] 버튼을 클릭합니다.
+55. [[Create dashboard]] 버튼을 클릭합니다.
 
-55. **Dashboard name**에 `CloudArchitect-Lab-Dashboard`를 입력합니다.
+56. **Dashboard name**에 `CloudArchitect-Lab-Dashboard`를 입력합니다.
 
-56. [[Create dashboard]] 버튼을 클릭합니다.
+57. [[Create dashboard]] 버튼을 클릭합니다.
 
 ### 5.2 위젯 추가
 
-57. **Add widget** 대화상자에서 **Widget type**으로 **Line**을 선택합니다.
+58. **Add widget** 대화상자에서 **Widget type**으로 **Line**을 선택합니다.
 
-58. [[Next]] 버튼을 클릭합니다.
+59. [[Next]] 버튼을 클릭합니다.
 
-59. **Browse** 탭에서 `EC2` > **Per-Instance Metrics**를 선택합니다.
+60. **Browse** 탭에서 `EC2` > **Per-Instance Metrics**를 선택합니다.
 
-60. 검색 필터에 **Instance ID**를 입력하고 **CPUUtilization**, **NetworkIn**, **NetworkOut** 지표를 선택합니다.
+61. 검색 필터에 **Instance ID**를 입력하고 **CPUUtilization**, **NetworkIn**, **NetworkOut** 지표를 선택합니다.
 
-61. [[Create widget]] 버튼을 클릭합니다.
+62. [[Create widget]] 버튼을 클릭합니다.
 
-62. [[Save]] 버튼을 클릭하여 대시보드를 저장합니다.
-
-63. 대시보드 상단의 **Settings** 아이콘(⚙️)을 선택합니다.
-
-64. **Tags** 탭에서 [[Manage tags]] 버튼을 클릭합니다.
-
-65. [[Add new tag]] 버튼을 클릭하여 다음 태그를 추가합니다:
-   - Key: `Name`, Value: `CloudArchitect-Lab-Dashboard`
-   - Key: `StudentId`, Value: `[본인 학번]` (예: 20241234)
-
-66. [[Save]] 버튼을 클릭합니다.
+63. [[Save]] 버튼을 클릭하여 대시보드를 저장합니다.
 
 > [!TIP]
 > 대시보드에 여러 위젯을 추가하여 CPU, 네트워크, 디스크 지표를 한 화면에서 모니터링할 수 있습니다. 위젯은 드래그하여 크기와 위치를 조정할 수 있습니다.
@@ -337,39 +327,39 @@ chmod +x setup-7-1.sh
 
 ### 6.1 Amazon EC2 인스턴스 접속
 
-67. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
+64. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-68. 왼쪽 메뉴에서 **Instances**를 선택합니다.
+65. 왼쪽 메뉴에서 **Instances**를 선택합니다.
 
-69. `CloudArchitect-Lab-MonitoringServer` 인스턴스를 선택합니다.
+66. `CloudArchitect-Lab-MonitoringServer` 인스턴스를 선택합니다.
 
-70. [[Connect]] 버튼을 클릭합니다.
+67. [[Connect]] 버튼을 클릭합니다.
 
-71. **EC2 Instance Connect** 탭에서 [[Connect]] 버튼을 클릭합니다.
+68. **EC2 Instance Connect** 탭에서 [[Connect]] 버튼을 클릭합니다.
 
 ### 6.2 CPU 스트레스 테스트 실행
 
-72. 터미널에서 다음 명령어를 실행하여 CPU 부하를 생성합니다:
+69. 터미널에서 다음 명령어를 실행하여 CPU 부하를 생성합니다:
 
 ```bash
-stress --cpu 1 --timeout 180
+stress --cpu 1 --timeout 300
 ```
 
 > [!NOTE]
-> `stress` 명령어는 3분(180초) 동안 CPU 부하를 생성합니다. 사전 구축 스크립트에서 이미 설치되어 있습니다.
+> `stress` 명령어는 5분(300초) 동안 CPU 부하를 생성합니다. 사전 구축 스크립트에서 이미 설치되어 있습니다.
 
 ### 6.3 경보 상태 확인
 
-73. Amazon CloudWatch 콘솔로 이동합니다. 왼쪽 메뉴에서 **Alarms**를 선택합니다.
+70. Amazon CloudWatch 콘솔로 이동합니다. 왼쪽 메뉴에서 **Alarms**를 선택합니다.
 
-74. `CloudArchitect-Lab-HighCPU` 경보의 상태가 "OK"에서 "In alarm"으로 변경될 때까지 기다립니다.
+71. `CloudArchitect-Lab-HighCPU` 경보의 상태가 "OK"에서 "In alarm"으로 변경될 때까지 기다립니다.
 
 > [!NOTE]
 > 경보 상태 변경에 약 2-3분이 소요됩니다. Period가 1분으로 설정되어 있으므로, 1분간의 평균 CPU 사용률이 40%를 초과하면 경보가 발생합니다.
 
-75. 대시보드에서 CPU 사용률 그래프가 급격히 상승하는 것을 확인합니다.
+72. 대시보드에서 CPU 사용률 그래프가 급격히 상승하는 것을 확인합니다.
 
-76. 이메일 수신함에서 경보 알림 메일이 도착했는지 확인합니다.
+73. 이메일 수신함에서 경보 알림 메일이 도착했는지 확인합니다.
 
 > [!TROUBLESHOOTING]
 > - 경보가 "INSUFFICIENT_DATA" 상태로 유지되면: EC2 인스턴스가 Running 상태인지 확인합니다

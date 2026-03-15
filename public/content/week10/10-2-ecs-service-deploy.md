@@ -138,25 +138,25 @@ chmod +x setup-10-2.sh
 
 ### 1.1 Amazon VPC 인프라 확인
 
-8. 상단 검색창에서 `VPC`를 검색하고 **VPC**를 선택합니다.
+9. 상단 검색창에서 `VPC`를 검색하고 **VPC**를 선택합니다.
 
-9. 왼쪽 메뉴에서 **Your VPCs**를 선택합니다.
+10. 왼쪽 메뉴에서 **Your VPCs**를 선택합니다.
 
-10. **CloudArchitect-Lab-VPC**가 생성되어 있는지 확인합니다.
+11. **CloudArchitect-Lab-VPC**가 생성되어 있는지 확인합니다.
 
-11. 왼쪽 메뉴에서 **Subnets**를 선택하여 4개의 서브넷(Public 2개, Private 2개)을 확인합니다.
+12. 왼쪽 메뉴에서 **Subnets**를 선택하여 4개의 서브넷(Public 2개, Private 2개)을 확인합니다.
 
 ### 1.2 Amazon ECR 리포지토리 및 이미지 URI 확인
 
-12. 상단 검색창에서 `ECR`을 검색하고 **ECR**을 선택합니다.
+13. 상단 검색창에서 `ECR`을 검색하고 **ECR**을 선택합니다.
 
-13. ECR 콘솔의 왼쪽 메뉴에서 **Private registry** 섹션 아래의 **Repositories**를 선택합니다.
+14. ECR 콘솔의 왼쪽 메뉴에서 **Private registry** 섹션 아래의 **Repositories**를 선택합니다.
 
-14. **cloudarchitect-lab-webapp** 리포지토리를 선택합니다.
+15. **cloudarchitect-lab-webapp** 리포지토리를 선택합니다.
 
-15. `latest` 태그가 있는 Docker 이미지를 확인합니다.
+16. `latest` 태그가 있는 Docker 이미지를 확인합니다.
 
-16. **URI** 열에서 이미지 URI를 복사하여 메모장에 저장합니다.
+17. **URI** 열에서 이미지 URI를 복사하여 메모장에 저장합니다.
 
 > [!IMPORTANT]
 > 이미지 URI는 태스크 3에서 태스크 정의를 생성할 때 사용합니다. 형식: `[계정ID].dkr.ecr.ap-northeast-2.amazonaws.com/cloudarchitect-lab-webapp:latest`
@@ -172,19 +172,19 @@ chmod +x setup-10-2.sh
 
 ### 2.1 Amazon ECS 클러스터 생성
 
-17. 상단 검색창에서 `ECS`를 검색하고 **ECS**를 선택합니다.
+18. 상단 검색창에서 `ECS`를 검색하고 **ECS**를 선택합니다.
 
-18. 왼쪽 메뉴에서 **Clusters**를 선택합니다.
+19. 왼쪽 메뉴에서 **Clusters**를 선택합니다.
 
-19. [[Create cluster]] 버튼을 클릭합니다.
+20. [[Create cluster]] 버튼을 클릭합니다.
 
-20. **Cluster name**에 `CloudArchitect-Lab-Cluster`를 입력합니다.
+21. **Cluster name**에 `CloudArchitect-Lab-Cluster`를 입력합니다.
 
-21. **Infrastructure** 섹션에서 **Fargate only**가 선택되어 있는지 확인합니다.
+22. **Infrastructure** 섹션에서 **Fargate only**가 선택되어 있는지 확인합니다.
 
-22. [[Create]] 버튼을 클릭합니다.
+23. [[Create]] 버튼을 클릭합니다.
 
-23. 클러스터 상태가 "Active"로 변경되는지 확인합니다.
+24. 클러스터 상태가 "Active"로 변경되는지 확인합니다.
 
 ✅ **태스크 완료**: AWS Fargate 기반 ECS 클러스터가 생성되었습니다.
 
@@ -197,26 +197,24 @@ chmod +x setup-10-2.sh
 
 ### 3.1 태스크 정의 생성
 
-24. ECS 콘솔에서 왼쪽 메뉴의 **Task definitions**를 선택합니다.
+25. ECS 콘솔에서 왼쪽 메뉴의 **Task definitions**를 선택합니다.
 
-25. [[Create new task definition]] 버튼을 클릭합니다.
+26. [[Create new task definition]] 드롭다운에서 **Create new task definition**을 선택합니다.
 
-26. **Task definition family**에 `cloudarchitect-lab-task`를 입력합니다.
+27. **Task definition family**에 `cloudarchitect-lab-task`를 입력합니다.
 
-27. **Launch type**에서 **AWS Fargate**를 선택합니다.
+28. **Launch type**에서 **AWS Fargate**를 선택합니다.
 
-28. **Operating system/Architecture**에서 **Linux/X86_64**를 선택합니다.
+29. **Operating system/Architecture**에서 **Linux/X86_64**를 선택합니다.
 
-29. **CPU**를 `0.25 vCPU`로 설정합니다.
+30. **CPU**를 `0.25 vCPU`로 설정합니다.
 
-30. **Memory**를 `0.5 GB`로 설정합니다.
+31. **Memory**를 `0.5 GB`로 설정합니다.
 
-31. **Task roles** 섹션을 확장합니다.
+32. **Task execution role** 드롭다운에서 `ecsTaskExecutionRole`을 선택합니다.
 
-32. **Task execution role**에서 **Create new role**을 선택합니다.
-
-> [!NOTE]
-> Task execution role은 ECS가 ECR에서 이미지를 가져오고 CloudWatch에 로그를 전송하는 데 필요한 권한입니다. `Create new role`을 선택하면 `AmazonECSTaskExecutionRolePolicy`가 자동으로 부여됩니다.
+> [!TIP]
+> `ecsTaskExecutionRole`이 목록에 없는 경우, 옆의 [[Create new role]] 버튼을 클릭합니다. "Create role" 창이 열리면 **Role name**에 `ecsTaskExecutionRole`이 자동으로 입력되어 있고, **Default policies**에 `AmazonECSTaskExecutionRolePolicy`가 포함되어 있습니다. **Additional policy**에서 **No additional policy**를 선택한 후 하단의 [[Create role]] 버튼을 클릭합니다. 이 역할은 ECS가 ECR에서 이미지를 가져오고 CloudWatch에 로그를 전송하는 데 필요합니다.
 
 ### 3.2 컨테이너 구성
 
@@ -266,40 +264,44 @@ chmod +x setup-10-2.sh
 
 45. **Network mapping** 섹션에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
-46. **Availability Zones and subnets**에서 **Public 서브넷** 2개를 선택합니다 (이름에 "Public"이 포함된 서브넷).
+46. **Availability Zones and subnets** 섹션에서 **ap-northeast-2a**와 **ap-northeast-2b** 체크박스를 선택합니다. 각 AZ의 **Subnet** 드롭다운에서 **CloudArchitect-Lab-Public-Subnet-1**, **CloudArchitect-Lab-Public-Subnet-2**를 각각 선택합니다.
 
 47. **Security groups** 섹션에서 기본 보안 그룹을 제거하고 **CloudArchitect-Lab-ALB-SG**를 선택합니다.
 
 ### 4.3 Target Group 생성
 
-48. **Listeners and routing** 섹션에서 **Protocol**이 **HTTP**, **Port**가 **80**인지 확인합니다.
+48. **Listeners and routing** 섹션에서 **Listener HTTP:80**이 기본으로 설정되어 있는지 확인합니다.
 
-49. **Default action**에서 **Create target group** 링크를 선택합니다.
+49. **Default action**에서 **Forward to target groups**가 선택되어 있는지 확인합니다.
 
-50. 새 탭에서 **Target type**으로 **IP addresses**를 선택합니다.
+50. **Forward to target group** 아래의 **create target group** 링크를 선택합니다.
 
-51. **Target group name**에 `CloudArchitect-Lab-TG`를 입력합니다.
+51. 새 탭에서 **Target type**으로 **IP addresses**를 선택합니다.
 
-52. **Protocol**을 **HTTP**, **Port**를 `3000`으로 설정합니다.
+52. **Target group name**에 `CloudArchitect-Lab-TG`를 입력합니다.
 
-53. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
+53. **Protocol**을 **HTTP**, **Port**를 `3000`으로 설정합니다.
 
-54. **Health check path**를 `/health`로 설정합니다.
+54. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
-55. [[Next]] 버튼을 클릭합니다.
+55. **Health check path**를 `/health`로 설정합니다.
 
-56. 타겟 등록 단계에서 아무것도 추가하지 않고 [[Create target group]] 버튼을 클릭합니다.
+56. [[Next]] 버튼을 클릭합니다.
+
+57. 타겟 등록 단계에서 아무것도 추가하지 않고 [[Next]] 버튼을 클릭합니다.
+
+58. Review and create 페이지에서 설정을 확인한 후 [[Create target group]] 버튼을 클릭합니다.
 
 > [!NOTE]
 > Target Group의 타겟은 ECS 서비스가 생성될 때 자동으로 등록됩니다. 여기서는 빈 Target Group만 생성합니다.
 
-57. ALB 생성 탭으로 이동하여 **Default action** 드롭다운 옆의 새로고침 아이콘을 선택합니다.
+59. ALB 생성 탭으로 이동하여 **Target group** 드롭다운 옆의 새로고침 아이콘을 선택합니다.
 
-58. **CloudArchitect-Lab-TG**를 선택합니다.
+60. **CloudArchitect-Lab-TG**를 선택합니다.
 
-59. [[Create load balancer]] 버튼을 클릭합니다.
+61. [[Create load balancer]] 버튼을 클릭합니다.
 
-60. ALB 상태가 "Provisioning"에서 "Active"로 변경될 때까지 기다립니다.
+62. ALB 상태가 "Provisioning"에서 "Active"로 변경될 때까지 기다립니다.
 
 ✅ **태스크 완료**: Application Load Balancer와 Target Group이 생성되었습니다.
 
@@ -312,46 +314,54 @@ chmod +x setup-10-2.sh
 
 ### 5.1 Amazon ECS 서비스 생성
 
-61. ECS 콘솔에서 **CloudArchitect-Lab-Cluster**를 선택합니다.
+63. ECS 콘솔에서 **CloudArchitect-Lab-Cluster**를 선택합니다.
 
-62. **Services** 탭에서 [[Create]] 버튼을 클릭합니다.
+64. **Services** 탭에서 [[Create]] 버튼을 클릭합니다.
 
-63. **Compute options**에서 **Launch type**을 선택하고 **FARGATE**를 설정합니다.
+65. **Task definition family** 드롭다운에서 **cloudarchitect-lab-task**를 선택합니다.
 
-64. **Task definition** 섹션에서 **Family**로 **cloudarchitect-lab-task**를 선택합니다.
+66. **Task definition revision**은 기본값(최신 리비전)을 유지합니다.
 
-65. **Service name**에 `cloudarchitect-lab-service`를 입력합니다.
+67. **Service name**에 `cloudarchitect-lab-service`를 입력합니다.
 
-66. **Desired tasks**를 `2`로 설정합니다.
+68. **Compute configuration** 섹션에서 **Launch type**을 선택하고, **Launch type** 드롭다운에서 **FARGATE**를 선택합니다.
+
+69. **Deployment configuration** 섹션에서 **Desired tasks**를 `2`로 설정합니다.
 
 ### 5.2 네트워킹 설정
 
-67. **Networking** 섹션을 확장합니다.
+70. **Networking** 섹션을 확장합니다.
 
-68. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
+71. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
-69. **Subnets**에서 **Private 서브넷** 2개를 선택합니다 (이름에 "Private"이 포함된 서브넷).
+72. **Subnets**에서 **Private 서브넷** 2개를 선택합니다 (이름에 "Private"이 포함된 서브넷).
 
 > [!TIP]
 > ALB는 퍼블릭 서브넷에, ECS 태스크는 프라이빗 서브넷에 배치합니다. 이렇게 하면 컨테이너가 외부에 직접 노출되지 않아 보안이 강화됩니다.
 
-70. **Security group**에서 **Use an existing security group**을 선택한 후 `CloudArchitect-Lab-ECS-SG`를 선택합니다.
+73. **Security group**에서 기본 보안 그룹을 제거하고, **Use an existing security group**을 선택한 후 `CloudArchitect-Lab-ECS-SG`를 선택합니다.
 
-71. **Public IP** 토글을 **Turned off**로 설정합니다.
+74. **Public IP** 토글을 **Turned off**로 설정합니다.
 
 ### 5.3 로드 밸런서 연동
 
-72. **Load balancing** 섹션에서 **Application Load Balancer**를 선택합니다.
+75. **Load balancing** 섹션에서 **Use load balancing** 체크박스를 선택합니다.
 
-73. **Use an existing load balancer**를 선택합니다.
+76. **Load balancer type**에서 **Application Load Balancer**가 선택되어 있는지 확인합니다.
 
-74. **Load balancer**에서 `CloudArchitect-Lab-ALB`를 선택합니다.
+77. **Container** 드롭다운에서 **cloudarchitect-lab-app 3000:3000**이 선택되어 있는지 확인합니다.
 
-75. **Listener**에서 **Use an existing listener**를 선택하고 **80:HTTP**를 선택합니다.
+78. **Application Load Balancer**에서 **Use an existing load balancer**를 선택합니다.
 
-76. **Target group**에서 **Use an existing target group**을 선택하고 `CloudArchitect-Lab-TG`를 선택합니다.
+79. 드롭다운에서 `CloudArchitect-Lab-ALB`를 선택합니다.
 
-77. [[Create]] 버튼을 클릭합니다.
+80. **Listener**에서 **Use an existing listener**를 선택하고 **HTTP:80**을 선택합니다.
+
+81. **Target group**에서 **Use an existing target group**을 선택하고 `CloudArchitect-Lab-TG`를 선택합니다.
+
+82. **Health check path**를 `/health`로 설정합니다.
+
+83. [[Create]] 버튼을 클릭합니다.
 
 > [!NOTE]
 > 서비스가 생성되면 Desired tasks(2개)만큼 태스크가 자동으로 시작됩니다. 태스크가 시작되고 헬스 체크를 통과하기까지 약 2-3분이 소요됩니다.
@@ -363,9 +373,9 @@ chmod +x setup-10-2.sh
 
 ### 6.1 태스크 상태 확인
 
-78. 서비스 상세 페이지에서 **Tasks** 탭을 선택합니다.
+84. 서비스 상세 페이지에서 **Tasks** 탭을 선택합니다.
 
-79. 태스크 2개의 **Last status**가 "RUNNING"으로 변경될 때까지 기다립니다.
+85. 태스크 2개의 **Last status**가 "RUNNING"으로 변경될 때까지 기다립니다.
 
 > [!TROUBLESHOOTING]
 > 태스크 상태가 "STOPPED"인 경우:
@@ -375,30 +385,30 @@ chmod +x setup-10-2.sh
 
 ### 6.2 Application Load Balancer 접속 테스트
 
-80. EC2 콘솔에서 왼쪽 메뉴의 **Load Balancers**를 선택합니다.
+86. EC2 콘솔에서 왼쪽 메뉴의 **Load Balancers**를 선택합니다.
 
-81. `CloudArchitect-Lab-ALB`를 선택합니다.
+87. `CloudArchitect-Lab-ALB`를 선택합니다.
 
-82. **State**가 "Active"인지 확인합니다.
+88. **State**가 "Active"인지 확인합니다.
 
-83. **DNS name**을 복사합니다.
+89. **DNS name**을 복사합니다.
 
-84. 새 브라우저 탭을 열고 `http://[복사한 DNS name]`으로 접속합니다.
+90. 새 브라우저 탭을 열고 `http://[복사한 DNS name]`으로 접속합니다.
 
-85. Docker 애플리케이션 페이지가 정상적으로 표시되는지 확인합니다.
+91. Docker 애플리케이션 페이지가 정상적으로 표시되는지 확인합니다.
 
-86. 페이지를 여러 번 새로고침(F5)하여 로드 밸런싱이 작동하는지 확인합니다.
+92. 페이지를 여러 번 새로고침(F5)하여 로드 밸런싱이 작동하는지 확인합니다.
 
 > [!TIP]
-> 새로고침할 때마다 페이지 하단의 Container ID나 호스트명이 변경되면 ALB가 2개의 태스크에 트래픽을 균등하게 분산하고 있는 것입니다.
+> 새로고침할 때마다 페이지의 **호스트명 (태스크 ID)** 값이 변경되면 ALB가 2개의 태스크에 트래픽을 균등하게 분산하고 있는 것입니다.
 
 ### 6.3 Target Group 헬스 체크 확인
 
-87. EC2 콘솔에서 왼쪽 메뉴의 **Target Groups**를 선택합니다.
+93. EC2 콘솔에서 왼쪽 메뉴의 **Target Groups**를 선택합니다.
 
-88. `CloudArchitect-Lab-TG`를 선택합니다.
+94. `CloudArchitect-Lab-TG`를 선택합니다.
 
-89. **Targets** 탭에서 등록된 타겟들의 **Health status**가 "healthy"인지 확인합니다.
+95. **Targets** 탭에서 등록된 타겟들의 **Health status**가 "healthy"인지 확인합니다.
 
 ✅ **태스크 완료**: ECS 서비스가 정상적으로 실행되고 ALB를 통해 접근할 수 있습니다.
 
@@ -459,66 +469,66 @@ chmod +x setup-10-2.sh
 
 #### 태스크 2: Application Load Balancer 및 Target Group 삭제
 
-7. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
+9. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-8. 왼쪽 메뉴에서 **Load Balancers**를 선택합니다.
+10. 왼쪽 메뉴에서 **Load Balancers**를 선택합니다.
 
-9. `CloudArchitect-Lab-ALB`를 선택하고 **Actions** > **Delete load balancer**를 선택합니다.
+11. `CloudArchitect-Lab-ALB`를 선택하고 **Actions** > **Delete load balancer**를 선택합니다.
 
-10. 확인 필드에 `confirm`을 입력하고 [[Delete]]를 클릭합니다.
+12. 확인 필드에 `confirm`을 입력하고 [[Delete]]를 클릭합니다.
 
-11. 왼쪽 메뉴에서 **Target Groups**를 선택합니다.
+13. 왼쪽 메뉴에서 **Target Groups**를 선택합니다.
 
-12. `CloudArchitect-Lab-TG`를 선택하고 **Actions** > **Delete**를 선택합니다.
+14. `CloudArchitect-Lab-TG`를 선택하고 **Actions** > **Delete**를 선택합니다.
 
 #### 태스크 3: Amazon ECR 리포지토리 삭제
 
-13. 상단 검색창에서 `ECR`을 검색하고 **ECR**을 선택합니다.
+15. 상단 검색창에서 `ECR`을 검색하고 **ECR**을 선택합니다.
 
-14. `cloudarchitect-lab-webapp` 리포지토리를 선택하고 **Delete**를 클릭합니다.
+16. `cloudarchitect-lab-webapp` 리포지토리를 선택하고 **Delete**를 클릭합니다.
 
-15. 확인 필드에 `delete`를 입력하고 [[Delete]]를 클릭합니다.
+17. 확인 필드에 `delete`를 입력하고 [[Delete]]를 클릭합니다.
 
 #### 태스크 4: NAT Gateway 및 Elastic IP 삭제
 
-16. 상단 검색창에서 `VPC`를 검색하고 **VPC**를 선택합니다.
+18. 상단 검색창에서 `VPC`를 검색하고 **VPC**를 선택합니다.
 
-17. 왼쪽 메뉴에서 **NAT gateways**를 선택합니다.
+19. 왼쪽 메뉴에서 **NAT gateways**를 선택합니다.
 
-18. `CloudArchitect-Lab-NAT-GW`를 선택하고 **Actions** > **Delete NAT gateway**를 선택합니다.
+20. `CloudArchitect-Lab-NAT-GW`를 선택하고 **Actions** > **Delete NAT gateway**를 선택합니다.
 
-19. 확인 필드에 `delete`를 입력하고 [[Delete]]를 클릭합니다.
+21. 확인 필드에 `delete`를 입력하고 [[Delete]]를 클릭합니다.
 
-20. NAT Gateway 삭제 완료 후, 왼쪽 메뉴에서 **Elastic IPs**를 선택합니다.
+22. NAT Gateway 삭제 완료 후, 왼쪽 메뉴에서 **Elastic IPs**를 선택합니다.
 
-21. 사용하지 않는 Elastic IP를 선택하고 **Actions** > **Release Elastic IP addresses**를 선택합니다.
+23. 사용하지 않는 Elastic IP를 선택하고 **Actions** > **Release Elastic IP addresses**를 선택합니다.
 
 #### 태스크 5: Security Group 및 Amazon VPC 삭제
 
-22. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
+24. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-23. 왼쪽 메뉴의 **Security Groups**에서 `CloudArchitect-Lab-ECS-SG`와 `CloudArchitect-Lab-ALB-SG`를 각각 삭제합니다.
+25. 왼쪽 메뉴의 **Security Groups**에서 `CloudArchitect-Lab-ECS-SG`와 `CloudArchitect-Lab-ALB-SG`를 각각 삭제합니다.
 
-24. 상단 검색창에서 `VPC`를 검색하고 **VPC**를 선택합니다.
+26. 상단 검색창에서 `VPC`를 검색하고 **VPC**를 선택합니다.
 
-25. `CloudArchitect-Lab-VPC`를 선택하고 **Actions** > **Delete VPC**를 선택합니다.
+27. `CloudArchitect-Lab-VPC`를 선택하고 **Actions** > **Delete VPC**를 선택합니다.
 
-26. 확인 필드에 `delete`를 입력하고 [[Delete]]를 클릭합니다.
+28. 확인 필드에 `delete`를 입력하고 [[Delete]]를 클릭합니다.
 
 #### 태스크 6: 최종 확인
 
-27. 상단 검색창에서 `Resource Groups & Tag Editor`를 검색하고 **Resource Groups & Tag Editor**를 선택합니다.
+29. 상단 검색창에서 `Resource Groups & Tag Editor`를 검색하고 **Resource Groups & Tag Editor**를 선택합니다.
 
-28. 왼쪽 메뉴에서 **Tag Editor**를 선택합니다.
+30. 왼쪽 메뉴에서 **Tag Editor**를 선택합니다.
 
-29. 다음과 같이 검색 조건을 설정합니다:
+31. 다음과 같이 검색 조건을 설정합니다:
    - **Regions**: `Asia Pacific (Seoul) ap-northeast-2`
    - **Resource types**: `All supported resource types`
    - **Tags**: Tag key에 `Name`을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
 
-30. [[Search resources]]를 클릭합니다.
+32. [[Search resources]]를 클릭합니다.
 
-31. 검색 결과에 리소스가 표시되지 않으면 정리가 완료된 것입니다.
+33. 검색 결과에 리소스가 표시되지 않으면 정리가 완료된 것입니다.
 
 ✅ **리소스 정리 완료**: 모든 리소스가 삭제되었습니다.
 
