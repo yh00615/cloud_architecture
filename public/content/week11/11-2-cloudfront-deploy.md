@@ -180,6 +180,9 @@ chmod +x setup-11-2.sh
 
 ### 2.3 Step 3: Enable security
 
+> [!IMPORTANT]
+> 이 단계에서 **Pay as you go**를 선택해야 WAF 설정 옵션이 표시됩니다. Free tier를 선택하면 이 단계가 표시되지 않습니다.
+
 28. **Do not enable security protections**를 선택합니다.
 
 > [!NOTE]
@@ -187,15 +190,12 @@ chmod +x setup-11-2.sh
 
 29. [[Next]] 버튼을 클릭합니다.
 
-### 2.4 Step 4: Get TLS certificate
+### 2.4 Step 4: Review and create
 
-30. 이 단계에서는 기본 설정을 그대로 사용합니다 (사용자 지정 도메인을 사용하지 않으므로 TLS 인증서 설정이 필요하지 않습니다).
+> [!NOTE]
+> Pay as you go를 선택한 경우 Step 4에서 TLS 인증서 설정이 표시될 수 있습니다. 사용자 지정 도메인을 사용하지 않으므로 기본 설정을 그대로 유지하고 [[Next]]를 클릭합니다. Free tier를 선택한 경우 Step 3에서 바로 Review and create로 이동합니다.
 
-31. [[Next]] 버튼을 클릭합니다.
-
-### 2.5 Step 5: Review and create
-
-32. 설정을 검토한 후 [[Create distribution]] 버튼을 클릭합니다.
+30. 설정을 검토한 후 [[Create distribution]] 버튼을 클릭합니다.
 
 > [!NOTE]
 > CloudFront가 자동으로 OAC를 생성하고 S3 버킷 정책 업데이트를 안내하는 배너가 상단에 표시됩니다. 배포가 전 세계 엣지 로케이션에 전파되는 데 약 15-20분이 소요됩니다. **Last modified** 필드가 "Deploying"에서 날짜/시간으로 변경되면 배포가 완료된 것입니다.

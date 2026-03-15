@@ -32,9 +32,9 @@ learningObjectives:
 
 1. AWS Management Console에 로그인한 후 상단 검색창에서 `Billing and Cost Management`를 검색하고 **Billing and Cost Management**를 선택합니다.
 
-2. Billing and Cost Management 콘솔의 왼쪽 메뉴에서 **Cost analysis** 섹션 아래의 **Cost Explorer**를 선택합니다.
+2. Billing and Cost Management Home 대시보드가 표시됩니다. **Cost summary**, **Cost breakdown**, **Top trends** 등 비용 개요를 간단히 확인합니다.
 
-3. Launch Cost Explorer 버튼이 표시되면 [[Launch Cost Explorer]] 버튼을 클릭합니다.
+3. 왼쪽 메뉴에서 **Cost and Usage Analysis** 섹션 아래의 **Cost Explorer**를 선택합니다.
 
 > [!WARNING]
 > Cost Explorer를 처음 사용하는 경우 "Cost Explorer is being set up" 메시지가 표시될 수 있습니다. 이는 정상이며, 최대 24시간 후 데이터가 표시됩니다. 데이터가 없어도 다음 단계로 진행 가능합니다.

@@ -192,7 +192,7 @@ chmod +x setup-7-1.sh
 
 ### 3.1 Amazon SNS 토픽 생성
 
-20. 상단 검색창에서 `SNS`를 검색하고 **SNS**를 선택합니다.
+20. 상단 검색창에서 `SNS`를 검색하고 **Simple Notification Service**를 선택합니다.
 
 21. 왼쪽 메뉴에서 **Topics**를 선택합니다.
 
@@ -262,7 +262,7 @@ chmod +x setup-7-1.sh
 
 41. **Whenever CPUUtilization is**에서 **Greater**를 선택합니다.
 
-42. **than** 필드에 `60`을 입력합니다.
+42. **than** 필드에 `40`을 입력합니다.
 
 43. [[Next]] 버튼을 클릭합니다.
 
@@ -270,13 +270,13 @@ chmod +x setup-7-1.sh
 
 44. **Alarm state trigger**에서 **In alarm**을 선택합니다.
 
-45. **Select an existing SNS topic**을 선택하고 **CloudArchitect-Lab-Alerts**를 선택합니다.
+45. **Send a notification to...** 에서 **Select an existing SNS topic**을 선택하고 **CloudArchitect-Lab-Alerts**를 선택합니다.
 
 46. [[Next]] 버튼을 클릭합니다.
 
 47. **Alarm name**에 `CloudArchitect-Lab-HighCPU`를 입력합니다.
 
-48. **Alarm description**에 `CPU usage exceeds 60%`를 입력합니다.
+48. **Alarm description**에 `CPU usage exceeds 40%`를 입력합니다.
 
 49. **Tags** 섹션에서 [[Add new tag]] 버튼을 클릭하여 다음 태그를 추가합니다:
    - Key: `Name`, Value: `CloudArchitect-Lab-HighCPU`
@@ -288,7 +288,7 @@ chmod +x setup-7-1.sh
 
 52. 경보 상태가 "OK"인지 확인합니다.
 
-✅ **태스크 완료**: CPU 사용률 60% 초과 시 이메일 알림을 보내는 경보가 생성되었습니다.
+✅ **태스크 완료**: CPU 사용률 40% 초과 시 이메일 알림을 보내는 경보가 생성되었습니다.
 
 
 ## 태스크 5: Amazon CloudWatch 대시보드 생성
@@ -305,25 +305,27 @@ chmod +x setup-7-1.sh
 
 ### 5.2 위젯 추가
 
-58. **Add widget** 대화상자에서 **Line**을 선택합니다.
+57. **Add widget** 대화상자에서 **Widget type**으로 **Line**을 선택합니다.
 
-59. [[Next]] 버튼을 클릭합니다.
+58. [[Next]] 버튼을 클릭합니다.
 
-60. **Browse** 탭에서 `EC2` > **Per-Instance Metrics**를 선택합니다.
+59. **Browse** 탭에서 `EC2` > **Per-Instance Metrics**를 선택합니다.
 
-61. 검색 필터에 **Instance ID**를 입력하고 **CPUUtilization**, **NetworkIn**, **NetworkOut** 지표를 선택합니다.
+60. 검색 필터에 **Instance ID**를 입력하고 **CPUUtilization**, **NetworkIn**, **NetworkOut** 지표를 선택합니다.
 
-62. [[Create widget]] 버튼을 클릭합니다.
+61. [[Create widget]] 버튼을 클릭합니다.
 
-63. [[Save]] 버튼을 클릭하여 대시보드를 저장합니다.
+62. [[Save]] 버튼을 클릭하여 대시보드를 저장합니다.
 
-64. 대시보드 상단의 **Actions** > **Edit tags**를 선택합니다.
+63. 대시보드 상단의 **Settings** 아이콘(⚙️)을 선택합니다.
+
+64. **Tags** 탭에서 [[Manage tags]] 버튼을 클릭합니다.
 
 65. [[Add new tag]] 버튼을 클릭하여 다음 태그를 추가합니다:
    - Key: `Name`, Value: `CloudArchitect-Lab-Dashboard`
    - Key: `StudentId`, Value: `[본인 학번]` (예: 20241234)
 
-66. [[Save tags]] 버튼을 클릭합니다.
+66. [[Save]] 버튼을 클릭합니다.
 
 > [!TIP]
 > 대시보드에 여러 위젯을 추가하여 CPU, 네트워크, 디스크 지표를 한 화면에서 모니터링할 수 있습니다. 위젯은 드래그하여 크기와 위치를 조정할 수 있습니다.
@@ -350,11 +352,11 @@ chmod +x setup-7-1.sh
 72. 터미널에서 다음 명령어를 실행하여 CPU 부하를 생성합니다:
 
 ```bash
-stress --cpu 1 --timeout 300
+stress --cpu 1 --timeout 180
 ```
 
 > [!NOTE]
-> `stress` 명령어는 5분(300초) 동안 CPU 부하를 생성합니다. 사전 구축 스크립트에서 이미 설치되어 있습니다.
+> `stress` 명령어는 3분(180초) 동안 CPU 부하를 생성합니다. 사전 구축 스크립트에서 이미 설치되어 있습니다.
 
 ### 6.3 경보 상태 확인
 
@@ -363,7 +365,7 @@ stress --cpu 1 --timeout 300
 74. `CloudArchitect-Lab-HighCPU` 경보의 상태가 "OK"에서 "In alarm"으로 변경될 때까지 기다립니다.
 
 > [!NOTE]
-> 경보 상태 변경에 약 2-3분이 소요됩니다. Period가 1분으로 설정되어 있으므로, 1분간의 평균 CPU 사용률이 60%를 초과하면 경보가 발생합니다.
+> 경보 상태 변경에 약 2-3분이 소요됩니다. Period가 1분으로 설정되어 있으므로, 1분간의 평균 CPU 사용률이 40%를 초과하면 경보가 발생합니다.
 
 75. 대시보드에서 CPU 사용률 그래프가 급격히 상승하는 것을 확인합니다.
 

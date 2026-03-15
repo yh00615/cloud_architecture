@@ -361,7 +361,7 @@ EOF
 
 ### 3.7 Auto Scaling Group 생성 완료
 
-81. **Review** 페이지에서 설정을 검토합니다:
+61. **Review** 페이지에서 설정을 검토합니다:
 
 - Step 1: Launch template 확인
 - Step 2: VPC 및 서브넷 확인
@@ -369,7 +369,7 @@ EOF
 - Step 4: Group size 및 Scaling policies 확인
 - Step 6: Tags 확인
 
-82. [[Create Auto Scaling group]] 버튼을 클릭합니다.
+62. [[Create Auto Scaling group]] 버튼을 클릭합니다.
 
 > [!NOTE]
 > Auto Scaling Group이 생성되면 Desired capacity(2개)만큼 인스턴스가 자동으로 시작됩니다. 인스턴스가 시작되고 헬스 체크를 통과하기까지 약 5-10분이 소요됩니다.
@@ -380,45 +380,45 @@ EOF
 
 ### 4.1 인스턴스 상태 확인
 
-81. EC2 콘솔에서 왼쪽 메뉴의 **Auto Scaling Groups**를 선택합니다.
+63. EC2 콘솔에서 왼쪽 메뉴의 **Auto Scaling Groups**를 선택합니다.
 
-82. **CloudArchitect-Lab-ASG**를 선택합니다.
+64. **CloudArchitect-Lab-ASG**를 선택합니다.
 
-81. **Instance management** 탭을 선택합니다.
+65. **Instance management** 탭을 선택합니다.
 
-82. 인스턴스 2개가 "InService" 상태인지 확인합니다.
+66. 인스턴스 2개가 "InService" 상태인지 확인합니다.
 
 > [!TIP]
 > 인스턴스 상태가 "Pending"이면 아직 시작 중입니다. "InService"로 변경될 때까지 기다립니다. 상태가 변경되지 않으면 페이지를 새로고침합니다.
 
 ### 4.2 Application Load Balancer 접속 테스트
 
-81. EC2 콘솔에서 왼쪽 메뉴의 **Load Balancers**를 선택합니다.
+67. EC2 콘솔에서 왼쪽 메뉴의 **Load Balancers**를 선택합니다.
 
-82. **CloudArchitect-Lab-ALB**를 선택합니다.
+68. **CloudArchitect-Lab-ALB**를 선택합니다.
 
-81. **State**가 "Active"인지 확인합니다.
+69. **State**가 "Active"인지 확인합니다.
 
-82. **DNS name**을 복사합니다 (예: **CloudArchitect-Lab-ALB-123456789.ap-northeast-2.elb.amazonaws.com**).
+70. **DNS name**을 복사합니다 (예: **CloudArchitect-Lab-ALB-123456789.ap-northeast-2.elb.amazonaws.com**).
 
-81. 새 브라우저 탭을 열고 `http://[복사한 DNS name]`으로 접속합니다.
+71. 새 브라우저 탭을 열고 `http://[복사한 DNS name]`으로 접속합니다.
 
-82. "Lab06: Auto Scaling Web Server" 페이지가 표시되는지 확인합니다.
+72. "Lab06: Auto Scaling Web Server" 페이지가 표시되는지 확인합니다.
 
-81. 페이지를 여러 번 새로고침(F5)하여 **인스턴스 ID**와 **가용 영역**이 변경되는지 확인합니다.
+73. 페이지를 여러 번 새로고침(F5)하여 **인스턴스 ID**와 **가용 영역**이 변경되는지 확인합니다.
 
 > [!SUCCESS] 로드 밸런싱 확인:
 > 새로고침할 때마다 다른 인스턴스 ID가 표시되면 ALB가 2개의 인스턴스에 트래픽을 균등하게 분산하고 있는 것입니다.
 
 ### 4.3 Target Group 헬스 체크 확인
 
-82. EC2 콘솔에서 왼쪽 메뉴의 **Target Groups**를 선택합니다.
+74. EC2 콘솔에서 왼쪽 메뉴의 **Target Groups**를 선택합니다.
 
-81. **CloudArchitect-Lab-TG**를 선택합니다.
+75. **CloudArchitect-Lab-TG**를 선택합니다.
 
-82. **Targets** 탭을 선택합니다.
+76. **Targets** 탭을 선택합니다.
 
-81. 등록된 인스턴스들의 **Health status**가 "healthy"인지 확인합니다.
+77. 등록된 인스턴스들의 **Health status**가 "healthy"인지 확인합니다.
 
 > [!TROUBLESHOOTING]
 > 인스턴스 상태가 "unhealthy"인 경우:
@@ -429,19 +429,19 @@ EOF
 
 ### 4.4 Auto Scaling 자동 복구 테스트
 
-82. EC2 콘솔에서 왼쪽 메뉴의 **Instances**를 선택합니다.
+78. EC2 콘솔에서 왼쪽 메뉴의 **Instances**를 선택합니다.
 
-81. Auto Scaling Group에서 생성된 인스턴스 중 하나를 선택합니다 (이름에 CloudArchitect-Lab-ASG가 포함된 인스턴스).
+79. Auto Scaling Group에서 생성된 인스턴스 중 하나를 선택합니다 (이름에 CloudArchitect-Lab-ASG가 포함된 인스턴스).
 
-82. **Instance state** > **Terminate instance**를 선택합니다.
+80. **Instance state** > **Terminate instance**를 선택합니다.
 
 81. 확인 창에서 [[Terminate]] 버튼을 클릭합니다.
 
 82. 왼쪽 메뉴에서 **Auto Scaling Groups**를 선택합니다.
 
-81. **CloudArchitect-Lab-ASG**를 선택한 후 **Activity** 탭을 확인합니다.
+83. **CloudArchitect-Lab-ASG**를 선택한 후 **Activity** 탭을 확인합니다.
 
-82. 종료된 인스턴스를 대체할 새 인스턴스가 자동으로 시작되는 Activity 로그를 확인합니다.
+84. 종료된 인스턴스를 대체할 새 인스턴스가 자동으로 시작되는 Activity 로그를 확인합니다.
 
 > [!SUCCESS] Auto Scaling 자동 복구 확인:
 > 인스턴스가 종료되면 Auto Scaling Group이 Desired capacity(2개)를 유지하기 위해 자동으로 새 인스턴스를 시작합니다. Activity 탭에서 "Launching a new EC2 instance" 메시지를 확인할 수 있습니다.
@@ -455,46 +455,46 @@ EOF
 
 ### 5.1 Auto Scaling Group 삭제
 
-83. EC2 콘솔에서 왼쪽 메뉴의 **Auto Scaling Groups**를 선택합니다.
+85. EC2 콘솔에서 왼쪽 메뉴의 **Auto Scaling Groups**를 선택합니다.
 
-84. **CloudArchitect-Lab-ASG**를 선택합니다.
+86. **CloudArchitect-Lab-ASG**를 선택합니다.
 
-85. **Actions** > **Delete**를 선택합니다.
+87. **Actions** > **Delete**를 선택합니다.
 
-86. 확인 텍스트를 입력하고 삭제합니다.
+88. 확인 텍스트를 입력하고 삭제합니다.
 
 > [!NOTE]
 > Auto Scaling Group 삭제 시 연결된 모든 EC2 인스턴스가 자동으로 종료됩니다. 인스턴스가 완전히 종료될 때까지 약 2-3분 기다립니다.
 
 ### 5.2 Load Balancer 및 Target Group 삭제
 
-87. 왼쪽 메뉴에서 **Load Balancers**를 선택합니다.
+89. 왼쪽 메뉴에서 **Load Balancers**를 선택합니다.
 
-88. **CloudArchitect-Lab-ALB**를 선택합니다.
+90. **CloudArchitect-Lab-ALB**를 선택합니다.
 
-89. **Actions** > **Delete load balancer**를 선택합니다.
+91. **Actions** > **Delete load balancer**를 선택합니다.
 
-90. 확인 텍스트를 입력하고 삭제합니다.
+92. 확인 텍스트를 입력하고 삭제합니다.
 
-91. 왼쪽 메뉴에서 **Target Groups**를 선택합니다.
+93. 왼쪽 메뉴에서 **Target Groups**를 선택합니다.
 
-92. **CloudArchitect-Lab-TG**를 선택합니다.
+94. **CloudArchitect-Lab-TG**를 선택합니다.
 
-93. **Actions** > **Delete**를 선택합니다.
+95. **Actions** > **Delete**를 선택합니다.
 
 ### 5.3 Launch Template 삭제
 
-94. 왼쪽 메뉴에서 **Launch Templates**를 선택합니다.
+96. 왼쪽 메뉴에서 **Launch Templates**를 선택합니다.
 
-95. **CloudArchitect-Lab-WebServer-Template**를 선택합니다.
+97. **CloudArchitect-Lab-WebServer-Template**를 선택합니다.
 
-96. **Actions** > **Delete template**를 선택합니다.
+98. **Actions** > **Delete template**를 선택합니다.
 
-97. 확인 텍스트를 입력하고 삭제합니다.
+99. 확인 텍스트를 입력하고 삭제합니다.
 
 ### 5.4 Cleanup 스크립트 실행
 
-98. CloudShell에서 cleanup 스크립트를 실행하여 사전 구축 리소스를 정리합니다:
+100. CloudShell에서 cleanup 스크립트를 실행하여 사전 구축 리소스를 정리합니다:
 
 ```bash
 chmod +x cleanup-4-3.sh

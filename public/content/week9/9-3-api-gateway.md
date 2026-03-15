@@ -294,7 +294,7 @@ chmod +x setup-9-3.sh
 64. CloudShell에서 다음 명령어를 실행합니다 (`[Invoke URL]`을 실제 URL로 교체):
 
 ```bash
-curl -s "https://[Invoke URL]/users" | python3 -m json.tool
+curl -s "[Invoke URL]/users" | python3 -m json.tool
 ```
 
 > [!OUTPUT]
@@ -309,7 +309,7 @@ curl -s "https://[Invoke URL]/users" | python3 -m json.tool
 65. POST 요청도 테스트합니다:
 
 ```bash
-curl -s -X POST "https://[Invoke URL]/users" \
+curl -s -X POST "[Invoke URL]/users" \
   -H "Content-Type: application/json" \
   -d '{"id":"user004","name":"최지은","email":"choi@example.com","age":25}' | python3 -m json.tool
 ```

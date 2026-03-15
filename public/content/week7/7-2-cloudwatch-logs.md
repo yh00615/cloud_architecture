@@ -39,12 +39,8 @@ learningObjectives:
 > - **실행 시간**: 약 3-5분
 >
 > **사용 태스크:**
-> - 태스크 0: 사전 환경 구축 (setup-7-2.sh 실행)
-> - 리소스 정리: 실습 완료 후 cleanup-7-2.sh 실행
->   - 모든 생성된 리소스를 안전한 순서로 삭제
->
-> **사용 태스크:**
 > - 태스크 0: 사전 환경 구축 (setup-7-2.sh 실행, 약 5-7분 소요)
+> - 리소스 정리: 실습 완료 후 cleanup-7-2.sh 실행하여 모든 리소스 삭제
 
 > [!CONCEPT] Amazon CloudWatch Logs란?
 >
@@ -148,18 +144,28 @@ chmod +x setup-7-2.sh
 
 11. 하단 **Details** 탭에서 **Public IPv4 address**를 복사합니다.
 
-### 1.2 웹 서버 접속 테스트
+### 1.2 웹 서버 접속 및 로그 생성
 
 12. 새 브라우저 탭을 열고 `http://[복사한 Public IP]`로 접속합니다.
 
 13. CloudWatch Logs 실습 환경 페이지가 정상적으로 표시되는지 확인합니다.
 
+14. **여러 번 새로고침**(F5 키)하여 Access 로그를 생성합니다.
+
+15. 존재하지 않는 페이지에도 접속하여 404 에러 로그를 생성합니다:
+- `http://[복사한 Public IP]/test404`
+- `http://[복사한 Public IP]/notfound`
+- `http://[복사한 Public IP]/api/test`
+
 > [!NOTE]
-> 웹 서버에 접속하면 Nginx Access 로그가 자동으로 생성됩니다. 또한 사전 구축 스크립트에 의해 자동 트래픽 생성 시스템이 2분마다 다양한 URL 패턴(정상 200, 에러 404)의 로그를 생성합니다.
+> 웹 서버에 접속하면 Nginx가 `/var/log/nginx/access.log`에 로그를 기록하고, CloudWatch Agent가 이를 CloudWatch Logs로 전송합니다. 또한 사전 구축 스크립트에 의해 자동 트래픽 생성 시스템이 2분마다 다양한 URL 패턴(정상 200, 에러 404)의 로그를 생성합니다.
 
-14. 스크립트 실행 후 약 3-4분 기다려 충분한 로그 데이터가 생성되도록 합니다.
+16. **약 2-3분 기다려** CloudWatch Agent가 로그를 전송하도록 합니다.
 
-✅ **태스크 완료**: EC2 로그 서버와 웹 서버가 정상 작동하고 있습니다.
+> [!TIP]
+> CloudWatch Agent는 15초마다 로그 파일을 확인하고 변경사항을 CloudWatch Logs로 전송합니다. 처음 로그 그룹이 생성되는 데는 1-2분 정도 소요됩니다.
+
+✅ **태스크 완료**: 웹 서버가 정상 작동하고 로그가 생성되었습니다.
 
 
 ## 태스크 2: Amazon CloudWatch Logs 그룹 확인
@@ -170,23 +176,23 @@ chmod +x setup-7-2.sh
 
 ### 2.1 Access 로그 그룹 확인
 
-15. 상단 검색창에서 `CloudWatch`를 검색하고 **CloudWatch**를 선택합니다.
+17. 상단 검색창에서 `CloudWatch`를 검색하고 **CloudWatch**를 선택합니다.
 
-16. 왼쪽 메뉴에서 **Logs**를 선택하여 확장한 후 **Log Management**를 선택합니다.
+18. 왼쪽 메뉴에서 **Logs**를 선택하여 확장한 후 **Log Management**를 선택합니다.
 
-17. `/aws/ec2/nginx/access` 로그 그룹을 선택합니다.
+19. `/aws/ec2/nginx/access` 로그 그룹을 선택합니다.
 
-18. 로그 그룹의 **Retention setting**, **Stored bytes**, **Creation time**을 확인합니다.
+20. 로그 그룹의 **Retention**, **Stored bytes**, **Creation time**을 확인합니다.
 
-19. **Log streams** 탭에서 생성된 로그 스트림을 확인합니다.
+21. **Log streams** 탭에서 생성된 로그 스트림을 확인합니다.
 
 ### 2.2 Error 로그 그룹 확인
 
-20. 왼쪽 메뉴에서 **Log Management**를 다시 선택합니다.
+22. 왼쪽 메뉴에서 **Log Management**를 다시 선택합니다.
 
-21. `/aws/ec2/nginx/error` 로그 그룹을 선택합니다.
+23. `/aws/ec2/nginx/error` 로그 그룹을 선택합니다.
 
-22. Error 로그 그룹의 세부 정보와 로그 스트림을 확인합니다.
+24. Error 로그 그룹의 세부 정보와 로그 스트림을 확인합니다.
 
 > [!TIP]
 > Access 로그와 Error 로그를 별도의 그룹으로 분리하면 각각 다른 보존 기간을 설정하거나, Error 로그에만 경보를 설정하는 등 유연한 관리가 가능합니다.
@@ -198,13 +204,13 @@ chmod +x setup-7-2.sh
 
 ### 3.1 Access 로그 스트림 확인
 
-23. `/aws/ec2/nginx/access` 로그 그룹에서 **Log streams** 탭의 로그 스트림을 선택합니다.
+25. `/aws/ec2/nginx/access` 로그 그룹에서 **Log streams** 탭의 로그 스트림을 선택합니다.
 
-24. 생성된 로그 이벤트들을 확인합니다.
+26. 생성된 로그 이벤트들을 확인합니다.
 
-25. 각 로그 이벤트의 **Timestamp**와 **Message**를 확인합니다.
+27. 각 로그 이벤트의 **Timestamp**와 **Message**를 확인합니다.
 
-26. 정상 접속(200 응답)과 404 에러 로그를 구분하여 확인합니다.
+28. 정상 접속(200 응답)과 404 에러 로그를 구분하여 확인합니다.
 
 > [!NOTE]
 > Access 로그 형식 예시:
@@ -246,7 +252,10 @@ chmod +x setup-7-2.sh
 [ip, identity, user, timestamp, request, status_code="404", size]
 ```
 
-34. [[Test pattern]] 버튼을 클릭하여 패턴이 404 에러 로그와 매칭되는지 확인합니다.
+34. **Select log data to test** 섹션에서 **Custom log data**를 선택하고, 본인의 Instance ID로 변경한 후 [[Test pattern]] 버튼을 클릭하여 패턴이 404 에러 로그와 매칭되는지 확인합니다.
+
+> [!IMPORTANT]
+> Test pattern 실행 시 기본 제공되는 샘플 데이터가 아닌, 본인의 Instance ID에 해당하는 로그 데이터를 선택해야 결과가 표시됩니다.
 
 35. [[Next]] 버튼을 클릭합니다.
 
@@ -280,7 +289,7 @@ chmod +x setup-7-2.sh
 
 42. 왼쪽 메뉴에서 **Logs**를 선택하여 확장한 후 **Logs Insights**를 선택합니다.
 
-43. **Select log group(s)**에서 `/aws/ec2/nginx/access`를 선택합니다.
+43. **Select log group(s)** 드롭다운에서 `/aws/ec2/nginx/access`를 검색하여 선택합니다.
 
 44. 시간 범위를 **Last 1 hour**로 설정합니다.
 
@@ -338,7 +347,7 @@ fields @timestamp
 
 54. `/aws/ec2/nginx/access` 로그 그룹 페이지로 이동합니다.
 
-55. [[Start Live tail]] 버튼을 클릭합니다.
+55. [[Start tailing]] 버튼을 클릭합니다.
 
 56. Live tail 상태가 "Running"으로 변경될 때까지 기다립니다.
 
@@ -352,7 +361,7 @@ fields @timestamp
 
 60. 필터를 `200`으로 변경하여 정상 접속 로그만 표시합니다.
 
-61. [[Stop Live tail]] 버튼을 클릭하여 세션을 종료합니다.
+61. [[Cancel]] 버튼을 클릭하여 세션을 종료합니다.
 
 > [!NOTE]
 > Live tail은 실시간 문제 감지, 배포 후 로그 확인, 트래픽 패턴 분석 등에 유용합니다. 필터링 기능으로 특정 조건의 로그만 선택적으로 모니터링할 수 있습니다.
