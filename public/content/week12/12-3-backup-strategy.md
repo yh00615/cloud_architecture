@@ -25,7 +25,7 @@ learningObjectives:
 >   - Security Group (HTTP 80, SSH 22 포트 허용)
 >   - EC2 인스턴스 (백업 대상, 웹 서버 및 샘플 데이터 포함)
 >   - IAM 백업 역할 (AWS Backup 서비스 권한)
->   - 백업용 태그 (Project=CloudArchitect, Week=Week12)
+>   - 백업용 태그 (Project=CloudArchitect, Week=Week12-3)
 > - **실행 시간**: 약 3-5분
 > - **활용**: 태스크 2-6에서 백업 볼트를 생성하고, 백업 계획을 설정하며, 태그 기반으로 EC2를 백업하고 복원합니다
 >
@@ -111,7 +111,7 @@ chmod +x setup-12-3.sh
 | Security Group | CloudArchitect-Lab-EC2-SG | HTTP(80), SSH(22) 트래픽 허용 |
 | EC2 인스턴스 | CloudArchitect-Lab-TestInstance | 백업 대상 인스턴스 (웹 서버 + 샘플 데이터) |
 | IAM 백업 역할 | CloudArchitect-Lab-BackupRole | AWS Backup 서비스 권한 제공 |
-| 백업용 태그 | Project=CloudArchitect, Week=Week12 | 태그 기반 백업 대상 식별 |
+| 백업용 태그 | Project=CloudArchitect, Week=Week12-3 | 태그 기반 백업 대상 식별 |
 
 8. 출력 메시지에서 EC2 인스턴스의 **Public IP 주소**를 확인하고 메모합니다.
 
@@ -252,28 +252,28 @@ chmod +x setup-12-3.sh
 > [!NOTE]
 > 백업 계획은 설정된 스케줄에 따라 자동으로 실행되지만, 즉시 백업이 필요한 경우 수동(온디맨드) 백업을 실행할 수 있습니다. 이 태스크에서는 수동 백업을 실행하여 백업 프로세스를 직접 체험합니다.
 
-40. AWS Backup 콘솔의 왼쪽 메뉴에서 **Dashboard**를 선택합니다.
+41. AWS Backup 콘솔의 왼쪽 메뉴에서 **Dashboard**를 선택합니다.
 
-41. 대시보드 화면 오른쪽 상단의 [[Create on-demand backup]] 버튼을 클릭합니다.
+42. 대시보드 화면 오른쪽 상단의 [[Create on-demand backup]] 버튼을 클릭합니다.
 
-42. **Resource type**에서 **EC2**를 선택합니다.
+43. **Resource type**에서 **EC2**를 선택합니다.
 
-43. **Instance ID** 드롭다운에서 `CloudArchitect-Lab-TestInstance`를 선택합니다.
+44. **Instance ID** 드롭다운에서 `CloudArchitect-Lab-TestInstance`를 선택합니다.
 
-44. **Backup vault** 드롭다운에서 `CloudArchitect-Lab-BackupVault`를 선택합니다.
+45. **Backup vault** 드롭다운에서 `CloudArchitect-Lab-BackupVault`를 선택합니다.
 
-45. **IAM role**에서 **Choose an IAM role**을 선택한 후 `CloudArchitect-Lab-BackupRole`을 선택합니다.
+46. **IAM role**에서 **Choose an IAM role**을 선택한 후 `CloudArchitect-Lab-BackupRole`을 선택합니다.
 
-46. **Total retention period**를 `7 days`로 설정합니다.
+47. **Total retention period**를 `7 days`로 설정합니다.
 
-47. [[Create on-demand backup]] 버튼을 클릭합니다.
+48. [[Create on-demand backup]] 버튼을 클릭합니다.
 
-48. 자동으로 왼쪽 메뉴의 **Jobs** 페이지가 열리고 **Backup jobs** 탭에서 백업 작업 상태를 확인할 수 있습니다.
+49. 자동으로 왼쪽 메뉴의 **Jobs** 페이지가 열리고 **Backup jobs** 탭에서 백업 작업 상태를 확인할 수 있습니다.
+
+50. 백업 작업 상태가 "Completed"로 변경될 때까지 기다립니다.
 
 > [!NOTE]
 > EC2 인스턴스 백업에 약 10-15분이 소요됩니다. **Status** 열에서 "Created" → "Running" → "Completed" 순서로 진행됩니다. 페이지를 새로고침하여 상태를 확인합니다. 대기하는 동안 다음 태스크를 미리 읽어봅니다.
-
-49. 백업 작업 상태가 "Completed"로 변경될 때까지 기다립니다.
 
 ✅ **태스크 완료**: EC2 인스턴스의 수동 백업이 완료되었습니다.
 
@@ -283,28 +283,28 @@ chmod +x setup-12-3.sh
 > [!IMPORTANT]
 > 태스크 4의 백업 작업이 "Completed" 상태여야 복원을 진행할 수 있습니다. Jobs 페이지에서 Status를 확인합니다.
 
-50. 왼쪽 메뉴에서 **My account** 섹션 아래의 **Protected resources**를 선택합니다.
+51. 왼쪽 메뉴에서 **My account** 섹션 아래의 **Protected resources**를 선택합니다.
 
-51. 리소스 목록에서 `CloudArchitect-Lab-TestInstance`를 선택합니다.
+52. 리소스 목록에서 `CloudArchitect-Lab-TestInstance`를 선택합니다.
 
-52. **Recovery points** 섹션에서 생성된 복구 시점의 라디오 버튼을 선택합니다.
+53. **Recovery points** 섹션에서 생성된 복구 시점의 라디오 버튼을 선택합니다.
 
-53. [[Restore]] 버튼을 클릭합니다.
+54. [[Restore]] 버튼을 클릭합니다.
 
-54. **Instance configuration** 섹션에서 다음 설정을 확인합니다:
+55. **Instance configuration** 섹션에서 다음 설정을 확인합니다:
 - **Instance type**: `t3.micro` (원본과 동일)
 - **VPC**: 원본 VPC 선택
 - **Subnet**: 원본 서브넷 선택
 - **Security groups**: 원본 보안 그룹 선택
 
-55. **Restore role**에서 `CloudArchitect-Lab-BackupRole`을 선택합니다.
+56. **Restore role**에서 `CloudArchitect-Lab-BackupRole`을 선택합니다.
 
-56. [[Restore backup]] 버튼을 클릭합니다.
+57. [[Restore backup]] 버튼을 클릭합니다.
 
 > [!NOTE]
 > EC2 인스턴스 복원에 약 5-10분이 소요됩니다. Jobs 페이지의 **Restore jobs** 탭에서 진행 상태를 확인합니다.
 
-57. 복원이 완료되면 Amazon EC2 콘솔로 이동하여 새로 생성된 복원 인스턴스를 확인합니다.
+58. 복원이 완료되면 Amazon EC2 콘솔로 이동하여 새로 생성된 복원 인스턴스를 확인합니다.
 
 > [!OUTPUT]
 > ```
@@ -315,24 +315,27 @@ chmod +x setup-12-3.sh
 > (복원된 인스턴스 - 이름 없음)       | Running        | t3.micro
 > ```
 
-58. 복원된 인스턴스의 **Public IPv4 address**를 복사합니다.
+59. 복원된 인스턴스의 **Public IPv4 address**를 복사합니다.
 
-59. 새 브라우저 탭에서 `http://[복원된 인스턴스 IP]`로 접속합니다.
+60. 새 브라우저 탭에서 `http://[복원된 인스턴스 IP]`로 접속합니다.
 
-60. 원본 인스턴스와 동일한 웹 페이지가 표시되는지 확인합니다.
+61. 원본 인스턴스와 동일한 웹 페이지가 표시되는지 확인합니다.
 
 ✅ **태스크 완료**: 백업에서 EC2 인스턴스가 성공적으로 복원되었습니다.
 
 
 ## 태스크 6: AWS Backup 대시보드 확인
 
-61. AWS Backup 콘솔의 왼쪽 메뉴에서 **Dashboard**를 선택합니다.
+> [!NOTE]
+> 대시보드의 그래프와 통계는 백업/복원 작업이 완료된 후 데이터가 반영되기까지 시간이 걸릴 수 있습니다. 태스크 4의 백업과 태스크 5의 복원이 모두 "Completed" 상태인지 확인한 후 대시보드를 확인하세요. 그래프가 바로 표시되지 않으면 몇 분 후 페이지를 새로고침합니다.
 
-62. **Jobs status over time** 섹션에서 백업/복원 작업 상태 그래프를 확인합니다.
+62. AWS Backup 콘솔의 왼쪽 메뉴에서 **Dashboard**를 선택합니다.
 
-63. **Backup job status overview**에서 Completed, Failed 작업 수를 확인합니다.
+63. **Jobs status over time** 섹션에서 백업/복원 작업 상태 그래프를 확인합니다.
 
-64. **Backup job health** 섹션에서 백업 성공률을 확인합니다.
+64. **Backup job status overview**에서 Completed, Failed 작업 수를 확인합니다.
+
+65. **Backup job health** 섹션에서 백업 성공률을 확인합니다.
 
 > [!TIP]
 > 실무에서는 AWS Backup 대시보드를 주기적으로 확인하여 백업 상태를 모니터링합니다. CloudWatch와 연동하면 백업 실패 시 자동으로 알림을 받을 수 있습니다.

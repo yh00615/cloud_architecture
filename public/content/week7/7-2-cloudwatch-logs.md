@@ -182,7 +182,7 @@ chmod +x setup-7-2.sh
 
 19. `/aws/ec2/nginx/access` 로그 그룹을 선택합니다.
 
-20. 로그 그룹의 **Retention setting**, **Stored bytes**, **Creation time**을 확인합니다.
+20. 로그 그룹의 **Retention**, **Stored bytes**, **Creation time**을 확인합니다.
 
 21. **Log streams** 탭에서 생성된 로그 스트림을 확인합니다.
 
@@ -252,7 +252,10 @@ chmod +x setup-7-2.sh
 [ip, identity, user, timestamp, request, status_code="404", size]
 ```
 
-34. [[Test pattern]] 버튼을 클릭하여 패턴이 404 에러 로그와 매칭되는지 확인합니다.
+34. **Select log data to test** 섹션에서 **Custom log data**를 선택하고, 본인의 Instance ID로 변경한 후 [[Test pattern]] 버튼을 클릭하여 패턴이 404 에러 로그와 매칭되는지 확인합니다.
+
+> [!IMPORTANT]
+> Test pattern 실행 시 기본 제공되는 샘플 데이터가 아닌, 본인의 Instance ID에 해당하는 로그 데이터를 선택해야 결과가 표시됩니다.
 
 35. [[Next]] 버튼을 클릭합니다.
 
@@ -286,7 +289,7 @@ chmod +x setup-7-2.sh
 
 42. 왼쪽 메뉴에서 **Logs**를 선택하여 확장한 후 **Logs Insights**를 선택합니다.
 
-43. **Select log group(s)**에서 `/aws/ec2/nginx/access`를 선택합니다.
+43. **Select log group(s)** 드롭다운에서 `/aws/ec2/nginx/access`를 검색하여 선택합니다.
 
 44. 시간 범위를 **Last 1 hour**로 설정합니다.
 
@@ -344,7 +347,7 @@ fields @timestamp
 
 54. `/aws/ec2/nginx/access` 로그 그룹 페이지로 이동합니다.
 
-55. [[Start Live tail]] 버튼을 클릭합니다.
+55. [[Start tailing]] 버튼을 클릭합니다.
 
 56. Live tail 상태가 "Running"으로 변경될 때까지 기다립니다.
 
@@ -358,7 +361,7 @@ fields @timestamp
 
 60. 필터를 `200`으로 변경하여 정상 접속 로그만 표시합니다.
 
-61. [[Stop Live tail]] 버튼을 클릭하여 세션을 종료합니다.
+61. [[Cancel]] 버튼을 클릭하여 세션을 종료합니다.
 
 > [!NOTE]
 > Live tail은 실시간 문제 감지, 배포 후 로그 확인, 트래픽 패턴 분석 등에 유용합니다. 필터링 기능으로 특정 조건의 로그만 선택적으로 모니터링할 수 있습니다.

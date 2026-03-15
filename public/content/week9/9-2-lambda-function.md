@@ -149,7 +149,7 @@ chmod +x setup-9-2.sh
 
 25. **Change default execution role** 섹션을 확장합니다.
 
-26. **Execution role**에서 **Use an existing role**을 선택합니다.
+26. **Execution role**에서 **Use another role**을 선택합니다.
 
 27. **Existing role** 드롭다운에서 **CloudArchitect-Lab-LambdaExecutionRole**을 선택합니다.
 
