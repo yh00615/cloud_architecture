@@ -100,7 +100,7 @@ unzip week6-2-rds-service.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-6-2.sh
+chmod +x setup-6-2.sh cleanup-6-2.sh
 ./setup-6-2.sh
 ```
 
@@ -149,30 +149,30 @@ chmod +x setup-6-2.sh
 
 ### 1.1 사전 구축된 VPC 확인
 
-8. AWS Management Console에 로그인한 후 상단 검색창에서 `VPC`를 검색하고 **VPC**를 선택합니다.
+9. AWS Management Console에 로그인한 후 상단 검색창에서 `VPC`를 검색하고 **VPC**를 선택합니다.
 
-9. 왼쪽 메뉴에서 **Your VPCs**를 선택합니다.
+10. 왼쪽 메뉴에서 **Your VPCs**를 선택합니다.
 
-10. `CloudArchitect-Lab-VPC`가 "Available" 상태이고 CIDR 블록이 `10.0.0.0/16`으로 설정되어 있는지 확인합니다.
+11. `CloudArchitect-Lab-VPC`가 "Available" 상태이고 CIDR 블록이 `10.0.0.0/16`으로 설정되어 있는지 확인합니다.
 
 ### 1.2 Private 서브넷 확인
 
-11. 왼쪽 메뉴에서 **Subnets**를 선택합니다.
+12. 왼쪽 메뉴에서 **Subnets**를 선택합니다.
 
-12. `CloudArchitect-Lab-Private-Subnet-1`과 `CloudArchitect-Lab-Private-Subnet-2`가 서로 다른 가용 영역에 생성되어 있는지 확인합니다.
+13. `CloudArchitect-Lab-Private-Subnet-1`과 `CloudArchitect-Lab-Private-Subnet-2`가 서로 다른 가용 영역에 생성되어 있는지 확인합니다.
 
 > [!TIP]
 > RDS Multi-AZ 배포를 위해서는 최소 2개의 서로 다른 가용 영역에 서브넷이 필요합니다. 사전 구축 스크립트가 이를 자동으로 구성했습니다.
 
 ### 1.3 Bastion Host EC2 인스턴스 확인
 
-13. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
+14. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-14. 왼쪽 메뉴에서 **Instances**를 선택합니다.
+15. 왼쪽 메뉴에서 **Instances**를 선택합니다.
 
-15. `CloudArchitect-Lab-RDS-Client` 인스턴스의 상태가 "Running"인지 확인합니다.
+16. `CloudArchitect-Lab-RDS-Client` 인스턴스의 상태가 "Running"인지 확인합니다.
 
-16. 인스턴스의 **Public IPv4 address**가 할당되어 있는지 확인합니다.
+17. 인스턴스의 **Public IPv4 address**가 할당되어 있는지 확인합니다.
 
 ✅ **태스크 완료**: VPC, Private 서브넷 2개, Bastion Host EC2 인스턴스가 정상적으로 구축되어 있습니다.
 
@@ -184,25 +184,25 @@ chmod +x setup-6-2.sh
 
 ### 2.1 Amazon RDS DB 서브넷 그룹 생성 시작
 
-17. 상단 검색창에서 `RDS`를 검색하고 **RDS**를 선택합니다.
+18. 상단 검색창에서 `RDS`를 검색하고 **RDS**를 선택합니다.
 
-18. RDS 콘솔의 왼쪽 메뉴에서 **Subnet groups**를 선택합니다. (왼쪽 메뉴에 보이지 않으면 메뉴를 아래로 스크롤합니다.)
+19. RDS 콘솔의 왼쪽 메뉴에서 **Subnet groups**를 선택합니다. (왼쪽 메뉴에 보이지 않으면 메뉴를 아래로 스크롤합니다.)
 
-19. [[Create DB subnet group]] 버튼을 클릭합니다.
+20. [[Create DB subnet group]] 버튼을 클릭합니다.
 
 ### 2.2 Amazon RDS DB 서브넷 그룹 설정
 
-20. **Name**에 `cloudarchitect-lab-db-subnet-group`을 입력합니다.
+21. **Name**에 `cloudarchitect-lab-db-subnet-group`을 입력합니다.
 
-21. **Description**에 `CloudArchitect Lab DB Subnet Group`을 입력합니다.
+22. **Description**에 `CloudArchitect Lab DB Subnet Group`을 입력합니다.
 
-22. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
+23. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
-23. **Add subnets** 섹션에서 다음 2개의 가용 영역과 서브넷을 선택합니다:
+24. **Add subnets** 섹션에서 다음 2개의 가용 영역과 서브넷을 선택합니다:
     - **Availability Zones**: **ap-northeast-2a**와 **ap-northeast-2b**를 선택합니다
     - **Subnets**: **CloudArchitect-Lab-Private-Subnet-1** (ap-northeast-2a)과 **CloudArchitect-Lab-Private-Subnet-2** (ap-northeast-2b)를 선택합니다
 
-24. [[Create]] 버튼을 클릭합니다.
+25. [[Create]] 버튼을 클릭합니다.
 
 ✅ **태스크 완료**: Multi-AZ 배치를 위한 DB 서브넷 그룹이 생성되었습니다.
 
@@ -214,23 +214,23 @@ chmod +x setup-6-2.sh
 
 ### 3.1 보안 그룹 생성
 
-25. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
+26. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-26. 왼쪽 메뉴에서 **Security Groups**를 선택합니다.
+27. 왼쪽 메뉴에서 **Security Groups**를 선택합니다.
 
-27. [[Create security group]] 버튼을 클릭합니다.
+28. [[Create security group]] 버튼을 클릭합니다.
 
-28. **Security group name**에 `CloudArchitect-Lab-RDS-SG`를 입력합니다.
+29. **Security group name**에 `CloudArchitect-Lab-RDS-SG`를 입력합니다.
 
-29. **Description**에 `CloudArchitect Lab RDS Security Group`을 입력합니다.
+30. **Description**에 `CloudArchitect Lab RDS Security Group`을 입력합니다.
 
-30. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
+31. **VPC**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
 ### 3.2 인바운드 규칙 설정
 
-31. **Inbound rules** 섹션에서 [[Add rule]] 버튼을 클릭합니다.
+32. **Inbound rules** 섹션에서 [[Add rule]] 버튼을 클릭합니다.
 
-32. 다음과 같이 설정합니다:
+33. 다음과 같이 설정합니다:
 
 | 항목       | 값                                                          |
 | ---------- | ----------------------------------------------------------- |
@@ -241,7 +241,7 @@ chmod +x setup-6-2.sh
 > [!TIP]
 > Source에 IP 대신 EC2 보안 그룹을 지정하면, 해당 보안 그룹이 연결된 인스턴스에서만 접근이 허용됩니다. IP가 변경되어도 규칙을 수정할 필요가 없어 관리가 편리합니다.
 
-33. [[Create security group]] 버튼을 클릭합니다.
+34. [[Create security group]] 버튼을 클릭합니다.
 
 ✅ **태스크 완료**: VPC 내부의 EC2에서만 MySQL 포트(3306)로 접근할 수 있는 보안 그룹이 생성되었습니다.
 
@@ -259,64 +259,64 @@ chmod +x setup-6-2.sh
 
 ### 4.1 RDS 인스턴스 생성 시작
 
-34. 상단 검색창에서 `RDS`를 검색하고 **RDS**를 선택합니다.
+35. 상단 검색창에서 `RDS`를 검색하고 **RDS**를 선택합니다.
 
-35. 왼쪽 메뉴에서 **Databases**를 선택합니다.
+36. 왼쪽 메뉴에서 **Databases**를 선택합니다.
 
-36. [[Create database]] 버튼을 클릭합니다.
+37. [[Create database]] 버튼을 클릭합니다.
 
-37. **Choose a database creation method**에서 **Full configuration**을 선택합니다.
+38. **Choose a database creation method**에서 **Full configuration**을 선택합니다.
 
 > [!NOTE]
 > Full configuration을 선택하면 가용성, 보안, 백업, 유지 관리 등 모든 구성 옵션을 직접 설정할 수 있습니다. Easy create는 권장 모범 사례 구성을 자동으로 적용하지만, 일부 설정은 데이터베이스 생성 후에만 변경할 수 있습니다.
 
 ### 4.2 엔진 및 템플릿 설정
 
-38. **Engine type**에서 **MySQL**을 선택합니다.
+39. **Engine type**에서 **MySQL**을 선택합니다.
 
-39. **Templates**에서 **Free tier** (신규 계정) 또는 **Sandbox** (연결된 계정)를 선택합니다.
+40. **Templates**에서 **Free tier** (신규 계정) 또는 **Sandbox** (연결된 계정)를 선택합니다.
 
 > [!WARNING]
 > **Dev/Test** 또는 **Production** 템플릿을 선택하면 Multi-AZ DB Cluster로 설정되어 높은 비용이 발생합니다. 반드시 **Free tier** 또는 **Sandbox**를 선택합니다.
 
 ### 4.3 인스턴스 기본 설정
 
-40. **DB instance identifier**에 `cloudarchitect-lab-mysql`을 입력합니다.
+41. **DB instance identifier**에 `cloudarchitect-lab-mysql`을 입력합니다.
 
-41. **Master username**에 `admin`을 입력합니다.
+42. **Master username**에 `admin`을 입력합니다.
 
-42. **Master password**에 `CloudArchitect123!`을 입력합니다.
+43. **Master password**에 `CloudArchitect123!`을 입력합니다.
 
-43. **Confirm master password**에 동일한 패스워드를 입력합니다.
+44. **Confirm master password**에 동일한 패스워드를 입력합니다.
 
 ### 4.4 네트워크 설정
 
-44. **Connectivity** 섹션으로 스크롤합니다.
+45. **Connectivity** 섹션으로 스크롤합니다.
 
-45. **Compute resource**에서 **Don't connect to an EC2 compute resource**를 선택합니다.
+46. **Compute resource**에서 **Don't connect to an EC2 compute resource**를 선택합니다.
 
-46. **Virtual private cloud (VPC)**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
+47. **Virtual private cloud (VPC)**에서 **CloudArchitect-Lab-VPC**를 선택합니다.
 
-47. **DB subnet group**에서 **cloudarchitect-lab-db-subnet-group**을 선택합니다.
+48. **DB subnet group**에서 **cloudarchitect-lab-db-subnet-group**을 선택합니다.
 
-48. **Public access**에서 **No**를 선택합니다.
+49. **Public access**에서 **No**를 선택합니다.
 
-49. **VPC security group (firewall)**에서 **Choose existing**을 선택합니다.
+50. **VPC security group (firewall)**에서 **Choose existing**을 선택합니다.
 
-50. **Existing VPC security groups** 드롭다운에서 **CloudArchitect-Lab-RDS-SG**를 검색하여 선택합니다.
+51. **Existing VPC security groups** 드롭다운에서 **CloudArchitect-Lab-RDS-SG**를 검색하여 선택합니다.
 
-51. **default** 보안 그룹 옆의 [[X]] 버튼을 클릭하여 제거합니다.
+52. **default** 보안 그룹 옆의 [[X]] 버튼을 클릭하여 제거합니다.
 
 ### 4.5 태그 설정
 
-52. 페이지를 아래로 스크롤하여 **Tags - optional** 섹션을 찾습니다.
+53. 페이지를 아래로 스크롤하여 **Tags - optional** 섹션을 찾습니다.
 
-53. [[Add new tag]] 버튼을 클릭하고 첫 번째 태그를 입력합니다:
+54. [[Add new tag]] 버튼을 클릭하고 첫 번째 태그를 입력합니다:
 
 - **Key**: `Name`
 - **Value**: `CloudArchitect-Lab-MySQL`
 
-54. [[Add new tag]] 버튼을 다시 클릭하고 두 번째 태그를 추가합니다:
+55. [[Add new tag]] 버튼을 다시 클릭하고 두 번째 태그를 추가합니다:
 
 - **Key**: `StudentId`
 - **Value**: `[본인 학번]` (예: 20241234)
@@ -326,7 +326,7 @@ chmod +x setup-6-2.sh
 
 ### 4.6 모니터링 설정
 
-55. **Monitoring** 섹션에서:
+56. **Monitoring** 섹션에서:
     - ☐ **Enable Enhanced monitoring**: 체크를 해제합니다
 
 > [!NOTE]
@@ -334,15 +334,15 @@ chmod +x setup-6-2.sh
 
 ### 4.7 추가 설정
 
-56. 페이지 최하단으로 스크롤하여 **Additional configuration** 섹션을 찾습니다. 접힌 상태라면 섹션 제목을 클릭하여 확장합니다.
+57. 페이지 최하단으로 스크롤하여 **Additional configuration** 섹션을 찾습니다. 접힌 상태라면 섹션 제목을 클릭하여 확장합니다.
 
-57. **Database options**에서:
+58. **Database options**에서:
     - **Initial database name**: `cloudarchitect`를 입력합니다
 
 > [!NOTE]
 > Initial database name을 지정하지 않으면 RDS 인스턴스에 기본 데이터베이스가 생성되지 않습니다. 연결 후 수동으로 데이터베이스를 생성해야 합니다.
 
-58. **Additional configuration** 섹션 맨 아래에 있는 **Enable deletion protection** 체크박스의 체크를 해제합니다.
+59. **Additional configuration** 섹션 맨 아래에 있는 **Enable deletion protection** 체크박스의 체크를 해제합니다.
 
 > [!WARNING]
 > 실습 환경이므로 Deletion protection을 비활성화합니다. 프로덕션 환경에서는 반드시 활성화해야 합니다.
@@ -356,7 +356,7 @@ chmod +x setup-6-2.sh
 
 ### 4.8 RDS 인스턴스 생성
 
-59. 모든 설정을 확인한 후 [[Create database]] 버튼을 클릭합니다.
+60. 모든 설정을 확인한 후 [[Create database]] 버튼을 클릭합니다.
 
 > [!NOTE] RDS 인스턴스 생성 대기 중
 >
@@ -378,34 +378,34 @@ chmod +x setup-6-2.sh
 
 ### 5.1 Amazon RDS 인스턴스 상태 확인
 
-59. RDS 콘솔에서 왼쪽 메뉴의 **Databases**를 선택합니다.
+61. RDS 콘솔에서 왼쪽 메뉴의 **Databases**를 선택합니다.
 
-60. `cloudarchitect-lab-mysql` 인스턴스의 상태가 "Available"로 변경될 때까지 기다립니다.
+62. `cloudarchitect-lab-mysql` 인스턴스의 상태가 "Available"로 변경될 때까지 기다립니다.
 
-61. 인스턴스 이름을 선택하여 세부 정보를 확인합니다.
+63. 인스턴스 이름을 선택하여 세부 정보를 확인합니다.
 
-62. **Connectivity & security** 탭을 선택합니다.
+64. **Connectivity & security** 탭을 선택합니다.
 
-63. **Connect using** 섹션에서 **Endpoints** 라디오 버튼을 선택합니다.
+65. **Connect using** 섹션에서 **Endpoints** 라디오 버튼을 선택합니다.
 
-64. 표시된 **Endpoint** 값을 복사하여 메모장에 저장합니다.
+66. 표시된 **Endpoint** 값을 복사하여 메모장에 저장합니다.
 
 > [!NOTE]
 > 엔드포인트 형식: `cloudarchitect-lab-mysql.xxxxx.ap-northeast-2.rds.amazonaws.com`. 이 값은 EC2에서 RDS에 접속할 때 사용합니다.
 
 ### 5.2 Amazon EC2 인스턴스를 통한 RDS 접속
 
-65. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
+67. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-66. 왼쪽 메뉴에서 **Instances**를 선택합니다.
+68. 왼쪽 메뉴에서 **Instances**를 선택합니다.
 
-67. `CloudArchitect-Lab-RDS-Client` 인스턴스를 선택합니다.
+69. `CloudArchitect-Lab-RDS-Client` 인스턴스를 선택합니다.
 
-68. [[Connect]] 버튼을 클릭합니다.
+70. [[Connect]] 버튼을 클릭합니다.
 
-69. **EC2 Instance Connect** 탭에서 [[Connect]] 버튼을 클릭합니다.
+71. **EC2 Instance Connect** 탭에서 [[Connect]] 버튼을 클릭합니다.
 
-70. MySQL 클라이언트 설치 상태를 확인합니다:
+72. MySQL 클라이언트 설치 상태를 확인합니다:
 
 ```bash
 mysql --version
@@ -418,17 +418,17 @@ mysql --version
 > sudo dnf install -y mariadb105
 > ```
 
-68. RDS 인스턴스에 연결합니다 (엔드포인트를 실제 값으로 교체):
+73. RDS 인스턴스에 연결합니다 (엔드포인트를 실제 값으로 교체):
 
 ```bash
 mysql -h [RDS-엔드포인트] -u admin -p
 ```
 
-69. 패스워드 입력 프롬프트가 나타나면 `CloudArchitect123!`을 입력합니다.
+74. 패스워드 입력 프롬프트가 나타나면 `CloudArchitect123!`을 입력합니다.
 
 ### 5.3 MySQL 연결 확인
 
-70. 패스워드 입력 후 MySQL 연결이 성공하면 다음과 같은 프롬프트가 표시됩니다:
+75. 패스워드 입력 후 MySQL 연결이 성공하면 다음과 같은 프롬프트가 표시됩니다:
 
 > [!OUTPUT]
 >
@@ -439,7 +439,7 @@ mysql -h [RDS-엔드포인트] -u admin -p
 > mysql>
 > ```
 
-71. 연결 상태와 데이터베이스 정보를 확인합니다:
+76. 연결 상태와 데이터베이스 정보를 확인합니다:
 
 ```sql
 SELECT USER(), DATABASE(), VERSION();
@@ -449,7 +449,7 @@ USE cloudarchitect;
 
 ### 5.4 테이블 생성 및 데이터 조작
 
-72. 샘플 테이블을 생성합니다:
+77. 샘플 테이블을 생성합니다:
 
 ```sql
 CREATE TABLE users (
@@ -464,7 +464,7 @@ CREATE TABLE users (
 DESCRIBE users;
 ```
 
-73. 샘플 데이터를 삽입하고 조회합니다:
+78. 샘플 데이터를 삽입하고 조회합니다:
 
 ```sql
 INSERT INTO users (name, email, age, major) VALUES
@@ -493,13 +493,13 @@ SELECT COUNT(*) as total_users FROM users;
 
 ### 5.5 연결 종료
 
-74. MySQL 세션을 종료합니다:
+79. MySQL 세션을 종료합니다:
 
 ```sql
 EXIT;
 ```
 
-75. EC2 Instance Connect 세션도 종료합니다:
+80. EC2 Instance Connect 세션도 종료합니다:
 
 ```bash
 exit

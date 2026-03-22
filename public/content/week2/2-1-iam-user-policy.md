@@ -289,15 +289,15 @@ arn:aws:s3:::cloudarchitect-lab-test-bucket/test-file.txt
 > [!NOTE]
 > 특정 정책의 제한 효과를 명확히 확인하기 위해 CloudArchitect-Lab-S3-Limited-Access 정책만 선택합니다. 이 정책은 `cloudarchitect-lab-*` 패턴의 버킷에만 접근을 허용합니다.
 
-64. GetObject 행을 확장한 상태에서 **Resource** 섹션의 ARN 필드 내용을 지운 후 다음 ARN을 입력합니다:
+65. GetObject 행을 확장한 상태에서 **Resource** 섹션의 ARN 필드 내용을 지운 후 다음 ARN을 입력합니다:
 
 ```text
 arn:aws:s3:::other-bucket/test-file.txt
 ```
 
-65. [[Run Simulation]] 버튼을 클릭합니다.
+66. [[Run Simulation]] 버튼을 클릭합니다.
 
-66. 시뮬레이션 완료 후 GetObject 행의 **Permission** 열이 **denied**로 표시되는 것을 확인합니다. 옆에 **Implicitly denied**라는 추가 설명이 표시됩니다.
+67. 시뮬레이션 완료 후 GetObject 행의 **Permission** 열이 **denied**로 표시되는 것을 확인합니다. 옆에 **Implicitly denied**라는 추가 설명이 표시됩니다.
 
 > [!OUTPUT]
 >
@@ -312,15 +312,15 @@ arn:aws:s3:::other-bucket/test-file.txt
 
 ### 4.4 사용자 권한 확인
 
-67. IAM 콘솔로 이동합니다.
+68. IAM 콘솔로 이동합니다.
 
-68. 왼쪽 메뉴에서 **Users**를 선택합니다.
+69. 왼쪽 메뉴에서 **Users**를 선택합니다.
 
-69. **CloudArchitect-Lab-DeveloperUser** 사용자를 선택합니다.
+70. **CloudArchitect-Lab-DeveloperUser** 사용자를 선택합니다.
 
-70. **Permissions** 탭에서 사용자에게 적용된 모든 권한을 확인합니다.
+71. **Permissions** 탭에서 사용자에게 적용된 모든 권한을 확인합니다.
 
-71. **Groups** 탭에서 **User groups membership**을 확인합니다.
+72. **Groups** 탭에서 **User groups membership**을 확인합니다.
 
 > [!TIP]
 > **Permissions** 탭에서 정책 이름 옆에 "Attached from group: CloudArchitect-Lab-Developers"라고 표시됩니다. 이는 해당 권한이 그룹을 통해 상속된 것임을 나타냅니다.

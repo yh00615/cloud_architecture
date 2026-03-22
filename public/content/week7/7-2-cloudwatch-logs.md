@@ -95,7 +95,7 @@ unzip week7-2-cloudwatch-logs.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-7-2.sh
+chmod +x setup-7-2.sh cleanup-7-2.sh
 ./setup-7-2.sh
 ```
 
@@ -182,7 +182,7 @@ chmod +x setup-7-2.sh
 
 20. `/aws/ec2/nginx/access` 로그 그룹을 선택합니다.
 
-21. **Log group details** 섹션을 확장하여 **Retention**, **Stored bytes**, **Creation time**을 확인합니다.
+21. 로그 그룹의 **Retention**, **Stored bytes**, **Creation time**을 확인합니다.
 
 22. **Log streams** 탭에서 생성된 로그 스트림을 확인합니다.
 
@@ -289,10 +289,7 @@ chmod +x setup-7-2.sh
 
 45. 왼쪽 메뉴에서 **Logs**를 선택하여 확장한 후 **Logs Insights**를 선택합니다.
 
-46. **Select up to 50 log groups** 필드에서 `/aws/ec2/nginx/access`를 검색하여 선택합니다.
-
-> [!TIP]
-> 콘솔 버전에 따라 **Select log group(s)** 드롭다운으로 표시될 수 있습니다.
+46. **Select log group(s)** 드롭다운에서 `/aws/ec2/nginx/access`를 검색하여 선택합니다.
 
 47. 시간 범위를 **Last 1 hour**로 설정합니다.
 
@@ -331,6 +328,7 @@ fields @timestamp, @message
 ```
 fields @timestamp
 | stats count() by bin(5m)
+| sort @timestamp desc
 ```
 
 55. [[Run query]] 버튼을 클릭합니다.
@@ -338,7 +336,7 @@ fields @timestamp
 56. 결과에서 5분 단위로 로그 발생 추이를 확인합니다.
 
 > [!TIP]
-> 결과 테이블은 시간순으로 정렬되지 않을 수 있습니다. **Visualization** 탭을 선택하면 시간순 그래프로 로그 발생 추이를 확인할 수 있습니다.
+> Logs Insights 쿼리 결과는 **Visualization** 탭에서 그래프로 시각화할 수 있습니다. `stats` 명령어와 `bin()` 함수를 함께 사용하면 시계열 그래프를 생성할 수 있습니다.
 
 ✅ **태스크 완료**: Logs Insights를 통해 로그 검색, 파싱, 집계 분석을 수행했습니다.
 
@@ -351,25 +349,19 @@ fields @timestamp
 
 58. [[Start tailing]] 버튼을 클릭합니다.
 
-59. 실시간 로그 이벤트가 화면에 표시되는지 확인합니다.
+59. Live tail 상태가 "Running"으로 변경될 때까지 기다립니다.
 
 ### 6.2 실시간 로그 관찰
 
 60. 다른 브라우저 탭에서 웹 서버 IP로 접속하여 실시간으로 로그가 나타나는지 확인합니다.
 
-> [!TIP]
-> 로그가 바로 나타나지 않을 수 있습니다. 잠시 기다린 후 우측 하단의 [[Scroll to latest events]] 버튼을 클릭하면 최신 로그를 확인할 수 있습니다.
-
 61. 존재하지 않는 페이지(예: `http://[IP]/test-page`)에 접속하여 404 에러 로그를 생성합니다.
 
-62. 우측 상단의 [[Filter]] 버튼을 클릭하여 Filter 패널을 엽니다. **Add filter patterns (Case sensitive) - optional** 필드에 `404`를 입력하고 [[Apply filters]] 버튼을 클릭하여 404 에러 로그만 필터링합니다.
-
-> [!TIP]
-> 필터 적용 후 "Waiting for log events that match the filters" 메시지가 표시될 수 있습니다. 필터 조건에 맞는 새로운 로그가 발생할 때까지 잠시 기다립니다.
+62. Live tail 화면에서 **Filter events** 입력창에 `404`를 입력하여 404 에러 로그만 필터링합니다.
 
 63. 필터를 `200`으로 변경하여 정상 접속 로그만 표시합니다.
 
-64. 필터를 해제하고 우측 상단의 [[Cancel]] 버튼을 클릭하여 Live Tail을 중지합니다.
+64. [[Cancel]] 버튼을 클릭하여 세션을 종료합니다.
 
 > [!NOTE]
 > Live tail은 실시간 문제 감지, 배포 후 로그 확인, 트래픽 패턴 분석 등에 유용합니다. 필터링 기능으로 특정 조건의 로그만 선택적으로 모니터링할 수 있습니다.

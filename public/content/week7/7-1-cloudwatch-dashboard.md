@@ -89,7 +89,7 @@ unzip week7-1-cloudwatch-dashboard.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-7-1.sh
+chmod +x setup-7-1.sh cleanup-7-1.sh
 ./setup-7-1.sh
 ```
 
@@ -317,6 +317,16 @@ chmod +x setup-7-1.sh
 
 63. [[Save]] 버튼을 클릭하여 대시보드를 저장합니다.
 
+64. 대시보드 상단의 **Settings** 아이콘(⚙️)을 선택합니다.
+
+65. **Tags** 탭에서 [[Manage tags]] 버튼을 클릭합니다.
+
+66. [[Add new tag]] 버튼을 클릭하여 다음 태그를 추가합니다:
+   - Key: `Name`, Value: `CloudArchitect-Lab-Dashboard`
+   - Key: `StudentId`, Value: `[본인 학번]` (예: 20241234)
+
+67. [[Save]] 버튼을 클릭합니다.
+
 > [!TIP]
 > 대시보드에 여러 위젯을 추가하여 CPU, 네트워크, 디스크 지표를 한 화면에서 모니터링할 수 있습니다. 위젯은 드래그하여 크기와 위치를 조정할 수 있습니다.
 
@@ -327,39 +337,39 @@ chmod +x setup-7-1.sh
 
 ### 6.1 Amazon EC2 인스턴스 접속
 
-64. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
+68. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-65. 왼쪽 메뉴에서 **Instances**를 선택합니다.
+69. 왼쪽 메뉴에서 **Instances**를 선택합니다.
 
-66. `CloudArchitect-Lab-MonitoringServer` 인스턴스를 선택합니다.
+70. `CloudArchitect-Lab-MonitoringServer` 인스턴스를 선택합니다.
 
-67. [[Connect]] 버튼을 클릭합니다.
+71. [[Connect]] 버튼을 클릭합니다.
 
-68. **EC2 Instance Connect** 탭에서 [[Connect]] 버튼을 클릭합니다.
+72. **EC2 Instance Connect** 탭에서 [[Connect]] 버튼을 클릭합니다.
 
 ### 6.2 CPU 스트레스 테스트 실행
 
-69. 터미널에서 다음 명령어를 실행하여 CPU 부하를 생성합니다:
+73. 터미널에서 다음 명령어를 실행하여 CPU 부하를 생성합니다:
 
 ```bash
-stress --cpu 1 --timeout 300
+stress --cpu 1 --timeout 180
 ```
 
 > [!NOTE]
-> `stress` 명령어는 5분(300초) 동안 CPU 부하를 생성합니다. 사전 구축 스크립트에서 이미 설치되어 있습니다.
+> `stress` 명령어는 3분(180초) 동안 CPU 부하를 생성합니다. 사전 구축 스크립트에서 이미 설치되어 있습니다.
 
 ### 6.3 경보 상태 확인
 
-70. Amazon CloudWatch 콘솔로 이동합니다. 왼쪽 메뉴에서 **Alarms**를 선택합니다.
+74. Amazon CloudWatch 콘솔로 이동합니다. 왼쪽 메뉴에서 **Alarms**를 선택합니다.
 
-71. `CloudArchitect-Lab-HighCPU` 경보의 상태가 "OK"에서 "In alarm"으로 변경될 때까지 기다립니다.
+75. `CloudArchitect-Lab-HighCPU` 경보의 상태가 "OK"에서 "In alarm"으로 변경될 때까지 기다립니다.
 
 > [!NOTE]
 > 경보 상태 변경에 약 2-3분이 소요됩니다. Period가 1분으로 설정되어 있으므로, 1분간의 평균 CPU 사용률이 40%를 초과하면 경보가 발생합니다.
 
-72. 대시보드에서 CPU 사용률 그래프가 급격히 상승하는 것을 확인합니다.
+76. 대시보드에서 CPU 사용률 그래프가 급격히 상승하는 것을 확인합니다.
 
-73. 이메일 수신함에서 경보 알림 메일이 도착했는지 확인합니다.
+77. 이메일 수신함에서 경보 알림 메일이 도착했는지 확인합니다.
 
 > [!TROUBLESHOOTING]
 > - 경보가 "INSUFFICIENT_DATA" 상태로 유지되면: EC2 인스턴스가 Running 상태인지 확인합니다

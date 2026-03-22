@@ -91,7 +91,7 @@ unzip week4-1-ec2-instance-deploy.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-4-1.sh
+chmod +x setup-4-1.sh cleanup-4-1.sh
 ./setup-4-1.sh
 ```
 
@@ -431,7 +431,6 @@ curl -s localhost | head -5
 60. CloudShell에서 cleanup 스크립트를 실행합니다:
 
 ```bash
-chmod +x cleanup-4-1.sh
 ./cleanup-4-1.sh
 ```
 

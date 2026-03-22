@@ -86,7 +86,7 @@ unzip week11-2-cloudfront-deploy.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-11-2.sh
+chmod +x setup-11-2.sh cleanup-11-2.sh
 ./setup-11-2.sh
 ```
 
@@ -119,15 +119,15 @@ chmod +x setup-11-2.sh
 
 ## 태스크 1: 사전 구축된 환경 확인
 
-8. 상단 검색창에서 `S3`를 검색하고 **S3**를 선택합니다.
+9. 상단 검색창에서 `S3`를 검색하고 **S3**를 선택합니다.
 
-9. Amazon S3 콘솔의 버킷 목록에서 **cloudarchitect-lab-s3website-[계정 ID]** 형태의 버킷을 선택합니다.
+10. Amazon S3 콘솔의 버킷 목록에서 **cloudarchitect-lab-s3website-[계정 ID]** 형태의 버킷을 선택합니다.
 
-10. **Objects** 탭에서 `index.html`과 `error.html` 파일이 업로드되어 있는지 확인합니다.
+11. **Objects** 탭에서 `index.html`과 `error.html` 파일이 업로드되어 있는지 확인합니다.
 
-11. 상단 탭 중 **Properties** 탭을 선택하고 페이지 맨 아래의 **Static website hosting** 섹션을 확인합니다 (이 실습에서는 비활성화 상태).
+12. 상단 탭 중 **Properties** 탭을 선택하고 페이지 맨 아래의 **Static website hosting** 섹션을 확인합니다 (이 실습에서는 비활성화 상태).
 
-12. 상단 탭 중 **Permissions** 탭을 선택하여 초기 퍼블릭 액세스 정책을 확인합니다.
+13. 상단 탭 중 **Permissions** 탭을 선택하여 초기 퍼블릭 액세스 정책을 확인합니다.
 
 > [!NOTE]
 > 이 실습에서는 S3 정적 웹사이트 호스팅 대신 Amazon CloudFront OAC를 사용합니다. S3 정적 웹사이트 호스팅은 버킷을 퍼블릭으로 공개해야 하지만, OAC를 사용하면 S3 버킷을 퍼블릭으로 공개하지 않고도 CloudFront를 통해 콘텐츠를 제공할 수 있어 보안이 강화됩니다.
@@ -141,61 +141,66 @@ chmod +x setup-11-2.sh
 >
 > OAC는 S3 버킷에 Amazon CloudFront 배포만 접근할 수 있도록 제한하는 보안 메커니즘입니다. OAC를 사용하면 S3 버킷을 퍼블릭으로 공개하지 않아도 CloudFront를 통해 콘텐츠를 안전하게 제공할 수 있습니다. 기존의 OAI(Origin Access Identity)보다 서명 방식이 개선되어 보안이 강화된 최신 방식입니다.
 
-13. 상단 검색창에서 `CloudFront`를 검색하고 **CloudFront**를 선택합니다.
+14. 상단 검색창에서 `CloudFront`를 검색하고 **CloudFront**를 선택합니다.
 
-14. Amazon CloudFront 콘솔에서 [[Create distribution]] 버튼을 클릭합니다.
+15. Amazon CloudFront 콘솔에서 [[Create distribution]] 버튼을 클릭합니다.
 
 ### 2.1 Step 1: Get started
 
-15. **Distribution name**에 `CloudArchitect-Lab-Distribution`을 입력합니다.
+> [!IMPORTANT]
+> 이 단계에서 **Choose a plan** 옵션이 표시됩니다. 반드시 **Pay as you go**를 선택하세요. Free tier를 선택하면 이후 Step 3의 보안 설정(WAF) 옵션이 표시되지 않아 실습 진행이 달라집니다.
 
-16. **Description**은 비워둡니다 (선택 사항).
+16. **Choose a plan**에서 **Pay as you go**를 선택합니다.
 
-17. **Distribution type**에서 **Single website or app**을 선택합니다.
+17. **Distribution name**에 `CloudArchitect-Lab-Distribution`을 입력합니다.
 
-18. **Domain**은 비워둡니다 (선택 사항).
+18. **Description**은 비워둡니다 (선택 사항).
 
-19. **Tags**는 비워둡니다 (선택 사항).
+19. **Distribution type**에서 **Single website or app**을 선택합니다.
 
-20. [[Next]] 버튼을 클릭합니다.
+20. **Domain**은 비워둡니다 (선택 사항).
+
+21. **Tags**는 비워둡니다 (선택 사항).
+
+22. [[Next]] 버튼을 클릭합니다.
 
 ### 2.2 Step 2: Specify origin
 
-21. **Origin type**에서 **Amazon S3**를 선택합니다.
+23. **Origin type**에서 **Amazon S3**를 선택합니다.
 
-22. **S3 origin**에서 [[Browse S3]] 버튼을 클릭합니다.
+24. **S3 origin**에서 [[Browse S3]] 버튼을 클릭합니다.
 
-23. 버킷 목록에서 **cloudarchitect-lab-s3website-[계정ID]** 버킷을 선택하고 [[Choose]] 버튼을 클릭합니다.
+25. 버킷 목록에서 **cloudarchitect-lab-s3website-[계정ID]** 버킷을 선택하고 [[Choose]] 버튼을 클릭합니다.
 
-24. **Allow private S3 bucket access to CloudFront - Recommended** 체크박스가 선택되어 있는지 확인합니다.
+26. **Allow private S3 bucket access to CloudFront - Recommended** 체크박스가 선택되어 있는지 확인합니다.
 
 > [!NOTE]
 > 이 옵션을 선택하면 CloudFront가 자동으로 OAC(Origin Access Control)를 생성하고 S3 버킷 정책을 업데이트할 수 있는 권한을 요청합니다.
 
-25. **Origin settings**에서 **Use recommended origin settings**를 선택합니다.
+27. **Origin settings**에서 **Use recommended origin settings**를 선택합니다.
 
-26. **Cache settings**에서 **Use recommended cache settings tailored to serving S3 content**를 선택합니다.
+28. **Cache settings**에서 **Use recommended cache settings tailored to serving S3 content**를 선택합니다.
 
-27. [[Next]] 버튼을 클릭합니다.
+29. [[Next]] 버튼을 클릭합니다.
 
 ### 2.3 Step 3: Enable security
 
-> [!IMPORTANT]
-> 이 단계에서 **Pay as you go**를 선택해야 WAF 설정 옵션이 표시됩니다. Free tier를 선택하면 이 단계가 표시되지 않습니다.
+> [!NOTE]
+> Step 1에서 **Pay as you go**를 선택했기 때문에 이 단계에서 WAF 보안 설정 옵션이 표시됩니다. Free tier를 선택한 경우 이 단계가 표시되지 않습니다.
 
-28. **Do not enable security protections**를 선택합니다.
+30. **Do not enable security protections**를 선택합니다.
 
 > [!NOTE]
 > 이 실습에서는 WAF를 사용하지 않습니다. 프로덕션 환경에서는 보안 강화를 위해 WAF 활성화를 권장합니다.
 
-29. [[Next]] 버튼을 클릭합니다.
+31. [[Next]] 버튼을 클릭합니다.
 
 ### 2.4 Step 4: Review and create
 
 > [!NOTE]
 > Pay as you go를 선택한 경우 Step 4에서 TLS 인증서 설정이 표시될 수 있습니다. 사용자 지정 도메인을 사용하지 않으므로 기본 설정을 그대로 유지하고 [[Next]]를 클릭합니다. Free tier를 선택한 경우 Step 3에서 바로 Review and create로 이동합니다.
 
-30. 설정을 검토한 후 [[Create distribution]] 버튼을 클릭합니다.
+32. 설정을 검토한 후 [[Create distribution]] 버튼을 클릭합니다.
 
 > [!NOTE]
 > CloudFront가 자동으로 OAC를 생성하고 S3 버킷 정책 업데이트를 안내하는 배너가 상단에 표시됩니다. 배포가 전 세계 엣지 로케이션에 전파되는 데 약 15-20분이 소요됩니다. **Last modified** 필드가 "Deploying"에서 날짜/시간으로 변경되면 배포가 완료된 것입니다.
@@ -241,6 +246,13 @@ chmod +x setup-11-2.sh
 
 43. 웹사이트가 정상적으로 로드되는지 확인합니다.
 
+> [!TROUBLESHOOTING]
+> 웹사이트에 접속할 수 없거나 "Access Denied" 오류가 표시되는 경우:
+> - CloudFront 배포 상태가 "Deploying"이 아닌 날짜/시간으로 변경되었는지 확인합니다 (배포 완료까지 약 15-20분 소요)
+> - 태스크 3에서 S3 버킷 정책이 올바르게 업데이트되었는지 확인합니다
+> - URL이 `https://`로 시작하는지 확인합니다 (CloudFront는 기본적으로 HTTPS를 사용)
+> - `/index.html` 경로가 포함되어 있는지 확인합니다
+
 44. 브라우저 **개발자 도구**(F12)를 열고 **Network** 탭을 선택합니다.
 
 45. 페이지를 새로고침하고 `index.html` 요청을 선택하여 응답 헤더를 확인합니다.
@@ -276,26 +288,33 @@ chmod +x setup-11-2.sh
 
 50. 다운로드한 파일을 텍스트 편집기로 열고 내용을 수정합니다 (예: "Hello world!" → "Hello CloudFront!").
 
-51. 수정한 파일을 S3 버킷에 다시 업로드합니다 ([[Upload]] 버튼 선택).
+51. S3 버킷의 **Objects** 탭에서 [[Upload]] 버튼을 클릭합니다.
 
-52. CloudFront 도메인으로 접근하여 변경사항이 즉시 반영되지 않는 것을 확인합니다 (캐시된 이전 콘텐츠가 표시됨).
+52. [[Add files]] 버튼을 클릭하여 수정한 `index.html` 파일을 선택합니다.
+
+53. [[Upload]] 버튼을 클릭하여 업로드를 완료합니다.
+
+> [!NOTE]
+> 동일한 파일명으로 업로드하면 기존 파일이 덮어쓰기됩니다. 업로드 완료 후 [[Close]] 버튼을 클릭하여 버킷 목록으로 돌아갑니다.
+
+54. CloudFront 도메인(`https://[Domain name]/index.html`)으로 접근하여 변경사항이 즉시 반영되지 않는 것을 확인합니다 (캐시된 이전 콘텐츠가 표시됨).
 
 > [!NOTE]
 > CloudFront는 기본적으로 24시간 동안 콘텐츠를 캐시합니다. 즉시 업데이트를 반영하려면 캐시 무효화(Invalidation)를 수행해야 합니다.
 
-53. Amazon CloudFront 콘솔에서 생성한 배포를 선택합니다.
+55. Amazon CloudFront 콘솔에서 생성한 배포를 선택합니다.
 
-54. 상단 탭 중 **Invalidations** 탭을 선택합니다.
-
-55. [[Create invalidation]] 버튼을 클릭합니다.
-
-56. **Object paths**에 `/index.html`을 입력합니다.
+56. 상단 탭 중 **Invalidations** 탭을 선택합니다.
 
 57. [[Create invalidation]] 버튼을 클릭합니다.
 
-58. 무효화 상태가 "Completed"가 될 때까지 기다립니다 (약 1-2분 소요).
+58. **Object paths**에 `/index.html`을 입력합니다.
 
-59. 웹사이트를 새로고침하여 변경사항이 반영되었는지 확인합니다 ("Hello CloudFront!" 표시).
+59. [[Create invalidation]] 버튼을 클릭합니다.
+
+60. 무효화 상태가 "Completed"가 될 때까지 기다립니다 (약 1-2분 소요).
+
+61. 웹사이트를 새로고침하여 변경사항이 반영되었는지 확인합니다 ("Hello CloudFront!" 표시).
 
 > [!TIP]
 > `/*`를 입력하면 모든 파일의 캐시를 한 번에 무효화할 수 있습니다. 단, 무효화 요청은 월 1,000건까지 무료이며 초과 시 건당 비용이 발생합니다.

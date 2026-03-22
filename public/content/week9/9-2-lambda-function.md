@@ -51,7 +51,7 @@ unzip week9-2-lambda-function.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-9-2.sh
+chmod +x setup-9-2.sh cleanup-9-2.sh
 ./setup-9-2.sh
 ```
 

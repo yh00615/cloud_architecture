@@ -56,7 +56,7 @@ unzip week9-3-api-gateway.zip
 5. setup 스크립트에 실행 권한을 부여하고 실행합니다:
 
 ```bash
-chmod +x setup-9-3.sh
+chmod +x setup-9-3.sh cleanup-9-3.sh
 ./setup-9-3.sh
 ```
 

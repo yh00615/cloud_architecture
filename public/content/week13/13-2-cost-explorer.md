@@ -169,7 +169,7 @@ learningObjectives:
    - 드롭다운에서 **% of budgeted amount** 선택 (기본값)
    - **Trigger** 드롭다운에서 **Actual** 선택 (기본값)
 
-33. **Notification preferences** 섹션에서 **Amazon SNS Alerts**에 태스크 2에서 복사한 SNS 토픽 ARN을 붙여넣습니다.
+33. **Notification preferences** 섹션에서 **Amazon SNS Alerts** 토글을 활성화합니다. 입력 필드가 나타나면 태스크 2에서 복사한 SNS 토픽 ARN을 붙여넣습니다.
 
 34. [[Add an alert threshold]] 버튼을 다시 클릭하여 두 번째 알림을 추가합니다.
 
@@ -178,7 +178,7 @@ learningObjectives:
    - **Threshold**: `100` 입력
    - 드롭다운에서 **% of budgeted amount** 선택 (기본값)
    - **Trigger** 드롭다운에서 **Forecasted** 선택
-   - **Amazon SNS Alerts**에 동일한 SNS 토픽 ARN을 붙여넣습니다
+   - **Amazon SNS Alerts**에 동일한 SNS 토픽 ARN을 붙여넣습니다 (토글 활성화 후 입력)
 
 > [!NOTE]
 > Actual은 실제 사용량이 임계값에 도달하면 알림을 보내고, Forecasted는 AWS가 예측한 월말 사용량이 임계값을 초과할 것으로 예상되면 알림을 보냅니다. 두 가지를 함께 설정하면 더 효과적으로 비용을 관리할 수 있습니다.
@@ -291,22 +291,50 @@ Threshold: 80% Actual
 
 이 실습에서는 자동 정리 스크립트가 제공되지 않으므로, 아래 단계에 따라 AWS Management Console에서 수동으로 리소스를 삭제합니다.
 
-### 태스크 1: 최종 확인
+> [!NOTE]
+> AWS Budgets는 무료 예산 2개까지 비용이 발생하지 않지만, 사용하지 않는 리소스는 정리하는 것이 좋습니다. SNS 토픽도 삭제하지 않으면 불필요한 알림이 계속 발송될 수 있습니다.
 
-1. 상단 검색창에서 `Resource Groups & Tag Editor`를 검색하고 **Resource Groups & Tag Editor**를 선택합니다.
+### 태스크 1: AWS Budgets 삭제
 
-2. 왼쪽 메뉴에서 **Tag Editor**를 선택합니다.
+1. 상단 검색창에서 `Billing and Cost Management`를 검색하고 **Billing and Cost Management**를 선택합니다.
 
-3. 다음과 같이 검색 조건을 설정합니다:
+2. 왼쪽 메뉴에서 **Budgets**를 선택합니다.
+
+3. `MyPersonalBudget`의 라디오 버튼을 선택합니다.
+
+4. **Actions** 드롭다운에서 **Delete**를 선택합니다.
+
+5. 확인 대화 상자에서 [[Confirm]]을 클릭합니다.
+
+### 태스크 2: Amazon SNS 토픽 및 구독 삭제
+
+6. 상단 검색창에서 `SNS`를 검색하고 **Simple Notification Service**를 선택합니다.
+
+7. 왼쪽 메뉴에서 **Topics**를 선택합니다.
+
+8. `MyBudgetAlerts` 토픽의 라디오 버튼을 선택합니다.
+
+9. [[Delete]] 버튼을 클릭합니다.
+
+10. 확인 필드에 `delete me`를 입력하고 [[Delete]]를 클릭합니다.
+
+> [!NOTE]
+> 토픽을 삭제하면 해당 토픽에 연결된 모든 구독도 자동으로 삭제됩니다.
+
+### 태스크 3: 최종 확인
+
+11. 상단 검색창에서 `Resource Groups & Tag Editor`를 검색하고 **Resource Groups & Tag Editor**를 선택합니다.
+
+12. 왼쪽 메뉴에서 **Tag Editor**를 선택합니다.
+
+13. 다음과 같이 검색 조건을 설정합니다:
    - **Regions**: **Asia Pacific (Seoul) ap-northeast-2**
    - **Resource types**: **All supported resource types**
    - **Tags**: Tag key에 **Name**을 선택하고, Tag value에 `CloudArchitect-Lab`을 입력합니다.
 
-4. [[Search resources]]를 클릭합니다.
+14. [[Search resources]]를 클릭합니다.
 
-5. 검색 결과에 리소스가 표시되지 않으면 정리가 완료된 것입니다.
-
-6. 검색된 리소스가 있다면 해당 서비스 콘솔로 이동하여 삭제합니다.
+15. 검색 결과에 리소스가 표시되지 않으면 정리가 완료된 것입니다.
 
 ✅ **리소스 정리 완료**: 모든 리소스가 삭제되었습니다.
 
@@ -315,8 +343,16 @@ Threshold: 80% Actual
 
 📊
 AWS Cost Explorer
-AWS 비용과 사용량을 서비스별, 리전별, 기간별로 시각적으로 분석하여 비용 추이를 파악합니다.
+AWS 비용과 사용량을 서비스별, 리전별, 기간별로 시각적으로 분석하여 비용 추이를 파악합니다
+
+💰
+AWS Budgets
+월별 예산을 설정하고 실제/예측 사용량이 임계값을 초과하면 자동으로 알림을 받아 비용을 관리합니다
+
+🔔
+Amazon SNS 알림 연동
+SNS 토픽과 이메일 구독을 설정하여 Budget 알림을 자동으로 수신하는 비용 관리 시스템을 구축했습니다
 
 🛡️
 비용 관리 습관
-Cost Explorer를 월 1회 이상 확인하고, 예산 알림을 설정하여 예상치 못한 비용 증가를 조기에 발견합니다.
+Cost Explorer를 월 1회 이상 확인하고, 예산 알림을 설정하여 예상치 못한 비용 증가를 조기에 발견합니다
