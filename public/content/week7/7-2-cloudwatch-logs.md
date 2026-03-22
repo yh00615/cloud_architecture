@@ -345,23 +345,25 @@ fields @timestamp
 
 ### 6.1 Live Tail 시작
 
-57. `/aws/ec2/nginx/access` 로그 그룹 페이지로 이동합니다.
+57. CloudWatch 콘솔의 왼쪽 메뉴에서 **Logs** > **Live tail**을 선택합니다.
 
-58. [[Start tailing]] 버튼을 클릭합니다.
+58. **Select log groups**에서 `/aws/ec2/nginx/access` 로그 그룹을 선택합니다.
 
-59. Live tail 상태가 "Running"으로 변경될 때까지 기다립니다.
+59. [[Apply filters]] 버튼을 클릭하여 Live Tail 세션을 시작합니다.
+
+60. Live tail 상태가 "Running"으로 변경될 때까지 기다립니다.
 
 ### 6.2 실시간 로그 관찰
 
-60. 다른 브라우저 탭에서 웹 서버 IP로 접속하여 실시간으로 로그가 나타나는지 확인합니다.
+61. 다른 브라우저 탭에서 웹 서버 IP로 접속하여 실시간으로 로그가 나타나는지 확인합니다.
 
-61. 존재하지 않는 페이지(예: `http://[IP]/test-page`)에 접속하여 404 에러 로그를 생성합니다.
+62. 존재하지 않는 페이지(예: `http://[IP]/test-page`)에 접속하여 404 에러 로그를 생성합니다.
 
-62. Live tail 화면에서 **Filter events** 입력창에 `404`를 입력하여 404 에러 로그만 필터링합니다.
+63. Live tail 화면에서 **Filter events** 입력창에 `404`를 입력하여 404 에러 로그만 필터링합니다.
 
-63. 필터를 `200`으로 변경하여 정상 접속 로그만 표시합니다.
+64. 필터를 `200`으로 변경하여 정상 접속 로그만 표시합니다.
 
-64. [[Cancel]] 버튼을 클릭하여 세션을 종료합니다.
+65. [[Cancel]] 버튼을 클릭하여 세션을 종료합니다.
 
 > [!NOTE]
 > Live tail은 실시간 문제 감지, 배포 후 로그 확인, 트래픽 패턴 분석 등에 유용합니다. 필터링 기능으로 특정 조건의 로그만 선택적으로 모니터링할 수 있습니다.
@@ -425,7 +427,7 @@ fields @timestamp
 
 #### 태스크 3: Security Group 및 Amazon VPC 삭제
 
-12. EC2 인스턴스 종료 후, 왼쪽 메뉴의 **Security Groups**에서 `CloudArchitect-Lab-Web-SG`를 삭제합니다.
+12. EC2 인스턴스 종료 후, 왼쪽 메뉴의 **Network & Security** 섹션 아래의 **Security Groups**에서 `CloudArchitect-Lab-Web-SG`를 삭제합니다.
 
 13. 상단 검색창에서 `VPC`를 검색하고 **VPC**를 선택합니다.
 

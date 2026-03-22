@@ -161,7 +161,7 @@ chmod +x setup-7-1.sh cleanup-7-1.sh
 
 15. 상단 검색창에서 `CloudWatch`를 검색하고 **CloudWatch**를 선택합니다.
 
-16. 왼쪽 메뉴에서 **Metrics**를 선택하여 확장한 후 **All metrics**를 선택합니다.
+16. 왼쪽 메뉴에서 **Metrics** 섹션을 선택하여 확장한 후 **All metrics**를 선택합니다.
 
 17. **Browse** 탭에서 `EC2`를 선택합니다.
 
@@ -240,7 +240,7 @@ chmod +x setup-7-1.sh cleanup-7-1.sh
 
 ### 4.1 Amazon CloudWatch 경보 설정
 
-33. CloudWatch 콘솔에서 왼쪽 메뉴의 **Alarms**를 선택합니다.
+33. CloudWatch 콘솔에서 왼쪽 메뉴의 **Alarms** > **All alarms**를 선택합니다.
 
 34. [[Create alarm]] 버튼을 클릭합니다.
 
@@ -317,7 +317,7 @@ chmod +x setup-7-1.sh cleanup-7-1.sh
 
 63. [[Save]] 버튼을 클릭하여 대시보드를 저장합니다.
 
-64. 대시보드 상단의 **Settings** 아이콘(⚙️)을 선택합니다.
+64. 대시보드 페이지 오른쪽 상단의 **Settings** 아이콘(⚙️)을 선택합니다.
 
 65. **Tags** 탭에서 [[Manage tags]] 버튼을 클릭합니다.
 
@@ -360,7 +360,7 @@ stress --cpu 1 --timeout 180
 
 ### 6.3 경보 상태 확인
 
-74. Amazon CloudWatch 콘솔로 이동합니다. 왼쪽 메뉴에서 **Alarms**를 선택합니다.
+74. 브라우저에서 AWS 콘솔 탭으로 돌아갑니다. 상단 검색창에서 `CloudWatch`를 검색하고 **CloudWatch**를 선택합니다. 왼쪽 메뉴에서 **Alarms** > **All alarms**를 선택합니다.
 
 75. `CloudArchitect-Lab-HighCPU` 경보의 상태가 "OK"에서 "In alarm"으로 변경될 때까지 기다립니다.
 
@@ -447,7 +447,7 @@ stress --cpu 1 --timeout 180
 
 #### 태스크 4: Security Group 및 Amazon VPC 삭제
 
-17. EC2 인스턴스 종료 후, 왼쪽 메뉴의 **Security Groups**에서 `CloudArchitect-Lab-Web-SG`를 삭제합니다.
+17. EC2 인스턴스 종료 후, 왼쪽 메뉴의 **Network & Security** 섹션 아래의 **Security Groups**에서 `CloudArchitect-Lab-Web-SG`를 삭제합니다.
 
 18. 상단 검색창에서 `VPC`를 검색하고 **VPC**를 선택합니다.
 

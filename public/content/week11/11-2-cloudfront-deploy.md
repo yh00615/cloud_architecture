@@ -238,7 +238,7 @@ chmod +x setup-11-2.sh cleanup-11-2.sh
 
 ## 태스크 4: 웹사이트 접근 테스트
 
-40. Amazon CloudFront 콘솔로 이동하여 배포의 **Last modified** 필드가 날짜/시간으로 변경되었는지 확인합니다.
+40. 상단 검색창에서 `CloudFront`를 검색하고 **CloudFront**를 선택합니다. 왼쪽 메뉴에서 **Distributions**를 선택하고 배포의 **Last modified** 필드가 날짜/시간으로 변경되었는지 확인합니다.
 
 41. 배포 상세 페이지의 **General** 탭에서 **Distribution domain name**을 복사합니다 (예: `d111111abcdef8.cloudfront.net`).
 
@@ -282,7 +282,7 @@ chmod +x setup-11-2.sh cleanup-11-2.sh
 > [!NOTE]
 > 캐시 무효화는 S3에 새 콘텐츠를 업로드했지만 CloudFront가 이전 캐시를 계속 제공할 때 사용합니다. 프로덕션 환경에서는 파일명에 버전을 포함하는 방식(예: `index.v2.html`)이 더 효율적이지만, 이 실습에서는 무효화 기능을 직접 체험합니다.
 
-48. Amazon S3 콘솔에서 **cloudarchitect-lab-s3website-[계정ID]** 버킷을 선택합니다.
+48. 상단 검색창에서 `S3`를 검색하고 **S3**를 선택합니다. 버킷 목록에서 **cloudarchitect-lab-s3website-[계정ID]** 버킷을 선택합니다.
 
 49. `index.html` 파일의 체크박스를 선택하고 [[Download]] 버튼을 클릭하여 로컬에 저장합니다.
 
@@ -302,7 +302,7 @@ chmod +x setup-11-2.sh cleanup-11-2.sh
 > [!NOTE]
 > CloudFront는 기본적으로 24시간 동안 콘텐츠를 캐시합니다. 즉시 업데이트를 반영하려면 캐시 무효화(Invalidation)를 수행해야 합니다.
 
-55. Amazon CloudFront 콘솔에서 생성한 배포를 선택합니다.
+55. 상단 검색창에서 `CloudFront`를 검색하고 **CloudFront**를 선택합니다. 왼쪽 메뉴에서 **Distributions**를 선택하고 생성한 배포를 선택합니다.
 
 56. 상단 탭 중 **Invalidations** 탭을 선택합니다.
 

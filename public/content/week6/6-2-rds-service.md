@@ -216,7 +216,7 @@ chmod +x setup-6-2.sh cleanup-6-2.sh
 
 26. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-27. 왼쪽 메뉴에서 **Security Groups**를 선택합니다.
+27. 왼쪽 메뉴의 **Network & Security** 섹션에서 **Security Groups**를 선택합니다.
 
 28. [[Create security group]] 버튼을 클릭합니다.
 
@@ -265,10 +265,10 @@ chmod +x setup-6-2.sh cleanup-6-2.sh
 
 37. [[Create database]] 버튼을 클릭합니다.
 
-38. **Choose a database creation method**에서 **Full configuration**을 선택합니다.
+38. **Choose a database creation method**에서 **Standard create**를 선택합니다.
 
 > [!NOTE]
-> Full configuration을 선택하면 가용성, 보안, 백업, 유지 관리 등 모든 구성 옵션을 직접 설정할 수 있습니다. Easy create는 권장 모범 사례 구성을 자동으로 적용하지만, 일부 설정은 데이터베이스 생성 후에만 변경할 수 있습니다.
+> Standard create를 선택하면 가용성, 보안, 백업, 유지 관리 등 모든 구성 옵션을 직접 설정할 수 있습니다. Easy create는 권장 모범 사례 구성을 자동으로 적용하지만, 일부 설정은 데이터베이스 생성 후에만 변경할 수 있습니다.
 
 ### 4.2 엔진 및 템플릿 설정
 

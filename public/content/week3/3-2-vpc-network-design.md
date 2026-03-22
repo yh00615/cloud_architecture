@@ -89,31 +89,29 @@ learningObjectives:
 
 ### 1.4 NAT 게이트웨이 및 추가 옵션 설정
 
-11. **NAT gateways**에서 **Zonal**을 선택합니다.
-
-12. **NAT gateways** 하위 옵션에서 **In 1 AZ**를 선택합니다.
+11. **NAT gateways**에서 **In 1 AZ**를 선택합니다.
 
 > [!TIP]
-> NAT Gateway는 Zonal(단일 AZ)과 Regional(다중 AZ) 방식을 선택할 수 있습니다. 이 실습에서는 비용 절감을 위해 Zonal - In 1 AZ를 선택합니다. Regional NAT Gateway는 고가용성을 제공하지만 추가 비용이 발생합니다.
+> NAT Gateway 옵션은 **None**, **In 1 AZ**, **1 per AZ** 세 가지입니다. 이 실습에서는 비용 절감을 위해 **In 1 AZ**를 선택합니다. **1 per AZ**는 각 가용 영역에 NAT Gateway를 배치하여 고가용성을 제공하지만 추가 비용이 발생합니다.
 
-13. **VPC endpoints**에서 **None**을 선택합니다.
+12. **VPC endpoints**에서 **None**을 선택합니다.
 
-14. **DNS options**는 기본값을 유지합니다 (Enable DNS hostnames, Enable DNS resolution 모두 체크).
+13. **DNS options**는 기본값을 유지합니다 (Enable DNS hostnames, Enable DNS resolution 모두 체크).
 
 > [!NOTE]
 > NAT Gateway는 시간당 요금과 데이터 처리 요금이 발생합니다. 실습 완료 후 반드시 리소스를 정리합니다.
 
 ### 1.5 Amazon VPC 생성
 
-15. **Preview** 창에서 구성한 VPC 리소스 간의 관계를 확인합니다:
+14. **Preview** 창에서 구성한 VPC 리소스 간의 관계를 확인합니다:
 - VPC: CloudArchitect-Lab-vpc
 - Subnets: 4개 (퍼블릭 2개, 프라이빗 2개)
 - Route tables: 3개
 - Network connections: Internet Gateway, NAT Gateway
 
-16. [[Create VPC]] 버튼을 클릭합니다.
+15. [[Create VPC]] 버튼을 클릭합니다.
 
-17. VPC 생성이 완료될 때까지 기다립니다.
+16. VPC 생성이 완료될 때까지 기다립니다.
 
 > [!NOTE]
 > VPC와 모든 네트워크 구성 요소 생성에 약 2-3분이 소요됩니다. 생성 진행 상황이 화면에 표시됩니다.
@@ -125,11 +123,11 @@ learningObjectives:
 
 ### 2.1 Amazon VPC 확인
 
-18. VPC 콘솔에서 왼쪽 메뉴의 **Your VPCs**를 선택합니다.
+17. VPC 콘솔에서 왼쪽 메뉴의 **Your VPCs**를 선택합니다.
 
-19. **CloudArchitect-Lab-vpc**를 찾아 선택합니다.
+18. **CloudArchitect-Lab-vpc**를 찾아 선택합니다.
 
-20. 다음 정보를 확인합니다:
+19. 다음 정보를 확인합니다:
 - **State**: Available
 - **IPv4 CIDR**: `10.0.0.0/16`
 - **DNS hostnames**: Enabled
@@ -137,9 +135,9 @@ learningObjectives:
 
 ### 2.2 서브넷 확인
 
-21. 왼쪽 메뉴에서 **Subnets**를 선택합니다.
+20. 왼쪽 메뉴에서 **Subnets**를 선택합니다.
 
-22. 생성된 4개의 서브넷을 확인합니다:
+21. 생성된 4개의 서브넷을 확인합니다:
 
 | 서브넷 이름 | CIDR | 타입 | AZ |
 |-------------|------|------|-----|
@@ -150,13 +148,13 @@ learningObjectives:
 
 ### 2.3 Internet Gateway 및 NAT Gateway 확인
 
-23. 왼쪽 메뉴에서 **Internet gateways**를 선택합니다.
+22. 왼쪽 메뉴에서 **Internet gateways**를 선택합니다.
 
-24. **CloudArchitect-Lab-igw**가 생성되고 **State**가 "Attached"인지 확인합니다.
+23. **CloudArchitect-Lab-igw**가 생성되고 **State**가 "Attached"인지 확인합니다.
 
-25. 왼쪽 메뉴에서 **NAT gateways**를 선택합니다.
+24. 왼쪽 메뉴에서 **NAT gateways**를 선택합니다.
 
-26. **CloudArchitect-Lab-nat-public1-ap-northeast-2a**가 생성되고 **State**가 "Available"인지 확인합니다.
+25. **CloudArchitect-Lab-nat-public1-ap-northeast-2a**가 생성되고 **State**가 "Available"인지 확인합니다.
 
 > [!OUTPUT]
 > ```
@@ -179,11 +177,11 @@ learningObjectives:
 
 ### 3.1 Public 라우팅 테이블 확인
 
-27. 왼쪽 메뉴에서 **Route tables**를 선택합니다.
+26. 왼쪽 메뉴에서 **Route tables**를 선택합니다.
 
-28. **CloudArchitect-Lab-rtb-public** 라우팅 테이블을 찾아 선택합니다.
+27. **CloudArchitect-Lab-rtb-public** 라우팅 테이블을 찾아 선택합니다.
 
-29. **Routes** 탭에서 다음 라우트를 확인합니다:
+28. **Routes** 탭에서 다음 라우트를 확인합니다:
 
 | 목적지 | 대상 | 설명 |
 |--------|------|------|
@@ -199,13 +197,13 @@ learningObjectives:
 > - 이 규칙은 VPC 생성 시 자동으로 추가되며 삭제할 수 없습니다
 > - 서브넷이 Public이든 Private이든 같은 VPC 내에서는 항상 직접 통신이 가능합니다
 
-30. **Subnet associations** 탭에서 2개의 퍼블릭 서브넷이 연결되어 있는지 확인합니다.
+29. **Subnet associations** 탭에서 2개의 퍼블릭 서브넷이 연결되어 있는지 확인합니다.
 
 ### 3.2 Private 라우팅 테이블 확인
 
-31. **CloudArchitect-Lab-rtb-private1-ap-northeast-2a** 라우팅 테이블을 찾아 선택합니다.
+30. **CloudArchitect-Lab-rtb-private1-ap-northeast-2a** 라우팅 테이블을 찾아 선택합니다.
 
-32. **Routes** 탭에서 다음 라우트를 확인합니다:
+31. **Routes** 탭에서 다음 라우트를 확인합니다:
 
 | 목적지 | 대상 | 설명 |
 |--------|------|------|
@@ -220,7 +218,7 @@ learningObjectives:
 > - 외부 인터넷 통신(0.0.0.0/0)은 NAT Gateway를 통해 아웃바운드만 가능합니다
 > - 즉, Private 서브넷의 인스턴스는 같은 VPC의 Public 서브넷 인스턴스와 자유롭게 통신할 수 있습니다
 
-33. **Subnet associations** 탭에서 프라이빗 서브넷 1개가 연결되어 있는지 확인합니다.
+32. **Subnet associations** 탭에서 프라이빗 서브넷 1개가 연결되어 있는지 확인합니다.
 
 > [!NOTE]
 > In 1 AZ NAT Gateway를 선택한 경우, 하나의 프라이빗 서브넷만 이 라우팅 테이블을 사용합니다. 다른 프라이빗 서브넷은 별도의 라우팅 테이블(**CloudArchitect-Lab-rtb-private2-ap-northeast-2b**)을 가지며, NAT Gateway 없이 VPC 내부 통신만 가능합니다.
@@ -239,23 +237,23 @@ learningObjectives:
 
 ### 4.1 Web Server Security Group 생성
 
-34. 상단 검색창에 `EC2`를 검색하고 **EC2**를 선택합니다.
+33. 상단 검색창에 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-35. EC2 콘솔에서 왼쪽 메뉴의 **Network & Security** 섹션 아래의 **Security Groups**를 선택합니다.
+34. EC2 콘솔에서 왼쪽 메뉴의 **Network & Security** 섹션 아래의 **Security Groups**를 선택합니다.
 
-36. [[Create security group]] 버튼을 클릭합니다.
+35. [[Create security group]] 버튼을 클릭합니다.
 
-37. **Security group name** 필드에 `CloudArchitect-Lab-Web-SG`를 입력합니다.
+36. **Security group name** 필드에 `CloudArchitect-Lab-Web-SG`를 입력합니다.
 
-38. **Description** 필드에 `Web server security group for Lab04`를 입력합니다.
+37. **Description** 필드에 `Web server security group for Lab04`를 입력합니다.
 
-39. **VPC**에서 **CloudArchitect-Lab-vpc**를 선택합니다.
+38. **VPC**에서 **CloudArchitect-Lab-vpc**를 선택합니다.
 
 ### 4.2 Web Security Group 인바운드 규칙 설정
 
-40. **Inbound rules** 섹션에서 [[Add rule]] 버튼을 클릭합니다.
+39. **Inbound rules** 섹션에서 [[Add rule]] 버튼을 클릭합니다.
 
-41. 다음 규칙을 추가합니다:
+40. 다음 규칙을 추가합니다:
 
 | Type | Source type | Source | Description | 용도 |
 |------|-------------|--------|-------------|------|
@@ -266,29 +264,29 @@ learningObjectives:
 > [!TIP]
 > Type을 선택하면 Protocol과 Port range는 자동으로 설정됩니다. Source type을 선택하면 Source 값이 자동으로 입력되거나 선택할 수 있습니다. Description은 선택 사항이지만 규칙의 용도를 명확히 하기 위해 입력하는 것이 좋습니다.
 
-42. 각 규칙을 [[Add rule]] 버튼으로 추가합니다.
+41. 각 규칙을 [[Add rule]] 버튼으로 추가합니다.
 
-43. [[Create security group]] 버튼을 클릭합니다.
+42. [[Create security group]] 버튼을 클릭합니다.
 
 ### 4.3 Database Security Group 생성
 
-44. [[Create security group]] 버튼을 클릭합니다.
+43. [[Create security group]] 버튼을 클릭합니다.
 
-45. **Security group name** 필드에 `CloudArchitect-Lab-DB-SG`를 입력합니다.
+44. **Security group name** 필드에 `CloudArchitect-Lab-DB-SG`를 입력합니다.
 
-46. **Description** 필드에 `Database security group for Lab04`를 입력합니다.
+45. **Description** 필드에 `Database security group for Lab04`를 입력합니다.
 
-47. **VPC**에서 **CloudArchitect-Lab-vpc**를 선택합니다.
+46. **VPC**에서 **CloudArchitect-Lab-vpc**를 선택합니다.
 
-48. **Inbound rules** 섹션에서 [[Add rule]] 버튼을 클릭합니다.
+47. **Inbound rules** 섹션에서 [[Add rule]] 버튼을 클릭합니다.
 
-49. **Type**에서 **MySQL/Aurora**를 선택합니다.
+48. **Type**에서 **MySQL/Aurora**를 선택합니다.
 
-50. **Source type**에서 **Custom**을 선택하고, **Source** 필드에서 **CloudArchitect-Lab-Web-SG**를 검색하여 선택합니다.
+49. **Source type**에서 **Custom**을 선택하고, **Source** 필드에서 **CloudArchitect-Lab-Web-SG**를 검색하여 선택합니다.
 
-51. **Description** 필드에 `Allow MySQL from Web SG`를 입력합니다.
+50. **Description** 필드에 `Allow MySQL from Web SG`를 입력합니다.
 
-52. [[Create security group]] 버튼을 클릭합니다.
+51. [[Create security group]] 버튼을 클릭합니다.
 
 ✅ **태스크 완료**: Web-SG와 DB-SG 보안 그룹이 계층화된 구조로 생성되었습니다.
 

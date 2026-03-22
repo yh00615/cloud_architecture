@@ -130,7 +130,7 @@ learningObjectives:
 
 20. AWS Management Console에 로그인한 후 상단 검색창에서 `Billing and Cost Management`를 검색하고 **Billing and Cost Management**를 선택합니다.
 
-21. Billing and Cost Management 콘솔의 왼쪽 메뉴에서 **Budgets**를 선택합니다.
+21. Billing and Cost Management 콘솔의 왼쪽 메뉴에서 **Budgets and Planning** 섹션 아래의 **Budgets**를 선택합니다.
 
 22. [[Create budget]] 버튼을 클릭합니다.
 
@@ -263,7 +263,7 @@ Threshold: 80% Actual
 
 48. AWS Management Console에 로그인한 후 상단 검색창에서 `Billing and Cost Management`를 검색하고 **Billing and Cost Management**를 선택합니다.
 
-49. Billing and Cost Management 콘솔의 왼쪽 메뉴에서 **Budgets**를 선택합니다.
+49. Billing and Cost Management 콘솔의 왼쪽 메뉴에서 **Budgets and Planning** 섹션 아래의 **Budgets**를 선택합니다.
 
 50. `MyPersonalBudget`를 선택합니다.
 
@@ -298,7 +298,7 @@ Threshold: 80% Actual
 
 1. 상단 검색창에서 `Billing and Cost Management`를 검색하고 **Billing and Cost Management**를 선택합니다.
 
-2. 왼쪽 메뉴에서 **Budgets**를 선택합니다.
+2. 왼쪽 메뉴에서 **Budgets and Planning** 섹션 아래의 **Budgets**를 선택합니다.
 
 3. `MyPersonalBudget`의 라디오 버튼을 선택합니다.
 

@@ -137,7 +137,7 @@ chmod +x setup-9-2.sh cleanup-9-2.sh
 
 20. 상단 검색창에서 `Lambda`를 검색하고 **Lambda**를 선택합니다.
 
-21. [[Create function]] 버튼을 클릭합니다.
+21. 왼쪽 메뉴에서 **Functions**를 선택하고 [[Create function]] 버튼을 클릭합니다.
 
 22. **Author from scratch**를 선택합니다.
 
@@ -149,7 +149,7 @@ chmod +x setup-9-2.sh cleanup-9-2.sh
 
 25. **Change default execution role** 섹션을 확장합니다.
 
-26. **Execution role**에서 **Use another role**을 선택합니다.
+26. **Execution role**에서 **Use an existing role**을 선택합니다.
 
 27. **Existing role** 드롭다운에서 **CloudArchitect-Lab-LambdaExecutionRole**을 선택합니다.
 
@@ -510,11 +510,11 @@ def lambda_handler(event, context):
 > }
 > ```
 
-52. DynamoDB 콘솔로 이동하여 **CloudArchitect-Lab-Users** 테이블의 **Explore table items**를 선택합니다.
+52. 상단 검색창에서 `DynamoDB`를 검색하고 **DynamoDB**를 선택합니다. 왼쪽 메뉴에서 **Tables**를 선택하고 **CloudArchitect-Lab-Users** 테이블을 선택한 후 **Explore table items**를 선택합니다.
 
 53. 박민수(user003) 레코드가 추가되었는지 확인합니다.
 
-54. Lambda 콘솔로 이동하여 **CloudArchitect-Lab-UsersAPI** 함수를 선택합니다.
+54. 상단 검색창에서 `Lambda`를 검색하고 **Lambda**를 선택합니다. 왼쪽 메뉴에서 **Functions**를 선택하고 **CloudArchitect-Lab-UsersAPI** 함수를 선택합니다.
 
 55. **Test** 탭에서 이벤트 드롭다운에서 `GetAllUsers`를 선택하고 [[Test]] 버튼을 클릭합니다.
 

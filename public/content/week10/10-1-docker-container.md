@@ -387,7 +387,7 @@ docker push $ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/cloudarchitect-lab-
 
 ### 5.3 Amazon ECR 콘솔에서 확인
 
-19. 상단 검색창에서 `ECR`을 검색하고 **ECR**을 선택합니다.
+19. 상단 검색창에서 `ECR`을 검색하고 **Elastic Container Registry**를 선택합니다.
 
 20. ECR 콘솔의 왼쪽 메뉴에서 **Private registry** 섹션 아래의 **Repositories**를 선택합니다.
 
@@ -450,7 +450,7 @@ aws ecr delete-repository --repository-name cloudarchitect-lab-app --region ap-n
 
 ### 태스크 3: 최종 확인
 
-6. 상단 검색창에서 `ECR`을 검색하고 **ECR**을 선택합니다.
+6. 상단 검색창에서 `ECR`을 검색하고 **Elastic Container Registry**를 선택합니다.
 
 7. 왼쪽 메뉴에서 **Repositories**를 선택합니다.
 

@@ -312,7 +312,7 @@ footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1p
 </html>
 ```
 
-43. S3 버킷에 `error.html` 파일을 업로드합니다.
+43. 버킷 상세 페이지의 **Objects** 탭에서 [[Upload]] 버튼을 클릭하여 `error.html` 파일을 업로드합니다.
 
 44. 웹사이트 URL 뒤에 `/nonexistent.html`을 추가하여 접속합니다.
 

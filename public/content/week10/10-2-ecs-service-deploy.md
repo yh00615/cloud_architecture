@@ -148,7 +148,7 @@ chmod +x setup-10-2.sh cleanup-10-2.sh
 
 ### 1.2 Amazon ECR 리포지토리 및 이미지 URI 확인
 
-13. 상단 검색창에서 `ECR`을 검색하고 **ECR**을 선택합니다.
+13. 상단 검색창에서 `ECR`을 검색하고 **Elastic Container Registry**를 선택합니다.
 
 14. ECR 콘솔의 왼쪽 메뉴에서 **Private registry** 섹션 아래의 **Repositories**를 선택합니다.
 
@@ -320,7 +320,7 @@ chmod +x setup-10-2.sh cleanup-10-2.sh
 
 ### 5.1 Amazon ECS 서비스 생성
 
-63. ECS 콘솔에서 **CloudArchitect-Lab-Cluster**를 선택합니다.
+63. 상단 검색창에서 `ECS`를 검색하고 **Elastic Container Service**를 선택합니다. 왼쪽 메뉴에서 **Clusters**를 선택하고 **CloudArchitect-Lab-Cluster**를 선택합니다.
 
 64. **Services** 탭에서 [[Create]] 버튼을 클릭합니다.
 
@@ -386,7 +386,7 @@ chmod +x setup-10-2.sh cleanup-10-2.sh
 
 ### 6.2 Application Load Balancer 접속 테스트
 
-82. EC2 콘솔에서 왼쪽 메뉴의 **Load Balancers**를 선택합니다.
+82. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다. 왼쪽 메뉴의 **Load Balancing** 섹션에서 **Load Balancers**를 선택합니다.
 
 83. `CloudArchitect-Lab-ALB`를 선택합니다.
 
@@ -411,7 +411,7 @@ chmod +x setup-10-2.sh cleanup-10-2.sh
 
 ### 6.3 Target Group 헬스 체크 확인
 
-89. EC2 콘솔에서 왼쪽 메뉴의 **Target Groups**를 선택합니다.
+89. EC2 콘솔에서 왼쪽 메뉴의 **Load Balancing** 섹션 아래의 **Target Groups**를 선택합니다.
 
 90. `CloudArchitect-Lab-TG`를 선택합니다.
 
@@ -484,19 +484,19 @@ chmod +x setup-10-2.sh cleanup-10-2.sh
 
 9. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-10. 왼쪽 메뉴에서 **Load Balancers**를 선택합니다.
+10. 왼쪽 메뉴에서 **Load Balancing** 섹션 아래의 **Load Balancers**를 선택합니다.
 
 11. `CloudArchitect-Lab-ALB`를 선택하고 **Actions** > **Delete load balancer**를 선택합니다.
 
 12. 확인 필드에 `confirm`을 입력하고 [[Delete]]를 클릭합니다.
 
-13. 왼쪽 메뉴에서 **Target Groups**를 선택합니다.
+13. 왼쪽 메뉴에서 **Load Balancing** 섹션 아래의 **Target Groups**를 선택합니다.
 
 14. `CloudArchitect-Lab-TG`를 선택하고 **Actions** > **Delete**를 선택합니다.
 
 #### 태스크 3: Amazon ECR 리포지토리 삭제
 
-15. 상단 검색창에서 `ECR`을 검색하고 **ECR**을 선택합니다.
+15. 상단 검색창에서 `ECR`을 검색하고 **Elastic Container Registry**를 선택합니다.
 
 16. `cloudarchitect-lab-webapp` 리포지토리를 선택하고 **Delete**를 클릭합니다.
 
@@ -520,7 +520,7 @@ chmod +x setup-10-2.sh cleanup-10-2.sh
 
 24. 상단 검색창에서 `EC2`를 검색하고 **EC2**를 선택합니다.
 
-25. 왼쪽 메뉴의 **Security Groups**에서 `CloudArchitect-Lab-ECS-SG`와 `CloudArchitect-Lab-ALB-SG`를 각각 삭제합니다.
+25. 왼쪽 메뉴의 **Network & Security** 섹션 아래의 **Security Groups**에서 `CloudArchitect-Lab-ECS-SG`와 `CloudArchitect-Lab-ALB-SG`를 각각 삭제합니다.
 
 26. 상단 검색창에서 `VPC`를 검색하고 **VPC**를 선택합니다.
 

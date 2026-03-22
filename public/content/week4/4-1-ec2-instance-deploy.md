@@ -486,7 +486,7 @@ curl -s localhost | head -5
 
 #### 태스크 2: Security Group 삭제
 
-6. 왼쪽 메뉴의 **Network & Security** 섹션에서 **Security Groups**를 선택합니다.
+6. 왼쪽 메뉴의 **Network & Security** 섹션 아래의 **Security Groups**를 선택합니다.
 
 7. **CloudArchitect-Lab-Web-SG**를 선택하고 **Actions** > **Delete security groups**를 선택합니다.
 

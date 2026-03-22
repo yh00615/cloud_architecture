@@ -93,7 +93,7 @@ learningObjectives:
 
 13. 테이블 상세 페이지 상단의 **Explore table items** 탭을 선택합니다.
 
-14. 화면 오른쪽 상단의 **Actions** > **Create item**을 선택합니다.
+14. 화면 오른쪽 상단의 [[Create item]] 버튼을 클릭합니다.
 
 15. **id** 필드에 `user001`을 입력합니다.
 
@@ -124,7 +124,7 @@ learningObjectives:
 
 ### 2.2 두 번째 아이템 생성 (JSON 뷰)
 
-25. [[Create item]] 버튼을 클릭합니다.
+25. 화면 오른쪽 상단의 [[Create item]] 버튼을 클릭합니다.
 
 26. 아이템 편집 화면 상단의 **JSON view**를 선택합니다.
 

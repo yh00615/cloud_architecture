@@ -89,7 +89,7 @@ learningObjectives:
 
 9. [[Create policy]] 버튼을 클릭합니다.
 
-10. 상단의 **JSON** 탭을 선택합니다.
+10. **Policy editor** 섹션에서 **JSON** 탭을 선택합니다.
 
 11. 기존 JSON 내용을 모두 삭제하고 다음 정책 문서를 입력합니다:
 

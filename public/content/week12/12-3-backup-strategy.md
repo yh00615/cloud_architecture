@@ -187,7 +187,7 @@ chmod +x setup-12-3.sh cleanup-12-3.sh
 
 17. 상단 검색창에서 `AWS Backup`을 검색하고 **AWS Backup**을 선택합니다.
 
-18. AWS Backup 콘솔의 왼쪽 메뉴에서 **My account** 섹션 아래의 **Backup vaults**를 선택합니다.
+18. AWS Backup 콘솔의 왼쪽 메뉴에서 **My account** 섹션 아래의 **Vaults**를 선택합니다.
 
 > [!NOTE]
 > 기본적으로 `Default` 볼트가 이미 존재합니다. 이 실습에서는 프로젝트 전용 볼트를 새로 생성하여 백업 데이터를 분리 관리합니다.
@@ -329,7 +329,7 @@ chmod +x setup-12-3.sh cleanup-12-3.sh
 
 ### 4.1 백업 작업 모니터링
 
-50. 백업이 시작되면 자동으로 **Jobs** 페이지로 이동합니다. 왼쪽 메뉴에서 **Jobs**를 선택하여 이동할 수도 있습니다.
+50. 백업이 시작되면 자동으로 **Jobs** 페이지로 이동합니다. 왼쪽 메뉴에서 **My account** 섹션 아래의 **Jobs**를 선택하여 이동할 수도 있습니다.
 
 51. **Backup jobs** 탭에서 방금 생성한 백업 작업을 확인합니다.
 
@@ -364,7 +364,7 @@ chmod +x setup-12-3.sh cleanup-12-3.sh
 
 ### 5.1 복구 시점 선택
 
-53. AWS Backup 콘솔의 왼쪽 메뉴에서 **My account** 섹션 아래의 **Backup vaults**를 선택합니다.
+53. AWS Backup 콘솔의 왼쪽 메뉴에서 **My account** 섹션 아래의 **Vaults**를 선택합니다.
 
 54. `CloudArchitect-Lab-BackupVault`를 선택합니다.
 
@@ -392,7 +392,7 @@ chmod +x setup-12-3.sh cleanup-12-3.sh
 
 ### 5.3 복원 작업 모니터링
 
-60. 복원이 시작되면 왼쪽 메뉴에서 **Jobs**를 선택합니다.
+60. 복원이 시작되면 왼쪽 메뉴에서 **My account** 섹션 아래의 **Jobs**를 선택합니다.
 
 61. **Restore jobs** 탭을 선택하여 복원 작업의 진행 상태를 확인합니다.
 
@@ -526,7 +526,7 @@ chmod +x setup-12-3.sh cleanup-12-3.sh
 
 1. 상단 검색창에서 `AWS Backup`을 검색하고 **AWS Backup**을 선택합니다.
 
-2. 왼쪽 메뉴에서 **Backup vaults**를 선택합니다.
+2. 왼쪽 메뉴에서 **My account** 섹션 아래의 **Vaults**를 선택합니다.
 
 3. `CloudArchitect-Lab-BackupVault`를 선택합니다.
 
@@ -539,7 +539,7 @@ chmod +x setup-12-3.sh cleanup-12-3.sh
 
 #### 태스크 2: AWS Backup 계획 삭제
 
-6. 왼쪽 메뉴에서 **Backup plans**를 선택합니다.
+6. 왼쪽 메뉴에서 **My account** 섹션 아래의 **Backup plans**를 선택합니다.
 
 7. `CloudArchitect-Lab-BackupPlan`을 선택합니다.
 
@@ -554,7 +554,7 @@ chmod +x setup-12-3.sh cleanup-12-3.sh
 
 #### 태스크 3: AWS Backup 볼트 삭제
 
-11. 왼쪽 메뉴에서 **Backup vaults**를 선택합니다.
+11. 왼쪽 메뉴에서 **My account** 섹션 아래의 **Vaults**를 선택합니다.
 
 12. `CloudArchitect-Lab-BackupVault`를 선택합니다.
 
@@ -581,7 +581,7 @@ chmod +x setup-12-3.sh cleanup-12-3.sh
 
 #### 태스크 5: Security Group 및 Amazon VPC 삭제
 
-20. EC2 인스턴스 종료 후, 왼쪽 메뉴의 **Security Groups**에서 `CloudArchitect-Lab-EC2-SG`를 삭제합니다.
+20. EC2 인스턴스 종료 후, 왼쪽 메뉴의 **Network & Security** 섹션 아래의 **Security Groups**에서 `CloudArchitect-Lab-EC2-SG`를 삭제합니다.
 
 21. 상단 검색창에서 `VPC`를 검색하고 **VPC**를 선택합니다.
 

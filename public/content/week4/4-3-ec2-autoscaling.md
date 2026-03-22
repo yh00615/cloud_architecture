@@ -164,7 +164,7 @@ chmod +x setup-4-3.sh cleanup-4-3.sh
 
 ### 1.3 보안 그룹 확인
 
-18. 왼쪽 메뉴에서 **Security Groups**를 선택합니다.
+18. 왼쪽 메뉴에서 **Network & Security** 섹션 아래의 **Security Groups**를 선택합니다.
 
 19. **CloudArchitect-Lab-WebServer-SG**를 찾아 선택합니다.
 
@@ -393,7 +393,7 @@ EOF
 
 ### 4.2 Application Load Balancer 접속 테스트
 
-68. EC2 콘솔에서 왼쪽 메뉴의 **Load Balancers**를 선택합니다.
+68. EC2 콘솔에서 왼쪽 메뉴의 **Load Balancing** 섹션 아래의 **Load Balancers**를 선택합니다.
 
 69. **CloudArchitect-Lab-ALB**를 선택합니다.
 
@@ -412,7 +412,7 @@ EOF
 
 ### 4.3 Target Group 헬스 체크 확인
 
-75. EC2 콘솔에서 왼쪽 메뉴의 **Target Groups**를 선택합니다.
+75. EC2 콘솔에서 왼쪽 메뉴의 **Load Balancing** 섹션 아래의 **Target Groups**를 선택합니다.
 
 76. **CloudArchitect-Lab-TG**를 선택합니다.
 
@@ -468,7 +468,7 @@ EOF
 
 ### 5.2 Load Balancer 및 Target Group 삭제
 
-90. 왼쪽 메뉴에서 **Load Balancers**를 선택합니다.
+90. 왼쪽 메뉴에서 **Load Balancing** 섹션 아래의 **Load Balancers**를 선택합니다.
 
 91. **CloudArchitect-Lab-ALB**를 선택합니다.
 
@@ -476,7 +476,7 @@ EOF
 
 93. 확인 텍스트를 입력하고 삭제합니다.
 
-94. 왼쪽 메뉴에서 **Target Groups**를 선택합니다.
+94. 왼쪽 메뉴에서 **Load Balancing** 섹션 아래의 **Target Groups**를 선택합니다.
 
 95. **CloudArchitect-Lab-TG**를 선택합니다.
 
@@ -553,13 +553,13 @@ EOF
 
 #### 태스크 2: Application Load Balancer 및 Target Group 삭제
 
-5. 왼쪽 메뉴에서 **Load Balancers**를 선택합니다.
+5. 왼쪽 메뉴에서 **Load Balancing** 섹션 아래의 **Load Balancers**를 선택합니다.
 
 6. **CloudArchitect-Lab-ALB**를 선택하고 **Actions** > **Delete load balancer**를 선택합니다.
 
 7. 확인 필드에 `confirm`을 입력하고 [[Delete]]를 클릭합니다.
 
-8. 왼쪽 메뉴에서 **Target Groups**를 선택합니다.
+8. 왼쪽 메뉴에서 **Load Balancing** 섹션 아래의 **Target Groups**를 선택합니다.
 
 9. **CloudArchitect-Lab-TG**를 선택하고 **Actions** > **Delete**를 선택합니다.
 
