@@ -1203,7 +1203,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       );
     },
 
-    // 이미지 - base path 자동 처리 + 클릭 확대
+    // 이미지 - base path 자동 처리 + 클릭 확대 (모든 이미지)
     img: ({ src, alt, className, ...props }: any) => {
       // base path 가져오기 (vite.config.ts에서 설정한 값)
       const base = import.meta.env.BASE_URL || '/';
@@ -1213,15 +1213,13 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         ? src
         : `${base}${src?.replace(/^\//, '')}`;
 
-      const isArchitectureImg = className?.includes('guide-img-lg');
-
       return (
         <img
           src={imageSrc}
           alt={alt || ''}
           className={className || 'markdown-image'}
-          style={isArchitectureImg ? { cursor: 'zoom-in' } : undefined}
-          onClick={isArchitectureImg ? () => handleImageClick(imageSrc, alt || '') : undefined}
+          style={{ cursor: 'zoom-in' }}
+          onClick={() => handleImageClick(imageSrc, alt || '')}
           {...props}
         />
       );
@@ -1249,9 +1247,9 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       {/* 이미지 확대 모달 */}
       {zoomedImage && (
         <div className="image-zoom-overlay" onClick={handleCloseZoom}>
-          <div className="image-zoom-container">
+          <div className="image-zoom-container" onClick={(e) => e.stopPropagation()}>
             <button className="image-zoom-close" onClick={handleCloseZoom} aria-label="닫기">✕</button>
-            <img src={zoomedImage} alt={zoomedAlt} className="image-zoom-img" />
+            <img src={zoomedImage} alt={zoomedAlt} className="image-zoom-img" onClick={handleCloseZoom} style={{ cursor: 'zoom-out' }} />
             {zoomedAlt && <div className="image-zoom-title">{zoomedAlt}</div>}
           </div>
         </div>
